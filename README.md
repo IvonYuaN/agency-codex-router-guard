@@ -48,6 +48,7 @@ agency-codex-router-guard/
 ├── upstream-agents/
 ├── scripts/install.sh
 ├── scripts/init-project.sh
+├── scripts/update-profile.sh
 └── scripts/scan-project.sh
 ```
 
@@ -122,6 +123,16 @@ chmod +x scripts/install.sh scripts/init-project.sh
 ./scripts/scan-project.sh --project /path/to/your/repo
 ```
 
+如果任务中途发生 reroute，希望保留当前 profile 但更新 squad，并自动追加一条带时间和原因的历史记录：
+
+```bash
+./scripts/update-profile.sh \
+  --project /path/to/your/repo \
+  --primary "Reality Checker" \
+  --supporting "Frontend Developer,UX Architect,UI Designer" \
+  --reason "任务从实现转向验收"
+```
+
 ## 工作方式
 
 在一个新仓库里，这个 skill 的理想流程是：
@@ -138,6 +149,12 @@ chmod +x scripts/install.sh scripts/init-project.sh
 - `Constraints`
 - `Routing Cues`
 - `Squad History`
+
+如果项目已经在推进中，`update-profile.sh` 现在可以在不重建整份 profile 的前提下：
+
+- 更新 `Default Squad`
+- 按需改写 `Routing Cues`
+- 追加带时间和原因的 `Squad History`
 
 ## 项目 profile 示例
 
@@ -163,8 +180,8 @@ Use agency-codex-router-guard for this repo.
 ## 当前已知可优化方向
 
 - 自动扫描现在会读取少量关键配置与 README 标题，但规则仍然是启发式，不是深度理解
-- `Squad History` 目前只会记录初始化信息，还没有自动追加每次 reroute 的变更记录
 - 路由规则目前写在 `SKILL.md` 里，后续可以拆成更细的行业或任务模板
+- `update-profile.sh` 目前对 `Routing Cues` 仍是整段替换，还不是分支级精细编辑
 
 已经补上的优化：
 
@@ -173,12 +190,13 @@ Use agency-codex-router-guard for this repo.
 - 安装脚本现在默认中文，并支持安装后立即为项目生成 profile
 - 新项目对话答案现在可以直接落成 `Current Goals`、`Constraints`、`Routing Cues`
 - 所有生成的 profile 现在都会带 `Squad History`
+- `update-profile.sh` 现在可以在 reroute 时自动追加带时间和原因的历史记录
 
 下一步更值得继续做的增强：
 
 - 为不同行业继续补充 preset，例如电商、AI 工具、内容工作流、数据分析项目
-- 让 `Squad History` 自动追踪每次 squad 切换的原因和时间
 - 支持从真实对话文本里自动抽取这些字段，而不是只靠 CLI 传参
+- 让 `update-profile.sh` 在保留原线索的同时做更细粒度的局部更新，而不是整段替换
 
 ## 吸收了哪些外部思路
 
@@ -246,6 +264,7 @@ agency-codex-router-guard/
 ├── upstream-agents/
 ├── scripts/install.sh
 ├── scripts/init-project.sh
+├── scripts/update-profile.sh
 └── scripts/scan-project.sh
 ```
 
@@ -320,6 +339,16 @@ You can also use the scan shortcut directly:
 ./scripts/scan-project.sh --project /path/to/your/repo
 ```
 
+If the project is already in motion and you want to reroute without rebuilding the entire profile, you can update the active squad and append a timestamped history entry:
+
+```bash
+./scripts/update-profile.sh \
+  --project /path/to/your/repo \
+  --primary "Reality Checker" \
+  --supporting "Frontend Developer,UX Architect,UI Designer" \
+  --reason "Work shifted from implementation to verification"
+```
+
 ## How it works
 
 On a new repo, the skill should:
@@ -336,6 +365,12 @@ When dialogue answers are provided for a new project, `dialog` mode now writes t
 - `Constraints`
 - `Routing Cues`
 - `Squad History`
+
+For ongoing projects, `update-profile.sh` can now:
+
+- update `Default Squad`
+- rewrite `Routing Cues` when needed
+- append timestamped `Squad History` entries with reroute reasons
 
 ## Example project profiles
 
@@ -362,7 +397,6 @@ Or let Codex apply it when the task clearly benefits from routing.
 
 - Scan-based routing now reads a few key config files and README headings, but it is still heuristic rather than deep repo understanding
 - Routing rules are centralized in `SKILL.md`; they could later be split into domain-specific presets
-- `Squad History` currently records initialization only and does not yet append every reroute event automatically
 
 Already improved in this version:
 
@@ -371,12 +405,13 @@ Already improved in this version:
 - The install script now defaults to Chinese and can install the skill while generating a project profile immediately
 - New-project dialogue answers can now be written directly into `Current Goals`, `Constraints`, and `Routing Cues`
 - All generated profiles now include `Squad History`
+- `update-profile.sh` can now append timestamped reroute history entries automatically
 
 Best next upgrades:
 
 - Add more domain presets such as ecommerce, AI tools, content workflows, and analytics projects
-- Make `Squad History` automatically track reroute reasons and timestamps
 - Extract those dialogue fields directly from natural conversation, not only from CLI flags
+- Make `update-profile.sh` preserve and edit individual routing-cue branches more granularly instead of replacing the whole section
 
 ## External ideas incorporated
 

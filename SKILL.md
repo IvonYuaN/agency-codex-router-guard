@@ -109,6 +109,7 @@ If the user shifts domains, refresh the squad. Examples:
 - from static site design to QA verification
 
 When re-routing, update `.codex/project-profile.md`.
+Prefer `scripts/update-profile.sh` so squad changes and routing-cue changes also append a timestamped `Squad History` record.
 
 ### Step 6: Escalate when the agent is spinning
 

@@ -55,6 +55,10 @@
 - Check adjacent impact, not just the edited surface
 - Distinguish between demo-ready and production-ready
 
+## Squad History
+- Initial squad: example template initialized with `ppt-storytelling`
+- Latest change reason: no manual re-routing recorded yet
+
 ## Evolution Loop
 - Keep improvements
 - Revert regressions

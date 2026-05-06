@@ -55,6 +55,10 @@
 - 检查相邻影响面，而不是只看改动点本身
 - 区分“演示可用”与“生产可用”
 
+## Squad History
+- Initial squad: 示例模板初始化为 `ppt-storytelling`
+- Latest change reason: 尚未记录人工调整
+
 ## Evolution Loop
 - 保留有效改动
 - 回滚回归和劣化

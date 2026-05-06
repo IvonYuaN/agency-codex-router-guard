@@ -97,6 +97,7 @@ rm -rf "${TARGET_DIR}"
 cp -R "${SOURCE_DIR}" "${TARGET_DIR}"
 
 echo "Installed to ${TARGET_DIR}"
+chmod +x "${TARGET_DIR}/scripts/"*.sh
 
 if [[ -n "${PROJECT_DIR}" ]]; then
   if [[ ! -d "${PROJECT_DIR}" ]]; then
