@@ -6,16 +6,26 @@ FORCE="false"
 PROFILE_LANG="zh"
 MODE="auto"
 SOURCE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PROJECT_GOAL=""
+SUCCESS_METRIC=""
+STACK_CHOICE=""
+ARTIFACT_SHAPE=""
+FIRST_MOVE=""
 
 usage() {
   cat <<'EOF'
 Usage:
-  ./scripts/init-project.sh --project /path/to/repo [--lang zh|en] [--mode auto|scan|dialog|template] [--force]
+  ./scripts/init-project.sh --project /path/to/repo [--lang zh|en] [--mode auto|scan|dialog|template] [--goal VALUE] [--success VALUE] [--stack VALUE] [--artifact VALUE] [--first-move VALUE] [--force]
 
 Options:
   --project PATH    Initialize PATH/.codex/project-profile.md
   --lang LANG       Profile template language: zh (default) or en
   --mode MODE       auto (default), scan existing repo, dialog for new project, or template
+  --goal VALUE      New-project goal, e.g. website, web app, api, presentation, content
+  --success VALUE   Success metric, e.g. ready-to-ship, looks-better, more-reliable
+  --stack VALUE     Stack hint, e.g. react, nextjs, python, nodejs, undecided
+  --artifact VALUE  Deliverable, e.g. repo, page, api, slides, document
+  --first-move VALUE First priority, e.g. clarify-plan, scaffold, build-ui, build-backend, write-copy, validate
   --force           Overwrite an existing project profile
   -h, --help        Show this help message
 EOF
@@ -33,6 +43,26 @@ while [[ $# -gt 0 ]]; do
       ;;
     --mode)
       MODE="${2:-}"
+      shift 2
+      ;;
+    --goal)
+      PROJECT_GOAL="${2:-}"
+      shift 2
+      ;;
+    --success)
+      SUCCESS_METRIC="${2:-}"
+      shift 2
+      ;;
+    --stack)
+      STACK_CHOICE="${2:-}"
+      shift 2
+      ;;
+    --artifact)
+      ARTIFACT_SHAPE="${2:-}"
+      shift 2
+      ;;
+    --first-move)
+      FIRST_MOVE="${2:-}"
       shift 2
       ;;
     --force)
@@ -626,6 +656,10 @@ $(printf '%s
 - ${evo_1}
 - ${evo_2}
 - 每次迭代都要比上一个稳定版本更可信
+
+## Squad History
+- Initial squad: 由扫描自动生成，初始预设为 \`${preset}\`
+- Latest change reason: 尚未记录人工调整
 EOF
   else
     cue_a="understand repository structure, entry points, data flow, and main modules first"
@@ -697,13 +731,468 @@ $(printf '%s
 - ${evo_en_1}
 - ${evo_en_2}
 - Make each iteration more trustworthy than the last stable state
+
+## Squad History
+- Initial squad: auto-generated from repository scan with initial preset \`${preset}\`
+- Latest change reason: no manual re-routing recorded yet
+EOF
+  fi
+}
+
+normalize_token() {
+  printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | tr ' ' '-'
+}
+
+write_dialog_profile() {
+  local goal success stack artifact move normalized_goal normalized_stack normalized_artifact normalized_move
+  local type summary_stack artifacts preset primary support_a support_b support_c upstream_primary upstream_support_a upstream_support_b upstream_support_c
+  local current_goal_1 current_goal_2 constraint_1 constraint_2 cue_1 switch_1 cue_2 switch_2 cue_3 switch_3
+  local heur_1 heur_2 anti_1 anti_2 handoff_1 handoff_2 verify_1 verify_2 verify_3 evo_1 evo_2
+  local current_goal_en_1 current_goal_en_2 constraint_en_1 constraint_en_2 cue_en_1 switch_en_1 cue_en_2 switch_en_2 cue_en_3 switch_en_3
+  local heur_en_1 heur_en_2 anti_en_1 anti_en_2 handoff_en_1 handoff_en_2 verify_en_1 verify_en_2 verify_en_3 evo_en_1 evo_en_2
+
+  goal="$(normalize_token "${PROJECT_GOAL:-}")"
+  success="$(normalize_token "${SUCCESS_METRIC:-}")"
+  stack="$(normalize_token "${STACK_CHOICE:-}")"
+  artifact="$(normalize_token "${ARTIFACT_SHAPE:-}")"
+  move="$(normalize_token "${FIRST_MOVE:-}")"
+
+  normalized_goal="${goal:-new-project}"
+  normalized_stack="${stack:-undecided}"
+  normalized_artifact="${artifact:-repo}"
+  normalized_move="${move:-clarify-plan}"
+
+  case "${normalized_goal}" in
+    website|single-page|presentation|deck|ppt)
+      type="presentation-style web or deck concept"
+      summary_stack="new project, ${normalized_stack}"
+      artifacts="landing page, deck, or presentation-style deliverable"
+      preset="ppt-storytelling"
+      primary="Visual Storyteller"
+      support_a="UI Designer"
+      support_b="Frontend Developer"
+      support_c="Reality Checker"
+      upstream_primary="upstream-agents/design/design-visual-storyteller.md"
+      upstream_support_a="upstream-agents/design/design-ui-designer.md"
+      upstream_support_b="upstream-agents/engineering/engineering-frontend-developer.md"
+      upstream_support_c="upstream-agents/testing/testing-reality-checker.md"
+      cue_1="布局、叙事结构、视觉层级"
+      switch_1="Visual Storyteller"
+      cue_2="页面实现、样式、交互落地"
+      switch_2="Frontend Developer"
+      cue_3="可交付性、验证、响应式检查"
+      switch_3="Reality Checker"
+      current_goal_1="先明确故事线、页面结构和交付节奏"
+      current_goal_2="围绕“${SUCCESS_METRIC:-更好看}”组织第一轮产出"
+      constraint_1="当前为新项目推断 profile，需要随着真实样例持续修正"
+      constraint_2="目标交付形态: ${PROJECT_GOAL:-演示页}; 主要产物: ${ARTIFACT_SHAPE:-页面或演示稿}"
+      heur_1="先把叙事和信息层级讲清楚，再做局部抛光"
+      heur_2="优先产生可看、可讲、可验证的页面骨架"
+      anti_1="不要在主线未立住时堆装饰"
+      anti_2="不要把页面实现细节误当成故事判断"
+      handoff_1="当叙事方向稳定后，切换到 Frontend Developer 做实现"
+      handoff_2="当页面可用后，切换到 Reality Checker 做交付验收"
+      verify_1="检查首屏和关键区块是否表达核心主张"
+      verify_2="验证页面扫读路径是否清晰"
+      verify_3="区分提案可讲与成品可交付"
+      evo_1="保留能强化故事线和扫读性的调整"
+      evo_2="回滚降低说服力的视觉复杂度"
+      current_goal_en_1="Clarify the story, page structure, and delivery rhythm first"
+      current_goal_en_2="Shape the first iteration around the success metric: ${SUCCESS_METRIC:-looks better}"
+      constraint_en_1="This profile is inferred from new-project answers and should evolve with real project samples"
+      constraint_en_2="Target shape: ${PROJECT_GOAL:-presentation page}; primary artifact: ${ARTIFACT_SHAPE:-page or deck}"
+      cue_en_1="layout, narrative structure, and visual hierarchy"
+      switch_en_1="Visual Storyteller"
+      cue_en_2="page implementation, styling, and interaction delivery"
+      switch_en_2="Frontend Developer"
+      cue_en_3="readiness, verification, and responsive review"
+      switch_en_3="Reality Checker"
+      heur_en_1="Make the narrative and information hierarchy clear before polishing"
+      heur_en_2="Prefer a visible, reviewable page skeleton early"
+      anti_en_1="Do not pile on decoration before the core message stands"
+      anti_en_2="Do not confuse implementation detail with narrative judgment"
+      handoff_en_1="Switch to Frontend Developer once the narrative direction is stable"
+      handoff_en_2="Switch to Reality Checker once the page is ready for delivery validation"
+      verify_en_1="Check whether the hero and key sections express the core claim"
+      verify_en_2="Validate the scan path and reading flow"
+      verify_en_3="Distinguish between a pitch-ready draft and a delivery-ready artifact"
+      evo_en_1="Keep changes that strengthen storyline and scanability"
+      evo_en_2="Revert visual complexity that weakens persuasion"
+      ;;
+    web-app|app|webapp)
+      type="new frontend product or web app"
+      summary_stack="new product, ${normalized_stack}"
+      artifacts="frontend application, product flows, reusable UI"
+      preset="frontend-product"
+      primary="Frontend Developer"
+      support_a="UI Designer"
+      support_b="UX Architect"
+      support_c="Reality Checker"
+      upstream_primary="upstream-agents/engineering/engineering-frontend-developer.md"
+      upstream_support_a="upstream-agents/design/design-ui-designer.md"
+      upstream_support_b="upstream-agents/design/design-ux-architect.md"
+      upstream_support_c="upstream-agents/testing/testing-reality-checker.md"
+      cue_1="页面、组件、交互流程"
+      switch_1="Frontend Developer"
+      cue_2="信息架构、流程、体验判断"
+      switch_2="UX Architect"
+      cue_3="响应式、验收、用户可见行为验证"
+      switch_3="Reality Checker"
+      current_goal_1="先明确核心用户路径和第一批页面骨架"
+      current_goal_2="围绕“${SUCCESS_METRIC:-能上线}”定义最小可验证流程"
+      constraint_1="当前为新项目，无稳定代码基线，优先做最小有效结构"
+      constraint_2="技术方向: ${STACK_CHOICE:-未定}; 当前第一优先: ${FIRST_MOVE:-先梳理方案}"
+      heur_1="先让关键路径走通，再扩展抽象和系统性"
+      heur_2="优先处理用户可见的阻塞点"
+      anti_1="不要在用户路径未定时过早搭大框架"
+      anti_2="不要在没有浏览器验证时宣称体验成立"
+      handoff_1="当交互方向不清时，切换到 UX Architect"
+      handoff_2="当页面可跑后，切换到 Reality Checker 做用户视角验证"
+      verify_1="验证关键用户路径是否可走通"
+      verify_2="检查主要视口下的布局和反馈"
+      verify_3="确认当前实现支撑了最小可验证闭环"
+      evo_1="保留能提升关键路径清晰度的改动"
+      evo_2="回滚增加复杂度却不改善体验的实现"
+      current_goal_en_1="Define the core user path and first page skeletons"
+      current_goal_en_2="Build the minimum verifiable flow around the success metric: ${SUCCESS_METRIC:-ready to ship}"
+      constraint_en_1="This is a new project without a stable code baseline, so prefer the smallest effective structure"
+      constraint_en_2="Stack direction: ${STACK_CHOICE:-undecided}; first priority: ${FIRST_MOVE:-clarify the plan}"
+      cue_en_1="pages, components, and interaction flows"
+      switch_en_1="Frontend Developer"
+      cue_en_2="information architecture, flow design, and UX judgment"
+      switch_en_2="UX Architect"
+      cue_en_3="responsiveness, acceptance, and user-visible behavior verification"
+      switch_en_3="Reality Checker"
+      heur_en_1="Make the critical path work before expanding abstraction"
+      heur_en_2="Prioritize user-visible blockers first"
+      anti_en_1="Do not build a large framework before the user path is defined"
+      anti_en_2="Do not claim the UX works without browser evidence"
+      handoff_en_1="Switch to UX Architect when the interaction direction is still unclear"
+      handoff_en_2="Switch to Reality Checker once the pages are runnable"
+      verify_en_1="Validate that the key user path is complete"
+      verify_en_2="Check layout and feedback across the main viewports"
+      verify_en_3="Confirm the current build supports a minimal verifiable loop"
+      evo_en_1="Keep changes that improve critical-path clarity"
+      evo_en_2="Revert complexity that does not improve the experience"
+      ;;
+    api|backend|service|automation-workflow|automation)
+      type="new backend service or workflow"
+      summary_stack="new service, ${normalized_stack}"
+      artifacts="service modules, APIs, automation steps, operational logic"
+      preset="backend-service"
+      primary="Backend Architect"
+      support_a="API Tester"
+      support_b="Software Architect"
+      support_c="Technical Writer"
+      upstream_primary="upstream-agents/engineering/engineering-backend-architect.md"
+      upstream_support_a="upstream-agents/testing/testing-api-tester.md"
+      upstream_support_b="upstream-agents/engineering/engineering-software-architect.md"
+      upstream_support_c="upstream-agents/engineering/engineering-technical-writer.md"
+      cue_1="接口设计、模块边界、服务流程"
+      switch_1="Backend Architect"
+      cue_2="验证输入输出、错误路径、调用约定"
+      switch_2="API Tester"
+      cue_3="整体结构、模块边界、设计文档"
+      switch_3="Software Architect"
+      current_goal_1="先定义接口边界、核心流程和可验证输入输出"
+      current_goal_2="围绕“${SUCCESS_METRIC:-更稳定}”组织第一版服务结构"
+      constraint_1="当前缺少成熟运行证据，先建立可验证接口和最小调用链"
+      constraint_2="预期栈: ${STACK_CHOICE:-未定}; 主要交付: ${ARTIFACT_SHAPE:-接口或流程}"
+      heur_1="先保证边界清晰和数据流正确，再谈扩展性"
+      heur_2="优先引入能被验证的结构，而不是口头上的完整设计"
+      anti_1="不要在调用边界未理清时扩大改动"
+      anti_2="不要没有接口证据就声称服务稳定"
+      handoff_1="当实现进入验证阶段时，切换到 API Tester"
+      handoff_2="当局部实现暴露出结构问题时，切换到 Software Architect"
+      verify_1="验证关键接口输入输出"
+      verify_2="检查错误路径和边界条件"
+      verify_3="确认第一版结构支持后续扩展"
+      evo_1="保留能提升正确性和可验证性的改动"
+      evo_2="回滚扩大风险却没有更清晰边界的设计"
+      current_goal_en_1="Define interface boundaries, the core flow, and verifiable inputs and outputs first"
+      current_goal_en_2="Shape the first service structure around the success metric: ${SUCCESS_METRIC:-more reliable}"
+      constraint_en_1="There is no mature runtime evidence yet, so build a verifiable interface and minimal call chain first"
+      constraint_en_2="Expected stack: ${STACK_CHOICE:-undecided}; main artifact: ${ARTIFACT_SHAPE:-API or workflow}"
+      cue_en_1="API design, module boundaries, and service flow"
+      switch_en_1="Backend Architect"
+      cue_en_2="input/output validation, error paths, and calling contracts"
+      switch_en_2="API Tester"
+      cue_en_3="overall structure, module boundaries, and system design docs"
+      switch_en_3="Software Architect"
+      heur_en_1="Protect clear boundaries and correct data flow before chasing extensibility"
+      heur_en_2="Prefer structures that can be verified, not just described"
+      anti_en_1="Do not widen implementation before the calling boundaries are clear"
+      anti_en_2="Do not claim service stability without interface evidence"
+      handoff_en_1="Switch to API Tester when the implementation enters verification"
+      handoff_en_2="Switch to Software Architect when local implementation exposes structural issues"
+      verify_en_1="Validate critical interface inputs and outputs"
+      verify_en_2="Check error paths and edge conditions"
+      verify_en_3="Confirm the first structure can support future extension"
+      evo_en_1="Keep changes that improve correctness and verifiability"
+      evo_en_2="Revert design expansion that increases risk without clearer boundaries"
+      ;;
+    content|marketing|brand)
+      type="new content or marketing workspace"
+      summary_stack="content-led project, ${normalized_stack}"
+      artifacts="content assets, brand language, campaign or publishing outputs"
+      preset="marketing-site"
+      primary="Content Creator"
+      support_a="Brand Guardian"
+      support_b="Visual Storyteller"
+      support_c="SEO Specialist"
+      upstream_primary="upstream-agents/marketing/marketing-content-creator.md"
+      upstream_support_a="upstream-agents/design/design-brand-guardian.md"
+      upstream_support_b="upstream-agents/design/design-visual-storyteller.md"
+      upstream_support_c="upstream-agents/marketing/marketing-seo-specialist.md"
+      cue_1="主张、文案、内容框架"
+      switch_1="Content Creator"
+      cue_2="品牌一致性、视觉叙事"
+      switch_2="Brand Guardian"
+      cue_3="搜索表现、SEO、传播验证"
+      switch_3="SEO Specialist"
+      current_goal_1="先定义核心主张、受众和第一批内容结构"
+      current_goal_2="围绕“${SUCCESS_METRIC:-更快完成}”组织最小传播闭环"
+      constraint_1="当前为新项目内容假设，后续需要依据真实渠道和素材修正"
+      constraint_2="内容形态: ${ARTIFACT_SHAPE:-文案或营销资产}; 第一优先: ${FIRST_MOVE:-先写文案}"
+      heur_1="先把主张讲清楚，再扩展内容量"
+      heur_2="优先让内容、品牌和转化动作对齐"
+      anti_1="不要内容越写越多却更模糊"
+      anti_2="不要为了堆词破坏品牌一致性"
+      handoff_1="当内容框架稳定后，切换到 Brand Guardian 或 Visual Storyteller"
+      handoff_2="当目标转向搜索和分发验证时，切换到 SEO Specialist"
+      verify_1="检查核心主张是否一眼可见"
+      verify_2="验证内容与预期动作是否一致"
+      verify_3="确认扩展没有削弱品牌和转化意图"
+      evo_1="保留能提升清晰度和传播效率的改动"
+      evo_2="回滚拉长内容却削弱力度的版本"
+      current_goal_en_1="Define the core claim, audience, and first content structure"
+      current_goal_en_2="Build the smallest distribution loop around the success metric: ${SUCCESS_METRIC:-faster to complete}"
+      constraint_en_1="This profile is based on new-project content assumptions and should evolve with real channels and assets"
+      constraint_en_2="Content shape: ${ARTIFACT_SHAPE:-copy or marketing asset}; first priority: ${FIRST_MOVE:-write copy}"
+      cue_en_1="messaging, copy, and content framing"
+      switch_en_1="Content Creator"
+      cue_en_2="brand consistency and visual narrative"
+      switch_en_2="Brand Guardian"
+      cue_en_3="search performance, SEO, and distribution validation"
+      switch_en_3="SEO Specialist"
+      heur_en_1="Clarify the message before expanding content volume"
+      heur_en_2="Keep content, brand, and conversion action aligned"
+      anti_en_1="Do not let more content make the message blurrier"
+      anti_en_2="Do not damage brand consistency for keyword stuffing"
+      handoff_en_1="Switch to Brand Guardian or Visual Storyteller once the content frame is stable"
+      handoff_en_2="Switch to SEO Specialist once the goal becomes search or distribution validation"
+      verify_en_1="Check whether the core claim is obvious at a glance"
+      verify_en_2="Validate that the content aligns with the intended action"
+      verify_en_3="Confirm expansion did not weaken brand or conversion intent"
+      evo_en_1="Keep changes that improve clarity and distribution efficiency"
+      evo_en_2="Revert versions that lengthen content while weakening force"
+      ;;
+    *)
+      type="zero-to-one product workspace"
+      summary_stack="new project, ${normalized_stack}"
+      artifacts="mixed repository assets, early prototypes, planning docs"
+      preset="zero-to-one-startup"
+      primary="Product Manager"
+      support_a="Rapid Prototyper"
+      support_b="Project Shepherd"
+      support_c="Reality Checker"
+      upstream_primary="upstream-agents/product/product-product-manager.md"
+      upstream_support_a="upstream-agents/engineering/engineering-rapid-prototyper.md"
+      upstream_support_b="upstream-agents/project-management/project-management-project-shepherd.md"
+      upstream_support_c="upstream-agents/testing/testing-reality-checker.md"
+      cue_1="目标、范围、优先级、路线"
+      switch_1="Product Manager"
+      cue_2="快速原型、第一版实现、方向验证"
+      switch_2="Rapid Prototyper"
+      cue_3="验收、现实校验、是否真的有进展"
+      switch_3="Reality Checker"
+      current_goal_1="先把目标、成功标准和最小下一步说清楚"
+      current_goal_2="围绕“${SUCCESS_METRIC:-更易扩展}”形成第一轮最小验证方案"
+      constraint_1="当前仓库样本不足，profile 主要基于对话推断"
+      constraint_2="项目目标: ${PROJECT_GOAL:-新产品}; 第一优先: ${FIRST_MOVE:-先梳理方案}"
+      heur_1="先减少不确定性，再增加建设量"
+      heur_2="优先做能证明方向的最小结果"
+      anti_1="不要把忙碌误当成前进"
+      anti_2="不要在问题未定义稳之前过度建设"
+      handoff_1="当方向需要快速验证时，切换到 Rapid Prototyper"
+      handoff_2="当产物需要现实校验时，切换到 Reality Checker"
+      verify_1="确认当前方案是否真的降低了不确定性"
+      verify_2="检查下一步是否因此更明确"
+      verify_3="区分讨论进展与实际进展"
+      evo_1="保留能减少不确定性的推进"
+      evo_2="回滚扩大范围却没有更强证据的工作"
+      current_goal_en_1="Clarify the goal, success metric, and smallest next step first"
+      current_goal_en_2="Create a minimum validation path around the success metric: ${SUCCESS_METRIC:-easier to extend}"
+      constraint_en_1="There is not enough repository evidence yet, so this profile is mostly dialogue-derived"
+      constraint_en_2="Project goal: ${PROJECT_GOAL:-new product}; first priority: ${FIRST_MOVE:-clarify the plan}"
+      cue_en_1="goal setting, scope, priorities, and roadmap"
+      switch_en_1="Product Manager"
+      cue_en_2="rapid prototypes, first implementation, and direction validation"
+      switch_en_2="Rapid Prototyper"
+      cue_en_3="acceptance, reality checks, and whether progress is real"
+      switch_en_3="Reality Checker"
+      heur_en_1="Reduce uncertainty before increasing construction"
+      heur_en_2="Prefer the smallest output that proves direction"
+      anti_en_1="Do not confuse busyness with progress"
+      anti_en_2="Do not overbuild before the problem is actually defined"
+      handoff_en_1="Switch to Rapid Prototyper when the direction needs fast validation"
+      handoff_en_2="Switch to Reality Checker when the output needs a reality check"
+      verify_en_1="Confirm the current plan actually reduced uncertainty"
+      verify_en_2="Check whether the next move is now clearer"
+      verify_en_3="Distinguish discussion progress from actual progress"
+      evo_en_1="Keep moves that reduce uncertainty"
+      evo_en_2="Revert work that expands scope without stronger proof"
+      ;;
+  esac
+
+  if [[ "${PROFILE_LANG}" == "zh" ]]; then
+    cat > "${PROFILE_FILE}" <<EOF
+# Project Profile
+
+## Summary
+- Type: ${type}
+- Stack: ${summary_stack}
+- Primary artifacts: ${artifacts}
+
+## Default Squad
+- Preset: \`${preset}\`
+- Primary: \`${primary}\`
+- Supporting: \`${support_a}\`、\`${support_b}\`、\`${support_c}\`
+- Upstream agents:
+  - \`${upstream_primary}\`
+  - \`${upstream_support_a}\`
+  - \`${upstream_support_b}\`
+  - \`${upstream_support_c}\`
+
+## Routing Cues
+- If user asks for: ${cue_1}
+- Switch to: \`${switch_1}\`
+- If user asks for: ${cue_2}
+- Switch to: \`${switch_2}\`
+- If user asks for: ${cue_3}
+- Switch to: \`${switch_3}\`
+
+## Current Goals
+- ${current_goal_1}
+- ${current_goal_2}
+
+## Constraints
+- ${constraint_1}
+- ${constraint_2}
+
+## Working Style
+- 先基于对话建立最小可执行方向，再随着样例和代码增长更新 profile
+- 优先使用最小有效 squad，避免在新项目阶段过早膨胀
+
+## Decision Heuristics
+- ${heur_1}
+- ${heur_2}
+
+## Anti-Patterns
+- ${anti_1}
+- ${anti_2}
+
+## Handoff Triggers
+- ${handoff_1}
+- ${handoff_2}
+
+## Escalation Policy
+- 当同一路径连续失败 2 次以上时，切换到高能动排查模式
+- 声称完成前必须有可验证证据
+
+## Verification Protocol
+- ${verify_1}
+- ${verify_2}
+- ${verify_3}
+
+## Evolution Loop
+- ${evo_1}
+- ${evo_2}
+- 每次迭代都要比上一个稳定版本更可信
+
+## Squad History
+- Initial squad: 由新项目对话生成，初始预设为 \`${preset}\`
+- Latest change reason: 尚未记录人工调整
+EOF
+  else
+    cat > "${PROFILE_FILE}" <<EOF
+# Project Profile
+
+## Summary
+- Type: ${type}
+- Stack: ${summary_stack}
+- Primary artifacts: ${artifacts}
+
+## Default Squad
+- Preset: \`${preset}\`
+- Primary: \`${primary}\`
+- Supporting: \`${support_a}\`, \`${support_b}\`, \`${support_c}\`
+- Upstream agents:
+  - \`${upstream_primary}\`
+  - \`${upstream_support_a}\`
+  - \`${upstream_support_b}\`
+  - \`${upstream_support_c}\`
+
+## Routing Cues
+- If user asks for: ${cue_en_1}
+- Switch to: \`${switch_en_1}\`
+- If user asks for: ${cue_en_2}
+- Switch to: \`${switch_en_2}\`
+- If user asks for: ${cue_en_3}
+- Switch to: \`${switch_en_3}\`
+
+## Current Goals
+- ${current_goal_en_1}
+- ${current_goal_en_2}
+
+## Constraints
+- ${constraint_en_1}
+- ${constraint_en_2}
+
+## Working Style
+- Start from a dialogue-derived execution direction, then refine the profile as code and artifacts appear
+- Prefer the smallest useful squad before expanding early-project scope
+
+## Decision Heuristics
+- ${heur_en_1}
+- ${heur_en_2}
+
+## Anti-Patterns
+- ${anti_en_1}
+- ${anti_en_2}
+
+## Handoff Triggers
+- ${handoff_en_1}
+- ${handoff_en_2}
+
+## Escalation Policy
+- Switch to high-agency mode after 2 repeated failures on the same path
+- Require verifiable evidence before claiming completion
+
+## Verification Protocol
+- ${verify_en_1}
+- ${verify_en_2}
+- ${verify_en_3}
+
+## Evolution Loop
+- ${evo_en_1}
+- ${evo_en_2}
+- Make each iteration more trustworthy than the last stable state
+
+## Squad History
+- Initial squad: generated from new-project dialogue with initial preset \`${preset}\`
+- Latest change reason: no manual re-routing recorded yet
 EOF
   fi
 }
 
 write_dialog_files() {
-  cp "${TEMPLATE_FILE}" "${PROFILE_FILE}"
   cp "${DIALOG_TEMPLATE_FILE}" "${INTAKE_FILE}"
+  if [[ -n "${PROJECT_GOAL}${SUCCESS_METRIC}${STACK_CHOICE}${ARTIFACT_SHAPE}${FIRST_MOVE}" ]]; then
+    write_dialog_profile
+  else
+    cp "${TEMPLATE_FILE}" "${PROFILE_FILE}"
+  fi
 }
 
 SELECTED_MODE="$(detect_mode)"

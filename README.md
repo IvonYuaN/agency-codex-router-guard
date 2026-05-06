@@ -78,6 +78,19 @@ chmod +x scripts/install.sh scripts/init-project.sh
 ./scripts/install.sh --project /path/to/your/repo --mode dialog
 ```
 
+如果你已经知道新项目方向，也可以直接把答案一起传进去，让 profile 自动生成更细的目标、约束和路由线索：
+
+```bash
+./scripts/install.sh \
+  --project /path/to/your/repo \
+  --mode dialog \
+  --goal "web app" \
+  --success "ready to ship" \
+  --stack "nextjs" \
+  --artifact "page" \
+  --first-move "build ui"
+```
+
 如果你想生成英文模板：
 
 ```bash
@@ -99,6 +112,7 @@ chmod +x scripts/install.sh scripts/init-project.sh
 ./scripts/init-project.sh --project /path/to/your/repo --lang en
 ./scripts/init-project.sh --project /path/to/your/repo --mode scan
 ./scripts/init-project.sh --project /path/to/your/repo --mode dialog
+./scripts/init-project.sh --project /path/to/your/repo --mode dialog --goal "api" --success "more reliable" --stack "python" --artifact "api" --first-move "build backend"
 ./scripts/init-project.sh --project /path/to/your/repo --force
 ```
 
@@ -117,6 +131,13 @@ chmod +x scripts/install.sh scripts/init-project.sh
 3. 选出 1 个主 specialist 和最多 3 个辅助 specialist
 4. 把这个判断写入项目 profile
 5. 在任务发生明显变化前，持续沿用这一组 squad
+
+如果是新项目并且提供了对话答案，`dialog` 模式现在会直接把这些答案落成：
+
+- `Current Goals`
+- `Constraints`
+- `Routing Cues`
+- `Squad History`
 
 ## 项目 profile 示例
 
@@ -142,21 +163,22 @@ Use agency-codex-router-guard for this repo.
 ## 当前已知可优化方向
 
 - 自动扫描现在会读取少量关键配置与 README 标题，但规则仍然是启发式，不是深度理解
-- 新项目对话已经模板化，但回答结果还没有自动映射成更细的约束字段
+- `Squad History` 目前只会记录初始化信息，还没有自动追加每次 reroute 的变更记录
 - 路由规则目前写在 `SKILL.md` 里，后续可以拆成更细的行业或任务模板
-- 还没有“任务切换历史”，只能记住当前推荐 squad
 
 已经补上的优化：
 
 - 已部署项目现在可以直接扫描并生成带 `Preset`、`Upstream agents`、`Handoff Triggers`、`Verification Protocol` 的 profile
 - 不同项目类型已经会生成不同的决策规则、反模式、交接触发器和验证协议
 - 安装脚本现在默认中文，并支持安装后立即为项目生成 profile
+- 新项目对话答案现在可以直接落成 `Current Goals`、`Constraints`、`Routing Cues`
+- 所有生成的 profile 现在都会带 `Squad History`
 
 下一步更值得继续做的增强：
 
-- 把新项目对话答案自动落成 `Current Goals`、`Constraints`、`Routing Cues`
 - 为不同行业继续补充 preset，例如电商、AI 工具、内容工作流、数据分析项目
-- 增加 project-profile 的历史更新区，记录 squad 为什么切换
+- 让 `Squad History` 自动追踪每次 squad 切换的原因和时间
+- 支持从真实对话文本里自动抽取这些字段，而不是只靠 CLI 传参
 
 ## 吸收了哪些外部思路
 
@@ -254,6 +276,19 @@ If it is a new project and you want to explicitly use dialogue mode:
 ./scripts/install.sh --project /path/to/your/repo --mode dialog
 ```
 
+If you already know the new-project direction, you can pass the dialogue answers directly and generate a richer profile immediately:
+
+```bash
+./scripts/install.sh \
+  --project /path/to/your/repo \
+  --mode dialog \
+  --goal "web app" \
+  --success "ready to ship" \
+  --stack "nextjs" \
+  --artifact "page" \
+  --first-move "build ui"
+```
+
 Generate the English profile template instead:
 
 ```bash
@@ -275,6 +310,7 @@ If the skill is already installed and you only want to initialize or reset a pro
 ./scripts/init-project.sh --project /path/to/your/repo --lang en
 ./scripts/init-project.sh --project /path/to/your/repo --mode scan
 ./scripts/init-project.sh --project /path/to/your/repo --mode dialog
+./scripts/init-project.sh --project /path/to/your/repo --mode dialog --goal "api" --success "more reliable" --stack "python" --artifact "api" --first-move "build backend"
 ./scripts/init-project.sh --project /path/to/your/repo --force
 ```
 
@@ -293,6 +329,13 @@ On a new repo, the skill should:
 3. choose one primary specialist and up to three supporting specialists
 4. write the project profile for reuse
 5. keep using that squad until the task meaningfully changes
+
+When dialogue answers are provided for a new project, `dialog` mode now writes them directly into:
+
+- `Current Goals`
+- `Constraints`
+- `Routing Cues`
+- `Squad History`
 
 ## Example project profiles
 
@@ -318,21 +361,22 @@ Or let Codex apply it when the task clearly benefits from routing.
 ## Known optimization opportunities
 
 - Scan-based routing now reads a few key config files and README headings, but it is still heuristic rather than deep repo understanding
-- New-project dialogue mode exists, but the answers still do not auto-populate richer constraint fields
 - Routing rules are centralized in `SKILL.md`; they could later be split into domain-specific presets
-- There is no task-history memory yet, only the current recommended squad
+- `Squad History` currently records initialization only and does not yet append every reroute event automatically
 
 Already improved in this version:
 
 - Existing repositories can now be scanned directly into a profile with `Preset`, `Upstream agents`, `Handoff Triggers`, and `Verification Protocol`
 - Different project types now generate different heuristics, anti-patterns, handoff triggers, and verification rules
 - The install script now defaults to Chinese and can install the skill while generating a project profile immediately
+- New-project dialogue answers can now be written directly into `Current Goals`, `Constraints`, and `Routing Cues`
+- All generated profiles now include `Squad History`
 
 Best next upgrades:
 
-- Map new-project dialogue answers into `Current Goals`, `Constraints`, and `Routing Cues`
 - Add more domain presets such as ecommerce, AI tools, content workflows, and analytics projects
-- Add profile history so squad changes are recorded with reasons
+- Make `Squad History` automatically track reroute reasons and timestamps
+- Extract those dialogue fields directly from natural conversation, not only from CLI flags
 
 ## External ideas incorporated
 

@@ -98,6 +98,7 @@ Create or update `.codex/project-profile.md` with:
 Keep the file short and factual so it can be reused cheaply.
 
 For new projects, also create `.codex/project-intake.md` when the dialogue framing would be useful to future sessions.
+If dialogue answers are already known, map them into `Current Goals`, `Constraints`, `Routing Cues`, and `Squad History` instead of leaving a generic template behind.
 
 ### Step 5: Re-route when scope changes
 
@@ -247,6 +248,9 @@ Write `.codex/project-profile.md` in this structure:
 - 
 
 ## Verification Protocol
+- 
+
+## Squad History
 - 
 
 ## Evolution Loop
