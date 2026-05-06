@@ -126,6 +126,9 @@ read_package_field() {
 
 detect_frontend_framework() {
   local deps
+  if [[ ! -f "${PROJECT_DIR}/package.json" ]]; then
+    return 0
+  fi
   deps="$(tr '\n' ' ' < "${PROJECT_DIR}/package.json" 2>/dev/null || true)"
   if [[ "${deps}" == *"next"* ]]; then
     printf '%s\n' "Next.js"
@@ -141,7 +144,7 @@ detect_frontend_framework() {
 }
 
 write_scan_profile() {
-  local type stack artifacts primary implementer support_a support_b support_c cue_a cue_b cue_c top_files
+  local type stack artifacts preset primary implementer support_a support_b support_c cue_a cue_b cue_c top_files
   local framework package_name python_name go_module rust_package summary_hint
 
   top_files="$(find "${PROJECT_DIR}" -maxdepth 2 -type f \
@@ -159,6 +162,7 @@ write_scan_profile() {
   if [[ -f "${PROJECT_DIR}/package.json" ]]; then
     if [[ -f "${PROJECT_DIR}/next.config.js" || -f "${PROJECT_DIR}/next.config.mjs" || -d "${PROJECT_DIR}/app" || -d "${PROJECT_DIR}/pages" || -d "${PROJECT_DIR}/components" ]]; then
       type="frontend web application"
+      preset="frontend-product"
       stack="Node.js frontend stack based on package.json${framework:+, ${framework}}${package_name:+, package ${package_name}}"
       artifacts="app pages, components, styles, frontend assets"
       primary="Frontend Developer"
@@ -168,6 +172,7 @@ write_scan_profile() {
       support_c="Reality Checker"
     elif [[ -d "${PROJECT_DIR}/server" || -d "${PROJECT_DIR}/api" || -d "${PROJECT_DIR}/backend" ]]; then
       type="full-stack web application"
+      preset="backend-service"
       stack="Node.js full-stack workspace${framework:+, ${framework}}${package_name:+, package ${package_name}}"
       artifacts="frontend code, backend endpoints, shared assets"
       primary="Software Architect"
@@ -177,6 +182,7 @@ write_scan_profile() {
       support_c="Reality Checker"
     else
       type="JavaScript application"
+      preset="zero-to-one-startup"
       stack="Node.js package-based project${framework:+, ${framework}}${package_name:+, package ${package_name}}"
       artifacts="application code, scripts, static assets"
       primary="Rapid Prototyper"
@@ -187,6 +193,7 @@ write_scan_profile() {
     fi
   elif [[ -f "${PROJECT_DIR}/pyproject.toml" || -f "${PROJECT_DIR}/requirements.txt" ]]; then
     type="Python service or application"
+    preset="backend-service"
     stack="Python project${python_name:+, ${python_name}}"
     artifacts="service modules, scripts, docs, app files"
     primary="Backend Architect"
@@ -196,6 +203,7 @@ write_scan_profile() {
     support_c="Technical Writer"
   elif [[ -f "${PROJECT_DIR}/go.mod" ]]; then
     type="Go service"
+    preset="backend-service"
     stack="Go module${go_module:+, ${go_module}}"
     artifacts="packages, handlers, service code"
     primary="Backend Architect"
@@ -205,6 +213,7 @@ write_scan_profile() {
     support_c="Software Architect"
   elif [[ -f "${PROJECT_DIR}/Cargo.toml" ]]; then
     type="Rust application or service"
+    preset="backend-service"
     stack="Rust cargo project${rust_package:+, ${rust_package}}"
     artifacts="Rust crates, binaries, modules"
     primary="Senior Developer"
@@ -214,6 +223,7 @@ write_scan_profile() {
     support_c="Reality Checker"
   elif [[ -f "${PROJECT_DIR}/index.html" && ( -d "${PROJECT_DIR}/assets" || -d "${PROJECT_DIR}/images" ) ]]; then
     type="presentation-style static web artifact"
+    preset="marketing-site"
     stack="single-page HTML with local assets"
     artifacts="index.html, image assets, presentation visuals"
     primary="Visual Storyteller"
@@ -223,6 +233,7 @@ write_scan_profile() {
     support_c="Reality Checker"
   elif find "${PROJECT_DIR}" -maxdepth 2 -type f \( -name "*.pptx" -o -name "*.ppt" -o -name "*.key" -o -name "*.pdf" \) | grep -q .; then
     type="presentation or document artifact"
+    preset="ppt-storytelling"
     stack="document-driven deliverable"
     artifacts="decks, slides, exported documents, supporting visuals"
     primary="Visual Storyteller"
@@ -232,6 +243,7 @@ write_scan_profile() {
     support_c="Project Shepherd"
   elif [[ -d "${PROJECT_DIR}/content" || -d "${PROJECT_DIR}/posts" || -d "${PROJECT_DIR}/marketing" ]]; then
     type="content or marketing workspace"
+    preset="marketing-site"
     stack="content-oriented project"
     artifacts="copy, campaign assets, visuals, planning docs"
     primary="Content Creator"
@@ -241,6 +253,7 @@ write_scan_profile() {
     support_c="SEO Specialist"
   else
     type="general software or project workspace"
+    preset="zero-to-one-startup"
     stack="mixed or not yet classified"
     artifacts="repository files, docs, implementation assets"
     primary="Codebase Onboarding Engineer"
@@ -263,6 +276,7 @@ write_scan_profile() {
 - Primary artifacts: ${artifacts}
 
 ## Default Squad
+- Preset: \`${preset}\`
 - Primary: \`${primary}\`
 - Supporting: \`${support_a}\`、\`${support_b}\`、\`${support_c}\`
 
@@ -309,6 +323,7 @@ EOF
 - Primary artifacts: ${artifacts}
 
 ## Default Squad
+- Preset: \`${preset}\`
 - Primary: \`${primary}\`
 - Supporting: \`${support_a}\`, \`${support_b}\`, \`${support_c}\`
 

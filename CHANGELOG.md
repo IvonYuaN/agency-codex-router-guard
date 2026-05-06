@@ -16,3 +16,5 @@
 - Added optional high-agency escalation reference inspired by `tanweai/pua`
 - Updated project positioning toward "Router Guard" to reflect routing plus guardrails
 - Renamed the effective project identity to `agency-codex-router-guard`
+- Added curated `agency-agents` core catalog
+- Added reusable presets for common project shapes

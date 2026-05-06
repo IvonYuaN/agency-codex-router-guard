@@ -6,6 +6,7 @@
 - Primary artifacts: `index.html`, image assets, presentation visuals
 
 ## Default Squad
+- Preset: `ppt-storytelling`
 - Primary: `Visual Storyteller`
 - Supporting: `UI Designer`, `Frontend Developer`, `Reality Checker`
 

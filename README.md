@@ -12,12 +12,13 @@
 
 它是一个面向 Codex 的 skill。它借鉴了 [`agency-agents`](https://github.com/msitarzewski/agency-agents) 的“专家路由”思路，但不只做 agent 选择，还会补上项目记忆、工作守则、切换边界和防打转升级机制。
 
-它不是把几百个 agent 文件都塞进每个项目，而是做四件事：
+它不是把几百个 agent 文件都塞进每个项目，而是做五件事：
 
 1. 读取用户前 1 到 3 句话，加一次轻量仓库扫描
 2. 为当前项目挑出一组足够小、足够合适的 specialist squad
 3. 把结果写入 `.codex/project-profile.md`，方便后续在同一项目里复用
 4. 在任务开始打转或改动失控前，触发 guardrails 和 escalation
+5. 通过 curated catalog 和 presets，把 `agency-agents` 的核心 agent 真正纳入当前项目
 
 ## 解决什么问题
 
@@ -38,9 +39,11 @@ agency-codex-router-guard/
 ├── examples/project-profile.example.zh-CN.md
 ├── examples/new-project-dialogues.md
 ├── examples/new-project-dialogues.zh-CN.md
+├── presets/
 ├── references/karpathy-operating-principles.md
 ├── references/distilled-agent-frameworks.md
 ├── references/high-agency-escalation.md
+├── references/agency-agents-core-catalog.md
 ├── scripts/install.sh
 ├── scripts/init-project.sh
 └── scripts/scan-project.sh
@@ -119,6 +122,8 @@ chmod +x scripts/install.sh scripts/init-project.sh
 - 英文模板：[examples/project-profile.example.md](examples/project-profile.example.md)
 - 新项目对话模板（中文）：[examples/new-project-dialogues.zh-CN.md](examples/new-project-dialogues.zh-CN.md)
 - New project dialogue template (English): [examples/new-project-dialogues.md](examples/new-project-dialogues.md)
+- 核心 agent catalog：[references/agency-agents-core-catalog.md](references/agency-agents-core-catalog.md)
+- Presets: [presets/README.md](presets/README.md)
 
 ## 推荐使用方式
 
@@ -146,6 +151,8 @@ Use agency-codex-router-guard for this repo.
 - `tanweai/pua`
   - 吸收了“代理开始打转时，需要有升级机制强制搜索、验证、换路径”的做法
   - 不默认合并其施压口吻，而是保留为可选升级层
+- `msitarzewski/agency-agents`
+  - 现在不只是借路由思路，也补进了 curated core catalog 和 presets 层
 
 ## 说明
 
@@ -163,12 +170,13 @@ Use agency-codex-router-guard for this repo.
 
 It is a Codex skill that adapts the routing idea from [`agency-agents`](https://github.com/msitarzewski/agency-agents), but it now goes beyond routing into project memory, working rules, handoff boundaries, and anti-spinning escalation.
 
-Instead of copying hundreds of role files into every workspace, this skill does four things:
+Instead of copying hundreds of role files into every workspace, this skill does five things:
 
 1. reads the first 1-3 user messages plus a light repo scan
 2. selects a small specialist squad for the current project
 3. persists that choice in `.codex/project-profile.md` so future conversations in the same repo can resume faster
 4. activates guardrails and escalation before repeated failures turn into messy damage
+5. brings the core `agency-agents` roster into the project through a curated catalog and presets
 
 ## What it solves
 
@@ -189,9 +197,11 @@ agency-codex-router-guard/
 ├── examples/project-profile.example.zh-CN.md
 ├── examples/new-project-dialogues.md
 ├── examples/new-project-dialogues.zh-CN.md
+├── presets/
 ├── references/karpathy-operating-principles.md
 ├── references/distilled-agent-frameworks.md
 ├── references/high-agency-escalation.md
+├── references/agency-agents-core-catalog.md
 ├── scripts/install.sh
 ├── scripts/init-project.sh
 └── scripts/scan-project.sh
@@ -270,6 +280,8 @@ On a new repo, the skill should:
 - English template: [examples/project-profile.example.md](examples/project-profile.example.md)
 - Chinese new-project dialogue template: [examples/new-project-dialogues.zh-CN.md](examples/new-project-dialogues.zh-CN.md)
 - English new-project dialogue template: [examples/new-project-dialogues.md](examples/new-project-dialogues.md)
+- Core agent catalog: [references/agency-agents-core-catalog.md](references/agency-agents-core-catalog.md)
+- Presets: [presets/README.md](presets/README.md)
 
 ## Recommended usage
 
@@ -297,6 +309,8 @@ Or let Codex apply it when the task clearly benefits from routing.
 - `tanweai/pua`
   - Inspired an optional anti-spinning escalation layer that forces verification, broader search, and alternative approaches
   - Its pressure tone is not enabled by default; only the operational escalation ideas are merged
+- `msitarzewski/agency-agents`
+  - Now represented not just as routing inspiration, but as a curated core catalog plus preset layer
 
 ## Notes
 

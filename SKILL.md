@@ -11,6 +11,8 @@ This skill also benefits from:
 - `references/karpathy-operating-principles.md` for execution discipline
 - `references/distilled-agent-frameworks.md` for specialist distillation heuristics
 - `references/high-agency-escalation.md` for optional anti-spinning escalation
+- `references/agency-agents-core-catalog.md` for the curated upstream agent layer
+- `presets/` for reusable routing bundles
 
 ## Core Goal
 
@@ -84,6 +86,7 @@ Apply distilled-agent framing:
 Create or update `.codex/project-profile.md` with:
 - project summary
 - stack and artifact types
+- likely preset
 - default squad
 - routing cues
 - current goals
@@ -213,6 +216,7 @@ Write `.codex/project-profile.md` in this structure:
 - Primary artifacts:
 
 ## Default Squad
+- Preset:
 - Primary:
 - Supporting:
 
