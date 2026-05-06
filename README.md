@@ -127,6 +127,7 @@ chmod +x scripts/install.sh scripts/init-project.sh
 - 核心 agent catalog：[references/agency-agents-core-catalog.md](references/agency-agents-core-catalog.md)
 - Presets: [presets/README.md](presets/README.md)
 - Upstream agent assets: [upstream-agents/README.md](upstream-agents/README.md)
+- 来源整合审计：[references/source-integration-audit.md](references/source-integration-audit.md)
 
 ## 推荐使用方式
 
@@ -289,6 +290,7 @@ On a new repo, the skill should:
 - Core agent catalog: [references/agency-agents-core-catalog.md](references/agency-agents-core-catalog.md)
 - Presets: [presets/README.md](presets/README.md)
 - Upstream agent assets: [upstream-agents/README.md](upstream-agents/README.md)
+- Source integration audit: [references/source-integration-audit.md](references/source-integration-audit.md)
 
 ## Recommended usage
 
