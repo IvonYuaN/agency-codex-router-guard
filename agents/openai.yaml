@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agency Codex Router"
+  short_description: "Auto-select the right specialist squad for each project"
+  default_prompt: "Read this workspace, pick the best specialist squad for the current project, persist it in .codex/project-profile.md, and then execute the task using that routing."
