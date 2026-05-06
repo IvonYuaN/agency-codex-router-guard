@@ -6,15 +6,17 @@ SOURCE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PROJECT_DIR=""
 FORCE_PROFILE="false"
 PROFILE_LANG="zh"
+PROFILE_MODE="auto"
 
 usage() {
   cat <<'EOF'
 Usage:
-  ./scripts/install.sh [--project /path/to/repo] [--lang zh|en] [--force-profile]
+  ./scripts/install.sh [--project /path/to/repo] [--lang zh|en] [--mode auto|scan|dialog|template] [--force-profile]
 
 Options:
   --project PATH    Install the skill and initialize PATH/.codex/project-profile.md
   --lang LANG       Profile template language: zh (default) or en
+  --mode MODE       auto (default), scan existing repo, dialog for new project, or template
   --force-profile   Overwrite an existing project profile
   -h, --help        Show this help message
 EOF
@@ -28,6 +30,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --lang)
       PROFILE_LANG="${2:-}"
+      shift 2
+      ;;
+    --mode)
+      PROFILE_MODE="${2:-}"
       shift 2
       ;;
     --force-profile)
@@ -51,6 +57,11 @@ if [[ "${PROFILE_LANG}" != "zh" && "${PROFILE_LANG}" != "en" ]]; then
   exit 1
 fi
 
+if [[ "${PROFILE_MODE}" != "auto" && "${PROFILE_MODE}" != "scan" && "${PROFILE_MODE}" != "dialog" && "${PROFILE_MODE}" != "template" ]]; then
+  echo "Unsupported mode: ${PROFILE_MODE}. Use auto, scan, dialog, or template." >&2
+  exit 1
+fi
+
 mkdir -p "${HOME}/.codex/skills"
 rm -rf "${TARGET_DIR}"
 cp -R "${SOURCE_DIR}" "${TARGET_DIR}"
@@ -63,21 +74,11 @@ if [[ -n "${PROJECT_DIR}" ]]; then
     exit 1
   fi
 
-  PROFILE_DIR="${PROJECT_DIR}/.codex"
-  PROFILE_FILE="${PROFILE_DIR}/project-profile.md"
-  if [[ "${PROFILE_LANG}" == "zh" ]]; then
-    TEMPLATE_FILE="${SOURCE_DIR}/examples/project-profile.example.zh-CN.md"
-  else
-    TEMPLATE_FILE="${SOURCE_DIR}/examples/project-profile.example.md"
+  INIT_ARGS=(--project "${PROJECT_DIR}" --lang "${PROFILE_LANG}" --mode "${PROFILE_MODE}")
+
+  if [[ "${FORCE_PROFILE}" == "true" ]]; then
+    INIT_ARGS+=(--force)
   fi
 
-  mkdir -p "${PROFILE_DIR}"
-
-  if [[ -f "${PROFILE_FILE}" && "${FORCE_PROFILE}" != "true" ]]; then
-    echo "Project profile already exists at ${PROFILE_FILE}"
-    echo "Use --force-profile to overwrite it."
-  else
-    cp "${TEMPLATE_FILE}" "${PROFILE_FILE}"
-    echo "Initialized ${PROFILE_LANG} project profile at ${PROFILE_FILE}"
-  fi
+  bash "${SOURCE_DIR}/scripts/init-project.sh" "${INIT_ARGS[@]}"
 fi

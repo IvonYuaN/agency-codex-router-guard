@@ -36,7 +36,9 @@ Treat it as a starting point, not a hard rule. Update the squad when the user's 
 
 ### Step 2: If no profile exists, build one quickly
 
-Use the first 1-3 user messages plus a light repo scan.
+Use the first 1-3 user messages plus one of these paths:
+- existing or already-deployed project: do a light repo scan first
+- new or nearly empty project: run a short intake dialogue first
 
 Look for:
 - manifests and framework markers
@@ -45,6 +47,10 @@ Look for:
 - task mode: build, debug, review, design, research, test, strategy, content
 
 Keep this fast. Do not perform a deep audit unless the user asked for one.
+
+For existing repos, prefer `scripts/scan-project.sh` or follow the same logic directly.
+
+For new projects, use `examples/new-project-dialogues.zh-CN.md` or `examples/new-project-dialogues.md`.
 
 ### Step 3: Select an active squad
 
@@ -68,6 +74,8 @@ Create or update `.codex/project-profile.md` with:
 - constraints
 
 Keep the file short and factual so it can be reused cheaply.
+
+For new projects, also create `.codex/project-intake.md` when the dialogue framing would be useful to future sessions.
 
 ### Step 5: Re-route when scope changes
 

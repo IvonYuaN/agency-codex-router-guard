@@ -32,8 +32,11 @@ agency-codex-router/
 ├── references/agent-mapping.md
 ├── examples/project-profile.example.md
 ├── examples/project-profile.example.zh-CN.md
+├── examples/new-project-dialogues.md
+├── examples/new-project-dialogues.zh-CN.md
 ├── scripts/install.sh
-└── scripts/init-project.sh
+├── scripts/init-project.sh
+└── scripts/scan-project.sh
 ```
 
 ## 安装
@@ -49,6 +52,18 @@ chmod +x scripts/install.sh scripts/init-project.sh
 
 ```bash
 ./scripts/install.sh --project /path/to/your/repo
+```
+
+如果是已部署或已有代码的项目，明确走扫描模式：
+
+```bash
+./scripts/install.sh --project /path/to/your/repo --mode scan
+```
+
+如果是新项目，明确走对话引导模式：
+
+```bash
+./scripts/install.sh --project /path/to/your/repo --mode dialog
 ```
 
 如果你想生成英文模板：
@@ -70,7 +85,15 @@ chmod +x scripts/install.sh scripts/init-project.sh
 ```bash
 ./scripts/init-project.sh --project /path/to/your/repo
 ./scripts/init-project.sh --project /path/to/your/repo --lang en
+./scripts/init-project.sh --project /path/to/your/repo --mode scan
+./scripts/init-project.sh --project /path/to/your/repo --mode dialog
 ./scripts/init-project.sh --project /path/to/your/repo --force
+```
+
+也可以直接用扫描快捷脚本：
+
+```bash
+./scripts/scan-project.sh --project /path/to/your/repo
 ```
 
 ## 工作方式
@@ -87,6 +110,8 @@ chmod +x scripts/install.sh scripts/init-project.sh
 
 - 中文模板：[examples/project-profile.example.zh-CN.md](examples/project-profile.example.zh-CN.md)
 - 英文模板：[examples/project-profile.example.md](examples/project-profile.example.md)
+- 新项目对话模板（中文）：[examples/new-project-dialogues.zh-CN.md](examples/new-project-dialogues.zh-CN.md)
+- New project dialogue template (English): [examples/new-project-dialogues.md](examples/new-project-dialogues.md)
 
 ## 推荐使用方式
 
@@ -100,8 +125,8 @@ Use agency-codex-router for this repo.
 
 ## 当前已知可优化方向
 
-- 自动 repo 识别还比较轻，目前主要依赖“前几句需求 + 轻量扫描”
-- `project-profile.md` 还是模板驱动，还没做到真正自动预填 stack 和 squad
+- 自动扫描已经能预填 squad，但规则仍然是启发式，不是深度理解
+- 新项目对话已经模板化，但回答结果还没有自动映射成更细的约束字段
 - 路由规则目前写在 `SKILL.md` 里，后续可以拆成更细的行业或任务模板
 - 还没有“任务切换历史”，只能记住当前推荐 squad
 
@@ -141,8 +166,11 @@ agency-codex-router/
 ├── references/agent-mapping.md
 ├── examples/project-profile.example.md
 ├── examples/project-profile.example.zh-CN.md
+├── examples/new-project-dialogues.md
+├── examples/new-project-dialogues.zh-CN.md
 ├── scripts/install.sh
-└── scripts/init-project.sh
+├── scripts/init-project.sh
+└── scripts/scan-project.sh
 ```
 
 ## Install
@@ -158,6 +186,18 @@ Install the skill and initialize a Chinese `.codex/project-profile.md` for a tar
 
 ```bash
 ./scripts/install.sh --project /path/to/your/repo
+```
+
+If the project already exists and you want to explicitly use scan mode:
+
+```bash
+./scripts/install.sh --project /path/to/your/repo --mode scan
+```
+
+If it is a new project and you want to explicitly use dialogue mode:
+
+```bash
+./scripts/install.sh --project /path/to/your/repo --mode dialog
 ```
 
 Generate the English profile template instead:
@@ -179,7 +219,15 @@ If the skill is already installed and you only want to initialize or reset a pro
 ```bash
 ./scripts/init-project.sh --project /path/to/your/repo
 ./scripts/init-project.sh --project /path/to/your/repo --lang en
+./scripts/init-project.sh --project /path/to/your/repo --mode scan
+./scripts/init-project.sh --project /path/to/your/repo --mode dialog
 ./scripts/init-project.sh --project /path/to/your/repo --force
+```
+
+You can also use the scan shortcut directly:
+
+```bash
+./scripts/scan-project.sh --project /path/to/your/repo
 ```
 
 ## How it works
@@ -196,6 +244,8 @@ On a new repo, the skill should:
 
 - Chinese template: [examples/project-profile.example.zh-CN.md](examples/project-profile.example.zh-CN.md)
 - English template: [examples/project-profile.example.md](examples/project-profile.example.md)
+- Chinese new-project dialogue template: [examples/new-project-dialogues.zh-CN.md](examples/new-project-dialogues.zh-CN.md)
+- English new-project dialogue template: [examples/new-project-dialogues.md](examples/new-project-dialogues.md)
 
 ## Recommended usage
 
@@ -209,8 +259,8 @@ Or let Codex apply it when the task clearly benefits from routing.
 
 ## Known optimization opportunities
 
-- Repo classification is still lightweight and mostly based on early user messages plus a quick scan
-- `project-profile.md` is still template-driven instead of truly auto-filled from the repo
+- Scan-based routing now pre-fills squads, but it is still heuristic rather than deep repo understanding
+- New-project dialogue mode exists, but the answers still do not auto-populate richer constraint fields
 - Routing rules are centralized in `SKILL.md`; they could later be split into domain-specific presets
 - There is no task-history memory yet, only the current recommended squad
 

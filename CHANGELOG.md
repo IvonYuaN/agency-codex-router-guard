@@ -7,3 +7,6 @@
 - Added `scripts/install.sh` support for `--project`, `--lang`, and `--force-profile`
 - Added `scripts/init-project.sh` for project-profile-only initialization
 - Added Chinese profile template at `examples/project-profile.example.zh-CN.md`
+- Added scan mode for existing repositories and deployed projects
+- Added new-project dialogue templates in Chinese and English
+- Added `scripts/scan-project.sh` shortcut for scan-first initialization

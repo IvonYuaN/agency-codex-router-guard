@@ -4,16 +4,18 @@ set -euo pipefail
 PROJECT_DIR=""
 FORCE="false"
 PROFILE_LANG="zh"
+MODE="auto"
 SOURCE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 usage() {
   cat <<'EOF'
 Usage:
-  ./scripts/init-project.sh --project /path/to/repo [--lang zh|en] [--force]
+  ./scripts/init-project.sh --project /path/to/repo [--lang zh|en] [--mode auto|scan|dialog|template] [--force]
 
 Options:
   --project PATH    Initialize PATH/.codex/project-profile.md
   --lang LANG       Profile template language: zh (default) or en
+  --mode MODE       auto (default), scan existing repo, dialog for new project, or template
   --force           Overwrite an existing project profile
   -h, --help        Show this help message
 EOF
@@ -27,6 +29,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --lang)
       PROFILE_LANG="${2:-}"
+      shift 2
+      ;;
+    --mode)
+      MODE="${2:-}"
       shift 2
       ;;
     --force)
@@ -56,6 +62,11 @@ if [[ "${PROFILE_LANG}" != "zh" && "${PROFILE_LANG}" != "en" ]]; then
   exit 1
 fi
 
+if [[ "${MODE}" != "auto" && "${MODE}" != "scan" && "${MODE}" != "dialog" && "${MODE}" != "template" ]]; then
+  echo "Unsupported mode: ${MODE}. Use auto, scan, dialog, or template." >&2
+  exit 1
+fi
+
 if [[ ! -d "${PROJECT_DIR}" ]]; then
   echo "Project directory does not exist: ${PROJECT_DIR}" >&2
   exit 1
@@ -63,11 +74,14 @@ fi
 
 PROFILE_DIR="${PROJECT_DIR}/.codex"
 PROFILE_FILE="${PROFILE_DIR}/project-profile.md"
+INTAKE_FILE="${PROFILE_DIR}/project-intake.md"
 
 if [[ "${PROFILE_LANG}" == "zh" ]]; then
   TEMPLATE_FILE="${SOURCE_DIR}/examples/project-profile.example.zh-CN.md"
+  DIALOG_TEMPLATE_FILE="${SOURCE_DIR}/examples/new-project-dialogues.zh-CN.md"
 else
   TEMPLATE_FILE="${SOURCE_DIR}/examples/project-profile.example.md"
+  DIALOG_TEMPLATE_FILE="${SOURCE_DIR}/examples/new-project-dialogues.md"
 fi
 
 mkdir -p "${PROFILE_DIR}"
@@ -78,5 +92,212 @@ if [[ -f "${PROFILE_FILE}" && "${FORCE}" != "true" ]]; then
   exit 0
 fi
 
-cp "${TEMPLATE_FILE}" "${PROFILE_FILE}"
-echo "Initialized ${PROFILE_LANG} project profile at ${PROFILE_FILE}"
+detect_mode() {
+  if [[ "${MODE}" != "auto" ]]; then
+    printf '%s\n' "${MODE}"
+    return
+  fi
+
+  if find "${PROJECT_DIR}" -maxdepth 2 -type f \
+    ! -path "${PROJECT_DIR}/.git/*" \
+    ! -path "${PROJECT_DIR}/.codex/*" \
+    ! -name ".DS_Store" | grep -q .; then
+    printf '%s\n' "scan"
+  else
+    printf '%s\n' "dialog"
+  fi
+}
+
+write_scan_profile() {
+  local type stack artifacts primary implementer support_a support_b support_c cue_a cue_b cue_c top_files
+
+  top_files="$(find "${PROJECT_DIR}" -maxdepth 2 -type f \
+    ! -path "${PROJECT_DIR}/.git/*" \
+    ! -path "${PROJECT_DIR}/.codex/*" \
+    ! -name ".DS_Store" | sed "s#${PROJECT_DIR}/##" | sort | head -n 40)"
+
+  if [[ -f "${PROJECT_DIR}/package.json" ]]; then
+    if [[ -f "${PROJECT_DIR}/next.config.js" || -f "${PROJECT_DIR}/next.config.mjs" || -d "${PROJECT_DIR}/app" || -d "${PROJECT_DIR}/pages" || -d "${PROJECT_DIR}/components" ]]; then
+      type="frontend web application"
+      stack="Node.js frontend stack based on package.json"
+      artifacts="app pages, components, styles, frontend assets"
+      primary="Frontend Developer"
+      implementer="Frontend Developer"
+      support_a="UI Designer"
+      support_b="UX Architect"
+      support_c="Reality Checker"
+    elif [[ -d "${PROJECT_DIR}/server" || -d "${PROJECT_DIR}/api" || -d "${PROJECT_DIR}/backend" ]]; then
+      type="full-stack web application"
+      stack="Node.js full-stack workspace"
+      artifacts="frontend code, backend endpoints, shared assets"
+      primary="Software Architect"
+      implementer="Frontend Developer"
+      support_a="Frontend Developer"
+      support_b="Backend Architect"
+      support_c="Reality Checker"
+    else
+      type="JavaScript application"
+      stack="Node.js package-based project"
+      artifacts="application code, scripts, static assets"
+      primary="Rapid Prototyper"
+      implementer="Rapid Prototyper"
+      support_a="Frontend Developer"
+      support_b="Backend Architect"
+      support_c="Reality Checker"
+    fi
+  elif [[ -f "${PROJECT_DIR}/pyproject.toml" || -f "${PROJECT_DIR}/requirements.txt" ]]; then
+    type="Python service or application"
+    stack="Python project"
+    artifacts="service modules, scripts, docs, app files"
+    primary="Backend Architect"
+    implementer="Backend Architect"
+    support_a="API Tester"
+    support_b="Software Architect"
+    support_c="Technical Writer"
+  elif [[ -f "${PROJECT_DIR}/go.mod" ]]; then
+    type="Go service"
+    stack="Go module"
+    artifacts="packages, handlers, service code"
+    primary="Backend Architect"
+    implementer="Backend Architect"
+    support_a="API Tester"
+    support_b="SRE"
+    support_c="Software Architect"
+  elif [[ -f "${PROJECT_DIR}/Cargo.toml" ]]; then
+    type="Rust application or service"
+    stack="Rust cargo project"
+    artifacts="Rust crates, binaries, modules"
+    primary="Senior Developer"
+    implementer="Senior Developer"
+    support_a="Software Architect"
+    support_b="Code Reviewer"
+    support_c="Reality Checker"
+  elif [[ -f "${PROJECT_DIR}/index.html" && ( -d "${PROJECT_DIR}/assets" || -d "${PROJECT_DIR}/images" ) ]]; then
+    type="presentation-style static web artifact"
+    stack="single-page HTML with local assets"
+    artifacts="index.html, image assets, presentation visuals"
+    primary="Visual Storyteller"
+    implementer="Frontend Developer"
+    support_a="UI Designer"
+    support_b="Frontend Developer"
+    support_c="Reality Checker"
+  elif find "${PROJECT_DIR}" -maxdepth 2 -type f \( -name "*.pptx" -o -name "*.ppt" -o -name "*.key" -o -name "*.pdf" \) | grep -q .; then
+    type="presentation or document artifact"
+    stack="document-driven deliverable"
+    artifacts="decks, slides, exported documents, supporting visuals"
+    primary="Visual Storyteller"
+    implementer="Visual Storyteller"
+    support_a="Brand Guardian"
+    support_b="UI Designer"
+    support_c="Project Shepherd"
+  elif [[ -d "${PROJECT_DIR}/content" || -d "${PROJECT_DIR}/posts" || -d "${PROJECT_DIR}/marketing" ]]; then
+    type="content or marketing workspace"
+    stack="content-oriented project"
+    artifacts="copy, campaign assets, visuals, planning docs"
+    primary="Content Creator"
+    implementer="Content Creator"
+    support_a="Brand Guardian"
+    support_b="Visual Storyteller"
+    support_c="SEO Specialist"
+  else
+    type="general software or project workspace"
+    stack="mixed or not yet classified"
+    artifacts="repository files, docs, implementation assets"
+    primary="Codebase Onboarding Engineer"
+    implementer="Software Architect"
+    support_a="Software Architect"
+    support_b="Technical Writer"
+    support_c="Reality Checker"
+  fi
+
+  if [[ "${PROFILE_LANG}" == "zh" ]]; then
+    cue_a="先理解仓库结构、入口、数据流和主要模块"
+    cue_b="开始具体实现、修 bug、改页面、补功能"
+    cue_c="验证交付质量、响应式、测试结论或上线准备度"
+    cat > "${PROFILE_FILE}" <<EOF
+# Project Profile
+
+## Summary
+- Type: ${type}
+- Stack: ${stack}
+- Primary artifacts: ${artifacts}
+
+## Default Squad
+- Primary: \`${primary}\`
+- Supporting: \`${support_a}\`、\`${support_b}\`、\`${support_c}\`
+
+## Routing Cues
+- If user asks for: ${cue_a}
+- Switch to: \`Codebase Onboarding Engineer\`
+- If user asks for: ${cue_b}
+- Switch to: \`${implementer}\`
+- If user asks for: ${cue_c}
+- Switch to: \`${support_c}\`
+
+## Current Goals
+- 基于现有仓库和已部署形态继续推进，而不是假设项目从零开始
+- 先沿用当前结构与产物边界，再根据任务决定是否扩大改动范围
+
+## Constraints
+- 本 profile 由仓库扫描自动生成，后续需要随着真实需求持续更新
+- 扫描样本:
+$(printf '%s\n' "${top_files}" | sed 's/^/- /')
+EOF
+  else
+    cue_a="understand repository structure, entry points, data flow, and main modules first"
+    cue_b="implement, debug, redesign, or extend functionality"
+    cue_c="verify quality, responsiveness, testing results, or release readiness"
+    cat > "${PROFILE_FILE}" <<EOF
+# Project Profile
+
+## Summary
+- Type: ${type}
+- Stack: ${stack}
+- Primary artifacts: ${artifacts}
+
+## Default Squad
+- Primary: \`${primary}\`
+- Supporting: \`${support_a}\`, \`${support_b}\`, \`${support_c}\`
+
+## Routing Cues
+- If user asks for: ${cue_a}
+- Switch to: \`Codebase Onboarding Engineer\`
+- If user asks for: ${cue_b}
+- Switch to: \`${implementer}\`
+- If user asks for: ${cue_c}
+- Switch to: \`${support_c}\`
+
+## Current Goals
+- Continue from the existing repository and deployed shape instead of assuming a greenfield project
+- Preserve the current structure and artifacts first, then expand the scope only when the task requires it
+
+## Constraints
+- This profile was auto-generated from a repository scan and should be refined as real requirements become clearer
+- Scan sample:
+$(printf '%s\n' "${top_files}" | sed 's/^/- /')
+EOF
+  fi
+}
+
+write_dialog_files() {
+  cp "${TEMPLATE_FILE}" "${PROFILE_FILE}"
+  cp "${DIALOG_TEMPLATE_FILE}" "${INTAKE_FILE}"
+}
+
+SELECTED_MODE="$(detect_mode)"
+
+case "${SELECTED_MODE}" in
+  scan)
+    write_scan_profile
+    echo "Scanned repository and initialized ${PROFILE_LANG} project profile at ${PROFILE_FILE}"
+    ;;
+  dialog)
+    write_dialog_files
+    echo "Initialized ${PROFILE_LANG} project profile at ${PROFILE_FILE}"
+    echo "Initialized ${PROFILE_LANG} project intake prompts at ${INTAKE_FILE}"
+    ;;
+  template)
+    cp "${TEMPLATE_FILE}" "${PROFILE_FILE}"
+    echo "Initialized ${PROFILE_LANG} project profile at ${PROFILE_FILE}"
+    ;;
+esac
