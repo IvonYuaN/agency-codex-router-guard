@@ -246,6 +246,9 @@ Write `.codex/project-profile.md` in this structure:
 ## Handoff Triggers
 - 
 
+## Verification Protocol
+- 
+
 ## Evolution Loop
 - 
 ```

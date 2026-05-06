@@ -146,6 +146,18 @@ Use agency-codex-router-guard for this repo.
 - 路由规则目前写在 `SKILL.md` 里，后续可以拆成更细的行业或任务模板
 - 还没有“任务切换历史”，只能记住当前推荐 squad
 
+已经补上的优化：
+
+- 已部署项目现在可以直接扫描并生成带 `Preset`、`Upstream agents`、`Handoff Triggers`、`Verification Protocol` 的 profile
+- 不同项目类型已经会生成不同的决策规则、反模式、交接触发器和验证协议
+- 安装脚本现在默认中文，并支持安装后立即为项目生成 profile
+
+下一步更值得继续做的增强：
+
+- 把新项目对话答案自动落成 `Current Goals`、`Constraints`、`Routing Cues`
+- 为不同行业继续补充 preset，例如电商、AI 工具、内容工作流、数据分析项目
+- 增加 project-profile 的历史更新区，记录 squad 为什么切换
+
 ## 吸收了哪些外部思路
 
 - `forrestchang/andrej-karpathy-skills`
@@ -309,6 +321,18 @@ Or let Codex apply it when the task clearly benefits from routing.
 - New-project dialogue mode exists, but the answers still do not auto-populate richer constraint fields
 - Routing rules are centralized in `SKILL.md`; they could later be split into domain-specific presets
 - There is no task-history memory yet, only the current recommended squad
+
+Already improved in this version:
+
+- Existing repositories can now be scanned directly into a profile with `Preset`, `Upstream agents`, `Handoff Triggers`, and `Verification Protocol`
+- Different project types now generate different heuristics, anti-patterns, handoff triggers, and verification rules
+- The install script now defaults to Chinese and can install the skill while generating a project profile immediately
+
+Best next upgrades:
+
+- Map new-project dialogue answers into `Current Goals`, `Constraints`, and `Routing Cues`
+- Add more domain presets such as ecommerce, AI tools, content workflows, and analytics projects
+- Add profile history so squad changes are recorded with reasons
 
 ## External ideas incorporated
 

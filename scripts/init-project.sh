@@ -144,10 +144,13 @@ detect_frontend_framework() {
 }
 
 write_scan_profile() {
-  local type stack artifacts preset primary implementer support_a support_b support_c cue_a cue_b cue_c top_files
+  local type stack artifacts preset primary implementer verifier support_a support_b support_c cue_a cue_b cue_c top_files
   local upstream_primary upstream_support_a upstream_support_b upstream_support_c
   local framework package_name python_name go_module rust_package summary_hint
   local heur_1 heur_2 anti_1 anti_2 evo_1 evo_2
+  local heur_en_1 heur_en_2 anti_en_1 anti_en_2 evo_en_1 evo_en_2
+  local handoff_1 handoff_2 verify_1 verify_2 verify_3
+  local section_lang
 
   top_files="$(find "${PROJECT_DIR}" -maxdepth 2 -type f \
     ! -path "${PROJECT_DIR}/.git/*" \
@@ -169,6 +172,7 @@ write_scan_profile() {
       artifacts="app pages, components, styles, frontend assets"
       primary="Frontend Developer"
       implementer="Frontend Developer"
+      verifier="Reality Checker"
       support_a="UI Designer"
       support_b="UX Architect"
       support_c="Reality Checker"
@@ -182,6 +186,12 @@ write_scan_profile() {
       anti_2="不要在流程不清时提前追求精致抛光"
       evo_1="保留容易验证的交互改进"
       evo_2="回滚不能提升理解的 UI 复杂度"
+      heur_en_1="Prioritize user-visible interaction impact first"
+      heur_en_2="Make the flow clear before chasing abstraction elegance"
+      anti_en_1="Do not over-architect simple UI behavior"
+      anti_en_2="Do not polish too early when the flow is still unclear"
+      evo_en_1="Keep interaction improvements that are easy to verify"
+      evo_en_2="Revert UI complexity that does not improve understanding"
     elif [[ -d "${PROJECT_DIR}/server" || -d "${PROJECT_DIR}/api" || -d "${PROJECT_DIR}/backend" ]]; then
       type="full-stack web application"
       preset="backend-service"
@@ -189,6 +199,7 @@ write_scan_profile() {
       artifacts="frontend code, backend endpoints, shared assets"
       primary="Software Architect"
       implementer="Frontend Developer"
+      verifier="Reality Checker"
       support_a="Frontend Developer"
       support_b="Backend Architect"
       support_c="Reality Checker"
@@ -202,6 +213,12 @@ write_scan_profile() {
       anti_2="不要在没有验证时宣称整体稳定"
       evo_1="保留能减少结构混乱的调整"
       evo_2="回滚扩大风险但没有更清晰边界的改动"
+      heur_en_1="Protect interface boundaries and system structure first"
+      heur_en_2="Prefer cross-layer changes that remain explainable"
+      anti_en_1="Do not widen full-stack changes before the boundaries are clear"
+      anti_en_2="Do not claim the whole system is stable without verification"
+      evo_en_1="Keep changes that reduce structural confusion"
+      evo_en_2="Revert changes that expand risk without clarifying boundaries"
     else
       type="JavaScript application"
       preset="zero-to-one-startup"
@@ -209,6 +226,7 @@ write_scan_profile() {
       artifacts="application code, scripts, static assets"
       primary="Rapid Prototyper"
       implementer="Rapid Prototyper"
+      verifier="Reality Checker"
       support_a="Frontend Developer"
       support_b="Backend Architect"
       support_c="Reality Checker"
@@ -222,6 +240,12 @@ write_scan_profile() {
       anti_2="不要把大量产出误当成有效验证"
       evo_1="保留能减少不确定性的原型结论"
       evo_2="回滚让范围变大但没有更强证据的实现"
+      heur_en_1="Produce the smallest prototype that can validate the direction"
+      heur_en_2="Prove usefulness before systematizing"
+      anti_en_1="Do not turn the prototype directly into formal architecture"
+      anti_en_2="Do not mistake volume of output for evidence"
+      evo_en_1="Keep prototype conclusions that reduce uncertainty"
+      evo_en_2="Revert implementations that expand scope without stronger proof"
     fi
   elif [[ -f "${PROJECT_DIR}/pyproject.toml" || -f "${PROJECT_DIR}/requirements.txt" ]]; then
     type="Python service or application"
@@ -230,6 +254,7 @@ write_scan_profile() {
     artifacts="service modules, scripts, docs, app files"
     primary="Backend Architect"
     implementer="Backend Architect"
+    verifier="API Tester"
     support_a="API Tester"
     support_b="Software Architect"
     support_c="Technical Writer"
@@ -243,6 +268,12 @@ write_scan_profile() {
     anti_2="不要没有接口证据就宣称稳定"
     evo_1="保留提升正确性和可追踪性的改动"
     evo_2="回滚放大风险却没有更强保障的后端调整"
+    heur_en_1="Protect interface correctness and data flow first"
+    heur_en_2="Prefer backend changes that are observable and verifiable"
+    anti_en_1="Do not expand backend changes before dependency paths are clear"
+    anti_en_2="Do not claim stability without interface-level evidence"
+    evo_en_1="Keep changes that improve correctness and traceability"
+    evo_en_2="Revert backend adjustments that amplify risk without stronger safeguards"
   elif [[ -f "${PROJECT_DIR}/go.mod" ]]; then
     type="Go service"
     preset="backend-service"
@@ -250,6 +281,7 @@ write_scan_profile() {
     artifacts="packages, handlers, service code"
     primary="Backend Architect"
     implementer="Backend Architect"
+    verifier="API Tester"
     support_a="API Tester"
     support_b="SRE"
     support_c="Software Architect"
@@ -263,6 +295,12 @@ write_scan_profile() {
     anti_2="不要忽略运行证据只看代码直觉"
     evo_1="保留提升稳定性和可观测性的改动"
     evo_2="回滚制造更多运行不确定性的改动"
+    heur_en_1="Protect interface stability and runtime reliability first"
+    heur_en_2="Prefer fixes and observations backed by evidence"
+    anti_en_1="Do not widen service changes before tracing the call chain"
+    anti_en_2="Do not ignore runtime evidence in favor of code intuition"
+    evo_en_1="Keep changes that improve stability and observability"
+    evo_en_2="Revert changes that create more runtime uncertainty"
   elif [[ -f "${PROJECT_DIR}/Cargo.toml" ]]; then
     type="Rust application or service"
     preset="backend-service"
@@ -270,6 +308,7 @@ write_scan_profile() {
     artifacts="Rust crates, binaries, modules"
     primary="Senior Developer"
     implementer="Senior Developer"
+    verifier="Reality Checker"
     support_a="Software Architect"
     support_b="Code Reviewer"
     support_c="Reality Checker"
@@ -283,6 +322,12 @@ write_scan_profile() {
     anti_2="不要没有验证就扩大语言层级重构"
     evo_1="保留提升正确性和可维护性的实现"
     evo_2="回滚炫技但不增稳的复杂重构"
+    heur_en_1="Prioritize implementation correctness and explicit constraints"
+    heur_en_2="Clarify behavior before optimizing technique"
+    anti_en_1="Do not sacrifice readability for clever implementation"
+    anti_en_2="Do not expand language-level refactors without verification"
+    evo_en_1="Keep implementations that improve correctness and maintainability"
+    evo_en_2="Revert flashy refactors that do not increase stability"
   elif [[ -f "${PROJECT_DIR}/index.html" && ( -d "${PROJECT_DIR}/assets" || -d "${PROJECT_DIR}/images" ) ]]; then
     type="presentation-style static web artifact"
     preset="marketing-site"
@@ -290,6 +335,7 @@ write_scan_profile() {
     artifacts="index.html, image assets, presentation visuals"
     primary="Visual Storyteller"
     implementer="Frontend Developer"
+    verifier="Reality Checker"
     support_a="UI Designer"
     support_b="Frontend Developer"
     support_c="Reality Checker"
@@ -303,6 +349,12 @@ write_scan_profile() {
     anti_2="不要让实现细节淹没叙事"
     evo_1="保留能强化叙事和扫读性的改动"
     evo_2="回滚削弱清晰度和节奏的视觉复杂度"
+    heur_en_1="Establish information hierarchy and storyline first"
+    heur_en_2="Turn narrative judgment into visible browser structure quickly"
+    anti_en_1="Do not pile on decoration before the core message stands"
+    anti_en_2="Do not let implementation detail drown the narrative"
+    evo_en_1="Keep changes that strengthen storytelling and scanability"
+    evo_en_2="Revert visual complexity that weakens clarity and pacing"
   elif find "${PROJECT_DIR}" -maxdepth 2 -type f \( -name "*.pptx" -o -name "*.ppt" -o -name "*.key" -o -name "*.pdf" \) | grep -q .; then
     type="presentation or document artifact"
     preset="ppt-storytelling"
@@ -310,6 +362,7 @@ write_scan_profile() {
     artifacts="decks, slides, exported documents, supporting visuals"
     primary="Visual Storyteller"
     implementer="Visual Storyteller"
+    verifier="Brand Guardian"
     support_a="Brand Guardian"
     support_b="UI Designer"
     support_c="Project Shepherd"
@@ -323,6 +376,12 @@ write_scan_profile() {
     anti_2="不要添加削弱论证的花哨形式"
     evo_1="保留能改善故事流的结构调整"
     evo_2="回滚增加噪音却不增强说服力的内容"
+    heur_en_1="Get the narrative sequence right before polishing individual pages"
+    heur_en_2="Optimize for audience understanding, not information volume"
+    anti_en_1="Do not keep adding content when the sequence is still weak"
+    anti_en_2="Do not add flashy forms that weaken the argument"
+    evo_en_1="Keep structural adjustments that improve story flow"
+    evo_en_2="Revert content that adds noise without adding persuasion"
   elif [[ -d "${PROJECT_DIR}/content" || -d "${PROJECT_DIR}/posts" || -d "${PROJECT_DIR}/marketing" ]]; then
     type="content or marketing workspace"
     preset="marketing-site"
@@ -330,6 +389,7 @@ write_scan_profile() {
     artifacts="copy, campaign assets, visuals, planning docs"
     primary="Content Creator"
     implementer="Content Creator"
+    verifier="SEO Specialist"
     support_a="Brand Guardian"
     support_b="Visual Storyteller"
     support_c="SEO Specialist"
@@ -343,6 +403,12 @@ write_scan_profile() {
     anti_2="不要为了堆词牺牲品牌一致性"
     evo_1="保留能提升清晰度和转化意图的内容调整"
     evo_2="回滚拉长内容却降低力度的改动"
+    heur_en_1="Make the core message clear before expanding content layers"
+    heur_en_2="Align the narrative with the conversion goal first"
+    anti_en_1="Do not let the message become vague just because there is more content"
+    anti_en_2="Do not sacrifice brand consistency for keyword stuffing"
+    evo_en_1="Keep content changes that improve clarity and conversion intent"
+    evo_en_2="Revert edits that lengthen content while weakening force"
   else
     type="general software or project workspace"
     preset="zero-to-one-startup"
@@ -350,6 +416,7 @@ write_scan_profile() {
     artifacts="repository files, docs, implementation assets"
     primary="Codebase Onboarding Engineer"
     implementer="Software Architect"
+    verifier="Reality Checker"
     support_a="Software Architect"
     support_b="Technical Writer"
     support_c="Reality Checker"
@@ -363,7 +430,131 @@ write_scan_profile() {
     anti_2="不要把忙碌误当成已验证进展"
     evo_1="保留能减少不确定性的推进"
     evo_2="回滚增加表面积却没有更强把握的工作"
+    heur_en_1="Reduce uncertainty before expanding the execution surface"
+    heur_en_2="Prefer the smallest result that proves the next direction"
+    anti_en_1="Do not overbuild before the problem is clearly defined"
+    anti_en_2="Do not mistake busyness for validated progress"
+    evo_en_1="Keep progress that reduces uncertainty"
+    evo_en_2="Revert work that increases surface area without stronger confidence"
   fi
+
+  section_lang="${PROFILE_LANG}"
+  case "${preset}:${section_lang}" in
+    frontend-product:zh)
+      handoff_1="当任务从实现细节转向整体结构时，切换到 UX Architect"
+      handoff_2="当任务从交互实现转向发布验收时，切换到 Reality Checker"
+      verify_1="在浏览器中验证关键交互流程"
+      verify_2="检查响应式布局和主要视口"
+      verify_3="确认改动对用户可见行为确实产生了预期效果"
+      ;;
+    frontend-product:en)
+      handoff_1="Switch to UX Architect when the task moves from implementation details to interaction structure"
+      handoff_2="Switch to Reality Checker when the task moves from interaction work to release validation"
+      verify_1="Validate the key interaction flow in a browser"
+      verify_2="Check responsive behavior across the main viewports"
+      verify_3="Confirm the change produced the intended user-visible behavior"
+      ;;
+    backend-service:zh)
+      if [[ "${type}" == "full-stack web application" ]]; then
+        handoff_1="当任务分裂成前后端独立问题时，分别切向 Frontend Developer 和 Backend Architect"
+        handoff_2="当任务进入整体验收时，切换到 Reality Checker"
+        verify_1="验证主要端到端路径没有断裂"
+        verify_2="检查跨层变更是否仍与原边界一致"
+        verify_3="确认关键功能在集成场景中仍可工作"
+      elif [[ "${type}" == "Go service" ]]; then
+        handoff_1="当问题转向运行稳定性时，切换到 SRE"
+        handoff_2="当问题转向接口确认时，切换到 API Tester"
+        verify_1="检查服务级运行证据和错误信号"
+        verify_2="验证关键调用链是否恢复正常"
+        verify_3="确认修复没有引入新的运行不确定性"
+      else
+        handoff_1="当任务从设计转向验证时，切换到 API Tester"
+        handoff_2="当任务从实现转向边界梳理时，切换到 Software Architect"
+        verify_1="验证关键接口输入输出"
+        verify_2="检查错误路径和边界条件"
+        verify_3="确认改动后数据流仍然一致"
+      fi
+      ;;
+    backend-service:en)
+      if [[ "${type}" == "full-stack web application" ]]; then
+        handoff_1="Split to Frontend Developer and Backend Architect when the work separates into frontend and backend problems"
+        handoff_2="Switch to Reality Checker when the work moves into integrated acceptance"
+        verify_1="Verify the main end-to-end path is still intact"
+        verify_2="Check that cross-layer changes still respect the original boundaries"
+        verify_3="Confirm critical functionality still works in the integrated flow"
+      elif [[ "${type}" == "Go service" ]]; then
+        handoff_1="Switch to SRE when the problem becomes runtime stability"
+        handoff_2="Switch to API Tester when the work becomes interface confirmation"
+        verify_1="Inspect service-level runtime evidence and error signals"
+        verify_2="Verify the critical call chain has recovered"
+        verify_3="Confirm the fix did not introduce new runtime uncertainty"
+      else
+        handoff_1="Switch to API Tester when the task moves from implementation into verification"
+        handoff_2="Switch to Software Architect when the task moves from implementation into boundary design"
+        verify_1="Validate the inputs and outputs of critical interfaces"
+        verify_2="Check error paths and edge conditions"
+        verify_3="Confirm the data flow still behaves consistently after the change"
+      fi
+      ;;
+    zero-to-one-startup:zh)
+      handoff_1="当方向被验证后，切换到更稳定的实现角色"
+      handoff_2="当原型需要交付判断时，切换到 Reality Checker"
+      verify_1="确认原型是否真的回答了关键问题"
+      verify_2="检查最小实现是否足以支撑下一步判断"
+      verify_3="区分演示有效和生产可用"
+      ;;
+    zero-to-one-startup:en)
+      handoff_1="Switch to a steadier implementation role once the direction has been validated"
+      handoff_2="Switch to Reality Checker when the prototype needs delivery judgment"
+      verify_1="Confirm the prototype actually answers the key question"
+      verify_2="Check whether the minimal implementation is enough to support the next decision"
+      verify_3="Distinguish between a convincing demo and a production-ready system"
+      ;;
+    marketing-site:zh)
+      if [[ "${type}" == "presentation-style static web artifact" ]]; then
+        handoff_1="当叙事已明确并进入页面落地时，切换到 Frontend Developer"
+        handoff_2="当页面进入可交付验收时，切换到 Reality Checker"
+        verify_1="检查首屏和关键区块是否传达核心信息"
+        verify_2="验证页面层级和扫读路径是否清晰"
+        verify_3="确认实现没有破坏叙事节奏"
+      else
+        handoff_1="当内容框架稳定后，切换到 Visual Storyteller 或 Frontend Developer 落地"
+        handoff_2="当目标转向搜索表现时，切换到 SEO Specialist"
+        verify_1="检查核心主张是否一眼可见"
+        verify_2="验证内容与转化动作是否对齐"
+        verify_3="确认文案扩展没有削弱力度"
+      fi
+      ;;
+    marketing-site:en)
+      if [[ "${type}" == "presentation-style static web artifact" ]]; then
+        handoff_1="Switch to Frontend Developer once the narrative direction is clear and the page needs implementation"
+        handoff_2="Switch to Reality Checker when the page moves into delivery validation"
+        verify_1="Check whether the hero and key sections communicate the core message"
+        verify_2="Validate visual hierarchy and scan path clarity"
+        verify_3="Confirm the implementation did not break the narrative rhythm"
+      else
+        handoff_1="Switch to Visual Storyteller or Frontend Developer once the content frame is stable and needs execution"
+        handoff_2="Switch to SEO Specialist when the goal shifts toward search performance"
+        verify_1="Check whether the core claim is obvious at a glance"
+        verify_2="Validate that the content aligns with the conversion action"
+        verify_3="Confirm the copy expansion did not weaken the message"
+      fi
+      ;;
+    ppt-storytelling:zh)
+      handoff_1="当问题从故事结构转向品牌一致性时，切换到 Brand Guardian"
+      handoff_2="当问题从内容组织转向执行推进时，切换到 Project Shepherd"
+      verify_1="检查叙事顺序是否顺畅"
+      verify_2="验证每页是否服务整体论证"
+      verify_3="确认新增内容没有削弱主线"
+      ;;
+    ppt-storytelling:en)
+      handoff_1="Switch to Brand Guardian when the work moves from story structure to brand consistency"
+      handoff_2="Switch to Project Shepherd when the work moves from content shaping to execution coordination"
+      verify_1="Check whether the narrative sequence flows smoothly"
+      verify_2="Verify that each page supports the overall argument"
+      verify_3="Confirm new content did not weaken the main storyline"
+      ;;
+  esac
 
   if [[ "${PROFILE_LANG}" == "zh" ]]; then
     cue_a="先理解仓库结构、入口、数据流和主要模块"
@@ -393,7 +584,7 @@ write_scan_profile() {
 - If user asks for: ${cue_b}
 - Switch to: \`${implementer}\`
 - If user asks for: ${cue_c}
-- Switch to: \`${support_c}\`
+- Switch to: \`${verifier}\`
 
 ## Current Goals
 - 基于现有仓库和已部署形态继续推进，而不是假设项目从零开始
@@ -403,7 +594,8 @@ write_scan_profile() {
 - 本 profile 由仓库扫描自动生成，后续需要随着真实需求持续更新
 - README 摘要: ${summary_hint:-未读取到标题}
 - 扫描样本:
-$(printf '%s\n' "${top_files}" | sed 's/^/- /')
+$(printf '%s
+' "${top_files}" | sed 's/^/- /')
 
 ## Working Style
 - 先理解，再做最小有效改动
@@ -418,12 +610,17 @@ $(printf '%s\n' "${top_files}" | sed 's/^/- /')
 - ${anti_2}
 
 ## Handoff Triggers
-- 当任务从理解仓库切到实现时，切换到 \`${implementer}\`
-- 当任务从实现切到验证时，切换到 \`${support_c}\`
+- ${handoff_1}
+- ${handoff_2}
 
 ## Escalation Policy
 - 当同一路径连续失败 2 次以上时，切换到高能动排查模式
 - 声称完成前必须有可验证证据
+
+## Verification Protocol
+- ${verify_1}
+- ${verify_2}
+- ${verify_3}
 
 ## Evolution Loop
 - ${evo_1}
@@ -458,7 +655,7 @@ EOF
 - If user asks for: ${cue_b}
 - Switch to: \`${implementer}\`
 - If user asks for: ${cue_c}
-- Switch to: \`${support_c}\`
+- Switch to: \`${verifier}\`
 
 ## Current Goals
 - Continue from the existing repository and deployed shape instead of assuming a greenfield project
@@ -468,31 +665,37 @@ EOF
 - This profile was auto-generated from a repository scan and should be refined as real requirements become clearer
 - README hint: ${summary_hint:-no README heading detected}
 - Scan sample:
-$(printf '%s\n' "${top_files}" | sed 's/^/- /')
+$(printf '%s
+' "${top_files}" | sed 's/^/- /')
 
 ## Working Style
 - Understand first, then make the smallest effective change
 - Prefer the smallest useful squad before expanding
 
 ## Decision Heuristics
-- ${heur_1}
-- ${heur_2}
+- ${heur_en_1}
+- ${heur_en_2}
 
 ## Anti-Patterns
-- ${anti_1}
-- ${anti_2}
+- ${anti_en_1}
+- ${anti_en_2}
 
 ## Handoff Triggers
-- Switch to \`${implementer}\` when the task moves from understanding to implementation
-- Switch to \`${support_c}\` when the task moves from implementation to verification
+- ${handoff_1}
+- ${handoff_2}
 
 ## Escalation Policy
 - Switch to high-agency mode after 2 repeated failures on the same path
 - Require verifiable evidence before claiming completion
 
+## Verification Protocol
+- ${verify_1}
+- ${verify_2}
+- ${verify_3}
+
 ## Evolution Loop
-- ${evo_1}
-- ${evo_2}
+- ${evo_en_1}
+- ${evo_en_2}
 - Make each iteration more trustworthy than the last stable state
 EOF
   fi

@@ -50,6 +50,11 @@
 - Switch to high-agency mode after 2 repeated failures on the same path
 - Require verifiable evidence before claiming completion
 
+## Verification Protocol
+- Verify the most critical user path or core output first
+- Check adjacent impact, not just the edited surface
+- Distinguish between demo-ready and production-ready
+
 ## Evolution Loop
 - Keep improvements
 - Revert regressions
