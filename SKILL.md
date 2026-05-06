@@ -7,6 +7,11 @@ description: Use when a user is working on a repo, app, website, deck, workflow,
 
 Turn `agency-agents` style specialist selection into a lightweight Codex workflow.
 
+This skill also benefits from:
+- `references/karpathy-operating-principles.md` for execution discipline
+- `references/distilled-agent-frameworks.md` for specialist distillation heuristics
+- `references/high-agency-escalation.md` for optional anti-spinning escalation
+
 ## Core Goal
 
 After the first 1-3 user messages in a project conversation:
@@ -63,6 +68,17 @@ Prefer small squads:
 
 For coding work, map specialist intent onto Codex behavior instead of roleplay theater. The output should be better execution, not more ceremony.
 
+Apply Karpathy-style discipline:
+- think before editing
+- prefer the smallest effective squad
+- prefer the smallest effective change
+- verify instead of narrating
+
+Apply distilled-agent framing:
+- identify the lead lens
+- identify what it optimizes for
+- identify the trigger that should switch to another lens
+
 ### Step 4: Persist project memory
 
 Create or update `.codex/project-profile.md` with:
@@ -86,6 +102,16 @@ If the user shifts domains, refresh the squad. Examples:
 - from static site design to QA verification
 
 When re-routing, update `.codex/project-profile.md`.
+
+### Step 6: Escalate when the agent is spinning
+
+If work stalls through repeated failed attempts, skipped verification, excuse-making, or passive waiting, activate a temporary high-agency escalation layer.
+
+This is inspired by `tanweai/pua`, but should usually be applied as behavior, not as default tone:
+- require a new approach
+- require evidence before claiming success
+- require search or source-reading before more guessing
+- require adjacency checks after a fix
 
 ## Squad Selection Rules
 
@@ -199,6 +225,12 @@ Write `.codex/project-profile.md` in this structure:
 
 ## Constraints
 - 
+
+## Working Style
+- 
+
+## Handoff Triggers
+- 
 ```
 
 ## Communication Rules
@@ -207,6 +239,7 @@ Write `.codex/project-profile.md` in this structure:
 - Do not dump long persona descriptions unless asked.
 - Avoid fake certainty. If the repo signal is weak, mark the squad as provisional.
 - Prioritize action. Routing should help the work start faster, not delay it.
+- Do not apply aggressive escalation rhetoric by default; treat it as an optional escalation mode
 
 ## Good Commentary Examples
 

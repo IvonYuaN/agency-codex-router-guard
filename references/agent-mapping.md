@@ -2,6 +2,10 @@
 
 This skill borrows the routing idea from `msitarzewski/agency-agents` and compresses it for Codex.
 
+It also incorporates:
+- Karpathy-style execution discipline: see `references/karpathy-operating-principles.md`
+- Distilled-agent framing ideas: see `references/distilled-agent-frameworks.md`
+
 ## Default mappings
 
 - Coding-heavy repo start: `Codebase Onboarding Engineer`

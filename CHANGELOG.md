@@ -10,3 +10,7 @@
 - Added scan mode for existing repositories and deployed projects
 - Added new-project dialogue templates in Chinese and English
 - Added `scripts/scan-project.sh` shortcut for scan-first initialization
+- Added Karpathy-style operating principles reference
+- Added distilled-agent framework reference inspired by `alchaincyf`
+- Upgraded scan mode to read key config hints and README headings
+- Added optional high-agency escalation reference inspired by `tanweai/pua`

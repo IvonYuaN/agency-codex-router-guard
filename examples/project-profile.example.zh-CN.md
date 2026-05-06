@@ -24,3 +24,14 @@
 ## Constraints
 - 除非明确要求重构，否则优先做最小结构改动
 - 保持与本地静态资源工作流兼容
+
+## Working Style
+- 先做小步可验证改动，再决定是否扩大范围
+
+## Handoff Triggers
+- 当任务从叙事设计进入页面实现时，切换到 `Frontend Developer`
+- 当任务从实现进入验收和上线判断时，切换到 `Reality Checker`
+
+## Escalation Policy
+- 当同一路径连续失败 2 次以上时，切换到高能动排查模式
+- 声称完成前必须有可验证证据

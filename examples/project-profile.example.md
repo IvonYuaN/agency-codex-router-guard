@@ -24,3 +24,14 @@
 ## Constraints
 - Prefer minimal structure changes unless a redesign is clearly requested
 - Preserve compatibility with local static asset workflow
+
+## Working Style
+- Prefer small, verifiable changes before expanding scope
+
+## Handoff Triggers
+- Switch to `Frontend Developer` when storytelling work becomes implementation work
+- Switch to `Reality Checker` when implementation work becomes release validation
+
+## Escalation Policy
+- Switch to high-agency mode after 2 repeated failures on the same path
+- Require verifiable evidence before claiming completion

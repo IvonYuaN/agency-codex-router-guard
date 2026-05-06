@@ -34,6 +34,9 @@ agency-codex-router/
 ├── examples/project-profile.example.zh-CN.md
 ├── examples/new-project-dialogues.md
 ├── examples/new-project-dialogues.zh-CN.md
+├── references/karpathy-operating-principles.md
+├── references/distilled-agent-frameworks.md
+├── references/high-agency-escalation.md
 ├── scripts/install.sh
 ├── scripts/init-project.sh
 └── scripts/scan-project.sh
@@ -125,10 +128,20 @@ Use agency-codex-router for this repo.
 
 ## 当前已知可优化方向
 
-- 自动扫描已经能预填 squad，但规则仍然是启发式，不是深度理解
+- 自动扫描现在会读取少量关键配置与 README 标题，但规则仍然是启发式，不是深度理解
 - 新项目对话已经模板化，但回答结果还没有自动映射成更细的约束字段
 - 路由规则目前写在 `SKILL.md` 里，后续可以拆成更细的行业或任务模板
 - 还没有“任务切换历史”，只能记住当前推荐 squad
+
+## 吸收了哪些外部思路
+
+- `forrestchang/andrej-karpathy-skills`
+  - 吸收了更强调“小步、简洁、可验证”的执行纪律
+- `alchaincyf`
+  - 吸收了“蒸馏 skill / agent 时要提炼心智模型、决策规则、切换边界”的做法
+- `tanweai/pua`
+  - 吸收了“代理开始打转时，需要有升级机制强制搜索、验证、换路径”的做法
+  - 不默认合并其施压口吻，而是保留为可选升级层
 
 ## 说明
 
@@ -168,6 +181,9 @@ agency-codex-router/
 ├── examples/project-profile.example.zh-CN.md
 ├── examples/new-project-dialogues.md
 ├── examples/new-project-dialogues.zh-CN.md
+├── references/karpathy-operating-principles.md
+├── references/distilled-agent-frameworks.md
+├── references/high-agency-escalation.md
 ├── scripts/install.sh
 ├── scripts/init-project.sh
 └── scripts/scan-project.sh
@@ -259,10 +275,20 @@ Or let Codex apply it when the task clearly benefits from routing.
 
 ## Known optimization opportunities
 
-- Scan-based routing now pre-fills squads, but it is still heuristic rather than deep repo understanding
+- Scan-based routing now reads a few key config files and README headings, but it is still heuristic rather than deep repo understanding
 - New-project dialogue mode exists, but the answers still do not auto-populate richer constraint fields
 - Routing rules are centralized in `SKILL.md`; they could later be split into domain-specific presets
 - There is no task-history memory yet, only the current recommended squad
+
+## External ideas incorporated
+
+- `forrestchang/andrej-karpathy-skills`
+  - Inspired the small-step, simplicity-first, verifiable-execution discipline
+- `alchaincyf`
+  - Inspired the idea of distilling an agent into mental models, heuristics, and handoff boundaries instead of just tone
+- `tanweai/pua`
+  - Inspired an optional anti-spinning escalation layer that forces verification, broader search, and alternative approaches
+  - Its pressure tone is not enabled by default; only the operational escalation ideas are merged
 
 ## Notes
 

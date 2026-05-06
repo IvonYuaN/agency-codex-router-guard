@@ -108,18 +108,58 @@ detect_mode() {
   fi
 }
 
+read_first_line_match() {
+  local file="$1"
+  local pattern="$2"
+  if [[ -f "${file}" ]]; then
+    rg -m 1 "${pattern}" "${file}" 2>/dev/null | head -n 1
+  fi
+}
+
+read_package_field() {
+  local field="$1"
+  local pkg="${PROJECT_DIR}/package.json"
+  if [[ -f "${pkg}" ]]; then
+    sed -n "s/.*\"${field}\"[[:space:]]*:[[:space:]]*\"\\([^\"]*\\)\".*/\\1/p" "${pkg}" | head -n 1
+  fi
+}
+
+detect_frontend_framework() {
+  local deps
+  deps="$(tr '\n' ' ' < "${PROJECT_DIR}/package.json" 2>/dev/null || true)"
+  if [[ "${deps}" == *"next"* ]]; then
+    printf '%s\n' "Next.js"
+  elif [[ "${deps}" == *"react"* ]]; then
+    printf '%s\n' "React"
+  elif [[ "${deps}" == *"vue"* ]]; then
+    printf '%s\n' "Vue"
+  elif [[ "${deps}" == *"svelte"* ]]; then
+    printf '%s\n' "Svelte"
+  elif [[ "${deps}" == *"nuxt"* ]]; then
+    printf '%s\n' "Nuxt"
+  fi
+}
+
 write_scan_profile() {
   local type stack artifacts primary implementer support_a support_b support_c cue_a cue_b cue_c top_files
+  local framework package_name python_name go_module rust_package summary_hint
 
   top_files="$(find "${PROJECT_DIR}" -maxdepth 2 -type f \
     ! -path "${PROJECT_DIR}/.git/*" \
     ! -path "${PROJECT_DIR}/.codex/*" \
     ! -name ".DS_Store" | sed "s#${PROJECT_DIR}/##" | sort | head -n 40)"
 
+  package_name="$(read_package_field "name")"
+  framework="$(detect_frontend_framework)"
+  python_name="$(read_first_line_match "${PROJECT_DIR}/pyproject.toml" '^name[[:space:]]*=')"
+  go_module="$(read_first_line_match "${PROJECT_DIR}/go.mod" '^module ')"
+  rust_package="$(read_first_line_match "${PROJECT_DIR}/Cargo.toml" '^name[[:space:]]*=')"
+  summary_hint="$(read_first_line_match "${PROJECT_DIR}/README.md" '^# ')"
+
   if [[ -f "${PROJECT_DIR}/package.json" ]]; then
     if [[ -f "${PROJECT_DIR}/next.config.js" || -f "${PROJECT_DIR}/next.config.mjs" || -d "${PROJECT_DIR}/app" || -d "${PROJECT_DIR}/pages" || -d "${PROJECT_DIR}/components" ]]; then
       type="frontend web application"
-      stack="Node.js frontend stack based on package.json"
+      stack="Node.js frontend stack based on package.json${framework:+, ${framework}}${package_name:+, package ${package_name}}"
       artifacts="app pages, components, styles, frontend assets"
       primary="Frontend Developer"
       implementer="Frontend Developer"
@@ -128,7 +168,7 @@ write_scan_profile() {
       support_c="Reality Checker"
     elif [[ -d "${PROJECT_DIR}/server" || -d "${PROJECT_DIR}/api" || -d "${PROJECT_DIR}/backend" ]]; then
       type="full-stack web application"
-      stack="Node.js full-stack workspace"
+      stack="Node.js full-stack workspace${framework:+, ${framework}}${package_name:+, package ${package_name}}"
       artifacts="frontend code, backend endpoints, shared assets"
       primary="Software Architect"
       implementer="Frontend Developer"
@@ -137,7 +177,7 @@ write_scan_profile() {
       support_c="Reality Checker"
     else
       type="JavaScript application"
-      stack="Node.js package-based project"
+      stack="Node.js package-based project${framework:+, ${framework}}${package_name:+, package ${package_name}}"
       artifacts="application code, scripts, static assets"
       primary="Rapid Prototyper"
       implementer="Rapid Prototyper"
@@ -147,7 +187,7 @@ write_scan_profile() {
     fi
   elif [[ -f "${PROJECT_DIR}/pyproject.toml" || -f "${PROJECT_DIR}/requirements.txt" ]]; then
     type="Python service or application"
-    stack="Python project"
+    stack="Python project${python_name:+, ${python_name}}"
     artifacts="service modules, scripts, docs, app files"
     primary="Backend Architect"
     implementer="Backend Architect"
@@ -156,7 +196,7 @@ write_scan_profile() {
     support_c="Technical Writer"
   elif [[ -f "${PROJECT_DIR}/go.mod" ]]; then
     type="Go service"
-    stack="Go module"
+    stack="Go module${go_module:+, ${go_module}}"
     artifacts="packages, handlers, service code"
     primary="Backend Architect"
     implementer="Backend Architect"
@@ -165,7 +205,7 @@ write_scan_profile() {
     support_c="Software Architect"
   elif [[ -f "${PROJECT_DIR}/Cargo.toml" ]]; then
     type="Rust application or service"
-    stack="Rust cargo project"
+    stack="Rust cargo project${rust_package:+, ${rust_package}}"
     artifacts="Rust crates, binaries, modules"
     primary="Senior Developer"
     implementer="Senior Developer"
@@ -240,8 +280,21 @@ write_scan_profile() {
 
 ## Constraints
 - 本 profile 由仓库扫描自动生成，后续需要随着真实需求持续更新
+- README 摘要: ${summary_hint:-未读取到标题}
 - 扫描样本:
 $(printf '%s\n' "${top_files}" | sed 's/^/- /')
+
+## Working Style
+- 先理解，再做最小有效改动
+- 优先使用最小可用 squad，避免无谓扩张
+
+## Handoff Triggers
+- 当任务从理解仓库切到实现时，切换到 \`${implementer}\`
+- 当任务从实现切到验证时，切换到 \`${support_c}\`
+
+## Escalation Policy
+- 当同一路径连续失败 2 次以上时，切换到高能动排查模式
+- 声称完成前必须有可验证证据
 EOF
   else
     cue_a="understand repository structure, entry points, data flow, and main modules first"
@@ -273,8 +326,21 @@ EOF
 
 ## Constraints
 - This profile was auto-generated from a repository scan and should be refined as real requirements become clearer
+- README hint: ${summary_hint:-no README heading detected}
 - Scan sample:
 $(printf '%s\n' "${top_files}" | sed 's/^/- /')
+
+## Working Style
+- Understand first, then make the smallest effective change
+- Prefer the smallest useful squad before expanding
+
+## Handoff Triggers
+- Switch to \`${implementer}\` when the task moves from understanding to implementation
+- Switch to \`${support_c}\` when the task moves from implementation to verification
+
+## Escalation Policy
+- Switch to high-agency mode after 2 repeated failures on the same path
+- Require verifiable evidence before claiming completion
 EOF
   fi
 }
