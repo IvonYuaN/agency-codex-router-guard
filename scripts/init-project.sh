@@ -348,6 +348,14 @@ $(printf '%s\n' "${top_files}" | sed 's/^/- /')
 - 先理解，再做最小有效改动
 - 优先使用最小可用 squad，避免无谓扩张
 
+## Decision Heuristics
+- 保留主导 agent 的认知模型，而不是只模仿表面表达
+- 先做可验证的小步改动，再决定是否扩大范围
+
+## Anti-Patterns
+- 不要只切换口吻，不切换思考方式
+- 不要在证据不足时持续扩大改动面
+
 ## Handoff Triggers
 - 当任务从理解仓库切到实现时，切换到 \`${implementer}\`
 - 当任务从实现切到验证时，切换到 \`${support_c}\`
@@ -355,6 +363,11 @@ $(printf '%s\n' "${top_files}" | sed 's/^/- /')
 ## Escalation Policy
 - 当同一路径连续失败 2 次以上时，切换到高能动排查模式
 - 声称完成前必须有可验证证据
+
+## Evolution Loop
+- 保留有效改动
+- 回滚回归和劣化
+- 每次迭代都要比上一个稳定版本更可信
 EOF
   else
     cue_a="understand repository structure, entry points, data flow, and main modules first"
@@ -400,6 +413,14 @@ $(printf '%s\n' "${top_files}" | sed 's/^/- /')
 - Understand first, then make the smallest effective change
 - Prefer the smallest useful squad before expanding
 
+## Decision Heuristics
+- Preserve the lead agent's mental model instead of only copying surface style
+- Prefer small verifiable changes before widening scope
+
+## Anti-Patterns
+- Do not change tone without changing reasoning
+- Do not enlarge the edit surface without evidence
+
 ## Handoff Triggers
 - Switch to \`${implementer}\` when the task moves from understanding to implementation
 - Switch to \`${support_c}\` when the task moves from implementation to verification
@@ -407,6 +428,11 @@ $(printf '%s\n' "${top_files}" | sed 's/^/- /')
 ## Escalation Policy
 - Switch to high-agency mode after 2 repeated failures on the same path
 - Require verifiable evidence before claiming completion
+
+## Evolution Loop
+- Keep improvements
+- Revert regressions
+- Make each iteration more trustworthy than the last stable state
 EOF
   fi
 }

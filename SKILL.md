@@ -237,7 +237,16 @@ Write `.codex/project-profile.md` in this structure:
 ## Working Style
 - 
 
+## Decision Heuristics
+- 
+
+## Anti-Patterns
+- 
+
 ## Handoff Triggers
+- 
+
+## Evolution Loop
 - 
 ```
 
