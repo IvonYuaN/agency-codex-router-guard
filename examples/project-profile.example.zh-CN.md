@@ -9,6 +9,11 @@
 - Preset: `ppt-storytelling`
 - Primary: `Visual Storyteller`
 - Supporting: `UI Designer`、`Frontend Developer`、`Reality Checker`
+- Upstream agents:
+  - `upstream-agents/design/design-visual-storyteller.md`
+  - `upstream-agents/design/design-ui-designer.md`
+  - `upstream-agents/engineering/engineering-frontend-developer.md`
+  - `upstream-agents/testing/testing-reality-checker.md`
 
 ## Routing Cues
 - If user asks for: 布局、视觉层级、叙事结构、品牌表达

@@ -145,6 +145,7 @@ detect_frontend_framework() {
 
 write_scan_profile() {
   local type stack artifacts preset primary implementer support_a support_b support_c cue_a cue_b cue_c top_files
+  local upstream_primary upstream_support_a upstream_support_b upstream_support_c
   local framework package_name python_name go_module rust_package summary_hint
 
   top_files="$(find "${PROJECT_DIR}" -maxdepth 2 -type f \
@@ -170,6 +171,10 @@ write_scan_profile() {
       support_a="UI Designer"
       support_b="UX Architect"
       support_c="Reality Checker"
+      upstream_primary="upstream-agents/engineering/engineering-frontend-developer.md"
+      upstream_support_a="upstream-agents/design/design-ui-designer.md"
+      upstream_support_b="upstream-agents/design/design-ux-architect.md"
+      upstream_support_c="upstream-agents/testing/testing-reality-checker.md"
     elif [[ -d "${PROJECT_DIR}/server" || -d "${PROJECT_DIR}/api" || -d "${PROJECT_DIR}/backend" ]]; then
       type="full-stack web application"
       preset="backend-service"
@@ -180,6 +185,10 @@ write_scan_profile() {
       support_a="Frontend Developer"
       support_b="Backend Architect"
       support_c="Reality Checker"
+      upstream_primary="upstream-agents/engineering/engineering-software-architect.md"
+      upstream_support_a="upstream-agents/engineering/engineering-frontend-developer.md"
+      upstream_support_b="upstream-agents/engineering/engineering-backend-architect.md"
+      upstream_support_c="upstream-agents/testing/testing-reality-checker.md"
     else
       type="JavaScript application"
       preset="zero-to-one-startup"
@@ -190,6 +199,10 @@ write_scan_profile() {
       support_a="Frontend Developer"
       support_b="Backend Architect"
       support_c="Reality Checker"
+      upstream_primary="upstream-agents/engineering/engineering-rapid-prototyper.md"
+      upstream_support_a="upstream-agents/engineering/engineering-frontend-developer.md"
+      upstream_support_b="upstream-agents/engineering/engineering-backend-architect.md"
+      upstream_support_c="upstream-agents/testing/testing-reality-checker.md"
     fi
   elif [[ -f "${PROJECT_DIR}/pyproject.toml" || -f "${PROJECT_DIR}/requirements.txt" ]]; then
     type="Python service or application"
@@ -201,6 +214,10 @@ write_scan_profile() {
     support_a="API Tester"
     support_b="Software Architect"
     support_c="Technical Writer"
+    upstream_primary="upstream-agents/engineering/engineering-backend-architect.md"
+    upstream_support_a="upstream-agents/testing/testing-api-tester.md"
+    upstream_support_b="upstream-agents/engineering/engineering-software-architect.md"
+    upstream_support_c="upstream-agents/engineering/engineering-technical-writer.md"
   elif [[ -f "${PROJECT_DIR}/go.mod" ]]; then
     type="Go service"
     preset="backend-service"
@@ -211,6 +228,10 @@ write_scan_profile() {
     support_a="API Tester"
     support_b="SRE"
     support_c="Software Architect"
+    upstream_primary="upstream-agents/engineering/engineering-backend-architect.md"
+    upstream_support_a="upstream-agents/testing/testing-api-tester.md"
+    upstream_support_b="upstream-agents/engineering/engineering-sre.md"
+    upstream_support_c="upstream-agents/engineering/engineering-software-architect.md"
   elif [[ -f "${PROJECT_DIR}/Cargo.toml" ]]; then
     type="Rust application or service"
     preset="backend-service"
@@ -221,6 +242,10 @@ write_scan_profile() {
     support_a="Software Architect"
     support_b="Code Reviewer"
     support_c="Reality Checker"
+    upstream_primary="upstream-agents/engineering/engineering-senior-developer.md"
+    upstream_support_a="upstream-agents/engineering/engineering-software-architect.md"
+    upstream_support_b="upstream-agents/engineering/engineering-code-reviewer.md"
+    upstream_support_c="upstream-agents/testing/testing-reality-checker.md"
   elif [[ -f "${PROJECT_DIR}/index.html" && ( -d "${PROJECT_DIR}/assets" || -d "${PROJECT_DIR}/images" ) ]]; then
     type="presentation-style static web artifact"
     preset="marketing-site"
@@ -231,6 +256,10 @@ write_scan_profile() {
     support_a="UI Designer"
     support_b="Frontend Developer"
     support_c="Reality Checker"
+    upstream_primary="upstream-agents/design/design-visual-storyteller.md"
+    upstream_support_a="upstream-agents/design/design-ui-designer.md"
+    upstream_support_b="upstream-agents/engineering/engineering-frontend-developer.md"
+    upstream_support_c="upstream-agents/testing/testing-reality-checker.md"
   elif find "${PROJECT_DIR}" -maxdepth 2 -type f \( -name "*.pptx" -o -name "*.ppt" -o -name "*.key" -o -name "*.pdf" \) | grep -q .; then
     type="presentation or document artifact"
     preset="ppt-storytelling"
@@ -241,6 +270,10 @@ write_scan_profile() {
     support_a="Brand Guardian"
     support_b="UI Designer"
     support_c="Project Shepherd"
+    upstream_primary="upstream-agents/design/design-visual-storyteller.md"
+    upstream_support_a="upstream-agents/design/design-brand-guardian.md"
+    upstream_support_b="upstream-agents/design/design-ui-designer.md"
+    upstream_support_c="upstream-agents/project-management/project-management-project-shepherd.md"
   elif [[ -d "${PROJECT_DIR}/content" || -d "${PROJECT_DIR}/posts" || -d "${PROJECT_DIR}/marketing" ]]; then
     type="content or marketing workspace"
     preset="marketing-site"
@@ -251,6 +284,10 @@ write_scan_profile() {
     support_a="Brand Guardian"
     support_b="Visual Storyteller"
     support_c="SEO Specialist"
+    upstream_primary="upstream-agents/marketing/marketing-content-creator.md"
+    upstream_support_a="upstream-agents/design/design-brand-guardian.md"
+    upstream_support_b="upstream-agents/design/design-visual-storyteller.md"
+    upstream_support_c="upstream-agents/marketing/marketing-seo-specialist.md"
   else
     type="general software or project workspace"
     preset="zero-to-one-startup"
@@ -261,6 +298,10 @@ write_scan_profile() {
     support_a="Software Architect"
     support_b="Technical Writer"
     support_c="Reality Checker"
+    upstream_primary="upstream-agents/engineering/engineering-codebase-onboarding-engineer.md"
+    upstream_support_a="upstream-agents/engineering/engineering-software-architect.md"
+    upstream_support_b="upstream-agents/engineering/engineering-technical-writer.md"
+    upstream_support_c="upstream-agents/testing/testing-reality-checker.md"
   fi
 
   if [[ "${PROFILE_LANG}" == "zh" ]]; then
@@ -279,6 +320,11 @@ write_scan_profile() {
 - Preset: \`${preset}\`
 - Primary: \`${primary}\`
 - Supporting: \`${support_a}\`、\`${support_b}\`、\`${support_c}\`
+- Upstream agents:
+  - \`${upstream_primary}\`
+  - \`${upstream_support_a}\`
+  - \`${upstream_support_b}\`
+  - \`${upstream_support_c}\`
 
 ## Routing Cues
 - If user asks for: ${cue_a}
@@ -326,6 +372,11 @@ EOF
 - Preset: \`${preset}\`
 - Primary: \`${primary}\`
 - Supporting: \`${support_a}\`, \`${support_b}\`, \`${support_c}\`
+- Upstream agents:
+  - \`${upstream_primary}\`
+  - \`${upstream_support_a}\`
+  - \`${upstream_support_b}\`
+  - \`${upstream_support_c}\`
 
 ## Routing Cues
 - If user asks for: ${cue_a}

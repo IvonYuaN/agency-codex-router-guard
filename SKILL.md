@@ -220,6 +220,7 @@ Write `.codex/project-profile.md` in this structure:
 - Preset:
 - Primary:
 - Supporting:
+- Upstream agents:
 
 ## Routing Cues
 - If user asks for:
