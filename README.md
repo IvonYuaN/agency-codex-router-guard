@@ -6,15 +6,18 @@
 
 # 中文
 
-## Agency Codex Router
+## Agency Codex Router Guard
 
-`agency-codex-router` 是一个面向 Codex 的 skill。它借鉴了 [`agency-agents`](https://github.com/msitarzewski/agency-agents) 的“专家路由”思路，但实现方式更轻量，也更适合 Codex 的实际工作流。
+`agency-codex-router-guard` 是这个项目现在更准确的名字。
 
-它不是把几百个 agent 文件都塞进每个项目，而是做三件事：
+它是一个面向 Codex 的 skill。它借鉴了 [`agency-agents`](https://github.com/msitarzewski/agency-agents) 的“专家路由”思路，但不只做 agent 选择，还会补上项目记忆、工作守则、切换边界和防打转升级机制。
+
+它不是把几百个 agent 文件都塞进每个项目，而是做四件事：
 
 1. 读取用户前 1 到 3 句话，加一次轻量仓库扫描
 2. 为当前项目挑出一组足够小、足够合适的 specialist squad
 3. 把结果写入 `.codex/project-profile.md`，方便后续在同一项目里复用
+4. 在任务开始打转或改动失控前，触发 guardrails 和 escalation
 
 ## 解决什么问题
 
@@ -22,11 +25,12 @@
 - Codex 可以在同一轮会话里保持稳定的“专业视角”
 - 不同仓库可以保留不同的默认 squad
 - 当任务从开发切到设计、测试、产品、文案或策略时，可以自动切换 squad
+- 当任务反复失败、验证不足或改动范围失控时，可以更早刹车，而不是越改越怪
 
 ## 仓库结构
 
 ```text
-agency-codex-router/
+agency-codex-router-guard/
 ├── SKILL.md
 ├── agents/openai.yaml
 ├── references/agent-mapping.md
@@ -121,7 +125,7 @@ chmod +x scripts/install.sh scripts/init-project.sh
 你可以直接在对话里点名：
 
 ```text
-Use agency-codex-router for this repo.
+Use agency-codex-router-guard for this repo.
 ```
 
 也可以让 Codex 在任务明显适合时自动使用。
@@ -153,15 +157,18 @@ Use agency-codex-router for this repo.
 
 # English
 
-## Agency Codex Router
+## Agency Codex Router Guard
 
-`agency-codex-router` is a Codex skill that adapts the routing idea from [`agency-agents`](https://github.com/msitarzewski/agency-agents) into a lightweight, practical workflow for Codex.
+`agency-codex-router-guard` is the more accurate name for the project now.
 
-Instead of copying hundreds of role files into every workspace, this skill does three things:
+It is a Codex skill that adapts the routing idea from [`agency-agents`](https://github.com/msitarzewski/agency-agents), but it now goes beyond routing into project memory, working rules, handoff boundaries, and anti-spinning escalation.
+
+Instead of copying hundreds of role files into every workspace, this skill does four things:
 
 1. reads the first 1-3 user messages plus a light repo scan
 2. selects a small specialist squad for the current project
 3. persists that choice in `.codex/project-profile.md` so future conversations in the same repo can resume faster
+4. activates guardrails and escalation before repeated failures turn into messy damage
 
 ## What it solves
 
@@ -169,11 +176,12 @@ Instead of copying hundreds of role files into every workspace, this skill does 
 - Codex can keep a stable specialist lens across the session
 - Different repositories can keep different default squads
 - The active squad can change when the task shifts from build to design, testing, product, content, or strategy
+- The workflow can intervene earlier when work starts to spin or unsafe edits accumulate
 
 ## Repository layout
 
 ```text
-agency-codex-router/
+agency-codex-router-guard/
 ├── SKILL.md
 ├── agents/openai.yaml
 ├── references/agent-mapping.md
@@ -268,7 +276,7 @@ On a new repo, the skill should:
 You can explicitly mention the skill:
 
 ```text
-Use agency-codex-router for this repo.
+Use agency-codex-router-guard for this repo.
 ```
 
 Or let Codex apply it when the task clearly benefits from routing.

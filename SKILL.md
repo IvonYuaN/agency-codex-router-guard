@@ -1,11 +1,11 @@
 ---
-name: agency-codex-router
-description: Use when a user is working on a repo, app, website, deck, workflow, marketing asset, or cross-functional project and Codex would benefit from first selecting the right specialist agent mix. Especially useful at the start of a new project conversation, after the first 1-3 user messages, or whenever the task shifts between engineering, design, testing, product, docs, content, research, operations, or strategy. Reads or creates `.codex/project-profile.md` inside the current workspace so future conversations in the same project can reuse the active specialist squad and adapt it as the scope changes.
+name: agency-codex-router-guard
+description: Use when a user is working on a repo, app, website, deck, workflow, marketing asset, or cross-functional project and Codex should do more than just pick the right specialist squad. This skill routes the right specialists, writes or updates `.codex/project-profile.md`, adds working-style and handoff rules, and activates anti-spinning guardrails or escalation when repeated failures or unsafe edit patterns appear.
 ---
 
-# Agency Codex Router
+# Agency Codex Router Guard
 
-Turn `agency-agents` style specialist selection into a lightweight Codex workflow.
+Turn `agency-agents` style specialist selection into a Codex workflow with routing, guardrails, and escalation control.
 
 This skill also benefits from:
 - `references/karpathy-operating-principles.md` for execution discipline

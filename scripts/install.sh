@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-TARGET_DIR="${HOME}/.codex/skills/agency-codex-router"
+TARGET_DIR="${HOME}/.codex/skills/agency-codex-router-guard"
 SOURCE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PROJECT_DIR=""
 FORCE_PROFILE="false"

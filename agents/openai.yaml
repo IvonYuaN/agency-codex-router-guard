@@ -1,4 +1,4 @@
 interface:
-  display_name: "Agency Codex Router"
-  short_description: "Auto-select the right specialist squad for each project"
-  default_prompt: "Read this workspace, pick the best specialist squad for the current project, persist it in .codex/project-profile.md, and then execute the task using that routing."
+  display_name: "Agency Codex Router Guard"
+  short_description: "Route the right squad, persist project memory, and prevent spinning"
+  default_prompt: "Read this workspace, choose the best specialist squad for the current project, persist it in .codex/project-profile.md, apply guardrails and escalation rules when needed, and then execute the task using that routing."

@@ -14,3 +14,5 @@
 - Added distilled-agent framework reference inspired by `alchaincyf`
 - Upgraded scan mode to read key config hints and README headings
 - Added optional high-agency escalation reference inspired by `tanweai/pua`
+- Updated project positioning toward "Router Guard" to reflect routing plus guardrails
+- Renamed the effective project identity to `agency-codex-router-guard`

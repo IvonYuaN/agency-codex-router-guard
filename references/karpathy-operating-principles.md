@@ -1,6 +1,6 @@
 # Karpathy-Style Operating Principles
 
-Distilled from the spirit of `andrej-karpathy-skills`, adapted for `agency-codex-router`.
+Distilled from the spirit of `andrej-karpathy-skills`, adapted for `agency-codex-router-guard`.
 
 ## Core rules
 
