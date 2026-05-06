@@ -147,6 +147,7 @@ write_scan_profile() {
   local type stack artifacts preset primary implementer support_a support_b support_c cue_a cue_b cue_c top_files
   local upstream_primary upstream_support_a upstream_support_b upstream_support_c
   local framework package_name python_name go_module rust_package summary_hint
+  local heur_1 heur_2 anti_1 anti_2 evo_1 evo_2
 
   top_files="$(find "${PROJECT_DIR}" -maxdepth 2 -type f \
     ! -path "${PROJECT_DIR}/.git/*" \
@@ -175,6 +176,12 @@ write_scan_profile() {
       upstream_support_a="upstream-agents/design/design-ui-designer.md"
       upstream_support_b="upstream-agents/design/design-ux-architect.md"
       upstream_support_c="upstream-agents/testing/testing-reality-checker.md"
+      heur_1="优先解决用户可见的交互影响"
+      heur_2="先保证流程清晰，再追求抽象优雅"
+      anti_1="不要为简单 UI 行为过度架构"
+      anti_2="不要在流程不清时提前追求精致抛光"
+      evo_1="保留容易验证的交互改进"
+      evo_2="回滚不能提升理解的 UI 复杂度"
     elif [[ -d "${PROJECT_DIR}/server" || -d "${PROJECT_DIR}/api" || -d "${PROJECT_DIR}/backend" ]]; then
       type="full-stack web application"
       preset="backend-service"
@@ -189,6 +196,12 @@ write_scan_profile() {
       upstream_support_a="upstream-agents/engineering/engineering-frontend-developer.md"
       upstream_support_b="upstream-agents/engineering/engineering-backend-architect.md"
       upstream_support_c="upstream-agents/testing/testing-reality-checker.md"
+      heur_1="先保护接口边界和系统结构"
+      heur_2="优先保证跨层改动的可解释性"
+      anti_1="不要在边界未理清时扩大全栈改动"
+      anti_2="不要在没有验证时宣称整体稳定"
+      evo_1="保留能减少结构混乱的调整"
+      evo_2="回滚扩大风险但没有更清晰边界的改动"
     else
       type="JavaScript application"
       preset="zero-to-one-startup"
@@ -203,6 +216,12 @@ write_scan_profile() {
       upstream_support_a="upstream-agents/engineering/engineering-frontend-developer.md"
       upstream_support_b="upstream-agents/engineering/engineering-backend-architect.md"
       upstream_support_c="upstream-agents/testing/testing-reality-checker.md"
+      heur_1="优先产出能验证方向的最小原型"
+      heur_2="先证明有效，再补系统化"
+      anti_1="不要把原型直接做成正式架构"
+      anti_2="不要把大量产出误当成有效验证"
+      evo_1="保留能减少不确定性的原型结论"
+      evo_2="回滚让范围变大但没有更强证据的实现"
     fi
   elif [[ -f "${PROJECT_DIR}/pyproject.toml" || -f "${PROJECT_DIR}/requirements.txt" ]]; then
     type="Python service or application"
@@ -218,6 +237,12 @@ write_scan_profile() {
     upstream_support_a="upstream-agents/testing/testing-api-tester.md"
     upstream_support_b="upstream-agents/engineering/engineering-software-architect.md"
     upstream_support_c="upstream-agents/engineering/engineering-technical-writer.md"
+    heur_1="先保护接口和数据流正确性"
+    heur_2="优先选择可观测、可验证的后端改动"
+    anti_1="不要在依赖未追清时扩大后端改动"
+    anti_2="不要没有接口证据就宣称稳定"
+    evo_1="保留提升正确性和可追踪性的改动"
+    evo_2="回滚放大风险却没有更强保障的后端调整"
   elif [[ -f "${PROJECT_DIR}/go.mod" ]]; then
     type="Go service"
     preset="backend-service"
@@ -232,6 +257,12 @@ write_scan_profile() {
     upstream_support_a="upstream-agents/testing/testing-api-tester.md"
     upstream_support_b="upstream-agents/engineering/engineering-sre.md"
     upstream_support_c="upstream-agents/engineering/engineering-software-architect.md"
+    heur_1="先守住接口稳定和运行可靠性"
+    heur_2="优先有证据的修复和观测"
+    anti_1="不要未排查调用链就扩大服务改动"
+    anti_2="不要忽略运行证据只看代码直觉"
+    evo_1="保留提升稳定性和可观测性的改动"
+    evo_2="回滚制造更多运行不确定性的改动"
   elif [[ -f "${PROJECT_DIR}/Cargo.toml" ]]; then
     type="Rust application or service"
     preset="backend-service"
@@ -246,6 +277,12 @@ write_scan_profile() {
     upstream_support_a="upstream-agents/engineering/engineering-software-architect.md"
     upstream_support_b="upstream-agents/engineering/engineering-code-reviewer.md"
     upstream_support_c="upstream-agents/testing/testing-reality-checker.md"
+    heur_1="优先保证实现正确和约束清晰"
+    heur_2="先把行为说清楚，再优化技巧"
+    anti_1="不要为技巧性实现牺牲可读性"
+    anti_2="不要没有验证就扩大语言层级重构"
+    evo_1="保留提升正确性和可维护性的实现"
+    evo_2="回滚炫技但不增稳的复杂重构"
   elif [[ -f "${PROJECT_DIR}/index.html" && ( -d "${PROJECT_DIR}/assets" || -d "${PROJECT_DIR}/images" ) ]]; then
     type="presentation-style static web artifact"
     preset="marketing-site"
@@ -260,6 +297,12 @@ write_scan_profile() {
     upstream_support_a="upstream-agents/design/design-ui-designer.md"
     upstream_support_b="upstream-agents/engineering/engineering-frontend-developer.md"
     upstream_support_c="upstream-agents/testing/testing-reality-checker.md"
+    heur_1="先让信息层级和故事线成立"
+    heur_2="尽快把叙事判断转成浏览器里可见的结构"
+    anti_1="不要在核心信息未立住时先堆装饰"
+    anti_2="不要让实现细节淹没叙事"
+    evo_1="保留能强化叙事和扫读性的改动"
+    evo_2="回滚削弱清晰度和节奏的视觉复杂度"
   elif find "${PROJECT_DIR}" -maxdepth 2 -type f \( -name "*.pptx" -o -name "*.ppt" -o -name "*.key" -o -name "*.pdf" \) | grep -q .; then
     type="presentation or document artifact"
     preset="ppt-storytelling"
@@ -274,6 +317,12 @@ write_scan_profile() {
     upstream_support_a="upstream-agents/design/design-brand-guardian.md"
     upstream_support_b="upstream-agents/design/design-ui-designer.md"
     upstream_support_c="upstream-agents/project-management/project-management-project-shepherd.md"
+    heur_1="先保证叙事顺序，再打磨局部页"
+    heur_2="优先服务观众理解，而不是信息堆量"
+    anti_1="不要在顺序弱时继续塞更多内容"
+    anti_2="不要添加削弱论证的花哨形式"
+    evo_1="保留能改善故事流的结构调整"
+    evo_2="回滚增加噪音却不增强说服力的内容"
   elif [[ -d "${PROJECT_DIR}/content" || -d "${PROJECT_DIR}/posts" || -d "${PROJECT_DIR}/marketing" ]]; then
     type="content or marketing workspace"
     preset="marketing-site"
@@ -288,6 +337,12 @@ write_scan_profile() {
     upstream_support_a="upstream-agents/design/design-brand-guardian.md"
     upstream_support_b="upstream-agents/design/design-visual-storyteller.md"
     upstream_support_c="upstream-agents/marketing/marketing-seo-specialist.md"
+    heur_1="先确保信息主张清楚，再扩展内容层次"
+    heur_2="优先让叙事和转化目标对齐"
+    anti_1="不要内容很多但核心主张模糊"
+    anti_2="不要为了堆词牺牲品牌一致性"
+    evo_1="保留能提升清晰度和转化意图的内容调整"
+    evo_2="回滚拉长内容却降低力度的改动"
   else
     type="general software or project workspace"
     preset="zero-to-one-startup"
@@ -302,6 +357,12 @@ write_scan_profile() {
     upstream_support_a="upstream-agents/engineering/engineering-software-architect.md"
     upstream_support_b="upstream-agents/engineering/engineering-technical-writer.md"
     upstream_support_c="upstream-agents/testing/testing-reality-checker.md"
+    heur_1="先降低不确定性，再扩大执行面"
+    heur_2="优先产出能证明下一步方向的最小结果"
+    anti_1="不要在问题还没定义稳之前过度建设"
+    anti_2="不要把忙碌误当成已验证进展"
+    evo_1="保留能减少不确定性的推进"
+    evo_2="回滚增加表面积却没有更强把握的工作"
   fi
 
   if [[ "${PROFILE_LANG}" == "zh" ]]; then
@@ -349,12 +410,12 @@ $(printf '%s\n' "${top_files}" | sed 's/^/- /')
 - 优先使用最小可用 squad，避免无谓扩张
 
 ## Decision Heuristics
-- 保留主导 agent 的认知模型，而不是只模仿表面表达
-- 先做可验证的小步改动，再决定是否扩大范围
+- ${heur_1}
+- ${heur_2}
 
 ## Anti-Patterns
-- 不要只切换口吻，不切换思考方式
-- 不要在证据不足时持续扩大改动面
+- ${anti_1}
+- ${anti_2}
 
 ## Handoff Triggers
 - 当任务从理解仓库切到实现时，切换到 \`${implementer}\`
@@ -365,8 +426,8 @@ $(printf '%s\n' "${top_files}" | sed 's/^/- /')
 - 声称完成前必须有可验证证据
 
 ## Evolution Loop
-- 保留有效改动
-- 回滚回归和劣化
+- ${evo_1}
+- ${evo_2}
 - 每次迭代都要比上一个稳定版本更可信
 EOF
   else
@@ -414,12 +475,12 @@ $(printf '%s\n' "${top_files}" | sed 's/^/- /')
 - Prefer the smallest useful squad before expanding
 
 ## Decision Heuristics
-- Preserve the lead agent's mental model instead of only copying surface style
-- Prefer small verifiable changes before widening scope
+- ${heur_1}
+- ${heur_2}
 
 ## Anti-Patterns
-- Do not change tone without changing reasoning
-- Do not enlarge the edit surface without evidence
+- ${anti_1}
+- ${anti_2}
 
 ## Handoff Triggers
 - Switch to \`${implementer}\` when the task moves from understanding to implementation
@@ -430,8 +491,8 @@ $(printf '%s\n' "${top_files}" | sed 's/^/- /')
 - Require verifiable evidence before claiming completion
 
 ## Evolution Loop
-- Keep improvements
-- Revert regressions
+- ${evo_1}
+- ${evo_2}
 - Make each iteration more trustworthy than the last stable state
 EOF
   fi
