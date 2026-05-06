@@ -12,6 +12,7 @@ This skill also benefits from:
 - `references/distilled-agent-frameworks.md` for specialist distillation heuristics
 - `references/high-agency-escalation.md` for optional anti-spinning escalation
 - `references/agency-agents-core-catalog.md` for the curated upstream agent layer
+- `references/upstream-agent-divisions.md` for the full upstream division map
 - `presets/` for reusable routing bundles
 
 ## Core Goal

@@ -18,3 +18,4 @@
 - Renamed the effective project identity to `agency-codex-router-guard`
 - Added curated `agency-agents` core catalog
 - Added reusable presets for common project shapes
+- Added vendored upstream agent asset directory under `upstream-agents/`

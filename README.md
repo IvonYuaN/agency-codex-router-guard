@@ -44,6 +44,8 @@ agency-codex-router-guard/
 ├── references/distilled-agent-frameworks.md
 ├── references/high-agency-escalation.md
 ├── references/agency-agents-core-catalog.md
+├── references/upstream-agent-divisions.md
+├── upstream-agents/
 ├── scripts/install.sh
 ├── scripts/init-project.sh
 └── scripts/scan-project.sh
@@ -124,6 +126,7 @@ chmod +x scripts/install.sh scripts/init-project.sh
 - New project dialogue template (English): [examples/new-project-dialogues.md](examples/new-project-dialogues.md)
 - 核心 agent catalog：[references/agency-agents-core-catalog.md](references/agency-agents-core-catalog.md)
 - Presets: [presets/README.md](presets/README.md)
+- Upstream agent assets: [upstream-agents/README.md](upstream-agents/README.md)
 
 ## 推荐使用方式
 
@@ -152,7 +155,8 @@ Use agency-codex-router-guard for this repo.
   - 吸收了“代理开始打转时，需要有升级机制强制搜索、验证、换路径”的做法
   - 不默认合并其施压口吻，而是保留为可选升级层
 - `msitarzewski/agency-agents`
-  - 现在不只是借路由思路，也补进了 curated core catalog 和 presets 层
+  - 现在不只是借路由思路，也真正引入了 upstream agent 资产目录
+  - 同时补了 curated core catalog 和 presets 层
 
 ## 说明
 
@@ -202,6 +206,8 @@ agency-codex-router-guard/
 ├── references/distilled-agent-frameworks.md
 ├── references/high-agency-escalation.md
 ├── references/agency-agents-core-catalog.md
+├── references/upstream-agent-divisions.md
+├── upstream-agents/
 ├── scripts/install.sh
 ├── scripts/init-project.sh
 └── scripts/scan-project.sh
@@ -282,6 +288,7 @@ On a new repo, the skill should:
 - English new-project dialogue template: [examples/new-project-dialogues.md](examples/new-project-dialogues.md)
 - Core agent catalog: [references/agency-agents-core-catalog.md](references/agency-agents-core-catalog.md)
 - Presets: [presets/README.md](presets/README.md)
+- Upstream agent assets: [upstream-agents/README.md](upstream-agents/README.md)
 
 ## Recommended usage
 
@@ -310,7 +317,8 @@ Or let Codex apply it when the task clearly benefits from routing.
   - Inspired an optional anti-spinning escalation layer that forces verification, broader search, and alternative approaches
   - Its pressure tone is not enabled by default; only the operational escalation ideas are merged
 - `msitarzewski/agency-agents`
-  - Now represented not just as routing inspiration, but as a curated core catalog plus preset layer
+  - Now included as actual upstream agent assets under `upstream-agents/`
+  - Also represented through a curated core catalog plus preset layer
 
 ## Notes
 
