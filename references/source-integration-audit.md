@@ -65,12 +65,16 @@ This file tracks what has actually been incorporated from the external sources d
   - `references/distilled-agent-frameworks.md`
   - `Working Style`
   - `Handoff Triggers`
+- Nuwa-specific method layer now reflected in:
+  - `references/nuwa-distillation-principles.md`
+- Darwin-specific optimization layer now reflected in:
+  - `references/darwin-optimization-principles.md`
 
 ### Not yet incorporated
 
 - No specific `alchaincyf` repository has been vendored
 - No concrete upstream files from that GitHub account are currently part of this repo
-- Only the abstract method layer has been absorbed so far
+- Only the method layer has been absorbed so far, not the original repo assets
 
 ## Honest current state
 

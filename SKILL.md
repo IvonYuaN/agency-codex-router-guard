@@ -10,6 +10,8 @@ Turn `agency-agents` style specialist selection into a Codex workflow with routi
 This skill also benefits from:
 - `references/karpathy-operating-principles.md` for execution discipline
 - `references/distilled-agent-frameworks.md` for specialist distillation heuristics
+- `references/nuwa-distillation-principles.md` for cognitive operating system extraction
+- `references/darwin-optimization-principles.md` for ratchet-style skill evolution
 - `references/high-agency-escalation.md` for optional anti-spinning escalation
 - `references/agency-agents-core-catalog.md` for the curated upstream agent layer
 - `references/upstream-agent-divisions.md` for the full upstream division map

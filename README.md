@@ -152,6 +152,7 @@ Use agency-codex-router-guard for this repo.
   - 吸收了更强调“小步、简洁、可验证”的执行纪律
 - `alchaincyf`
   - 吸收了“蒸馏 skill / agent 时要提炼心智模型、决策规则、切换边界”的做法
+  - 也单独吸收了女娲的“认知操作系统蒸馏”和达尔文的“评估-改进-回滚棘轮”方法
 - `tanweai/pua`
   - 吸收了“代理开始打转时，需要有升级机制强制搜索、验证、换路径”的做法
   - 不默认合并其施压口吻，而是保留为可选升级层
@@ -315,6 +316,7 @@ Or let Codex apply it when the task clearly benefits from routing.
   - Inspired the small-step, simplicity-first, verifiable-execution discipline
 - `alchaincyf`
   - Inspired the idea of distilling an agent into mental models, heuristics, and handoff boundaries instead of just tone
+  - Also contributed Nuwa-style cognitive distillation and Darwin-style ratchet optimization ideas
 - `tanweai/pua`
   - Inspired an optional anti-spinning escalation layer that forces verification, broader search, and alternative approaches
   - Its pressure tone is not enabled by default; only the operational escalation ideas are merged

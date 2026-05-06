@@ -19,3 +19,4 @@
 - Added curated `agency-agents` core catalog
 - Added reusable presets for common project shapes
 - Added vendored upstream agent asset directory under `upstream-agents/`
+- Added Nuwa and Darwin method references inspired by `alchaincyf`
