@@ -5,14 +5,16 @@ TARGET_DIR="${HOME}/.codex/skills/agency-codex-router"
 SOURCE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PROJECT_DIR=""
 FORCE_PROFILE="false"
+PROFILE_LANG="zh"
 
 usage() {
   cat <<'EOF'
 Usage:
-  ./scripts/install.sh [--project /path/to/repo] [--force-profile]
+  ./scripts/install.sh [--project /path/to/repo] [--lang zh|en] [--force-profile]
 
 Options:
   --project PATH    Install the skill and initialize PATH/.codex/project-profile.md
+  --lang LANG       Profile template language: zh (default) or en
   --force-profile   Overwrite an existing project profile
   -h, --help        Show this help message
 EOF
@@ -22,6 +24,10 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --project)
       PROJECT_DIR="${2:-}"
+      shift 2
+      ;;
+    --lang)
+      PROFILE_LANG="${2:-}"
       shift 2
       ;;
     --force-profile)
@@ -40,6 +46,11 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+if [[ "${PROFILE_LANG}" != "zh" && "${PROFILE_LANG}" != "en" ]]; then
+  echo "Unsupported language: ${PROFILE_LANG}. Use zh or en." >&2
+  exit 1
+fi
+
 mkdir -p "${HOME}/.codex/skills"
 rm -rf "${TARGET_DIR}"
 cp -R "${SOURCE_DIR}" "${TARGET_DIR}"
@@ -54,7 +65,11 @@ if [[ -n "${PROJECT_DIR}" ]]; then
 
   PROFILE_DIR="${PROJECT_DIR}/.codex"
   PROFILE_FILE="${PROFILE_DIR}/project-profile.md"
-  TEMPLATE_FILE="${SOURCE_DIR}/examples/project-profile.example.md"
+  if [[ "${PROFILE_LANG}" == "zh" ]]; then
+    TEMPLATE_FILE="${SOURCE_DIR}/examples/project-profile.example.zh-CN.md"
+  else
+    TEMPLATE_FILE="${SOURCE_DIR}/examples/project-profile.example.md"
+  fi
 
   mkdir -p "${PROFILE_DIR}"
 
@@ -63,6 +78,6 @@ if [[ -n "${PROJECT_DIR}" ]]; then
     echo "Use --force-profile to overwrite it."
   else
     cp "${TEMPLATE_FILE}" "${PROFILE_FILE}"
-    echo "Initialized project profile at ${PROFILE_FILE}"
+    echo "Initialized ${PROFILE_LANG} project profile at ${PROFILE_FILE}"
   fi
 fi

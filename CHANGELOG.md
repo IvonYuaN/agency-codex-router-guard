@@ -1,0 +1,9 @@
+# Changelog
+
+## 2026-05-06
+
+- Initial public release of `agency-codex-router`
+- Added bilingual README with Chinese-first layout and top language switch links
+- Added `scripts/install.sh` support for `--project`, `--lang`, and `--force-profile`
+- Added `scripts/init-project.sh` for project-profile-only initialization
+- Added Chinese profile template at `examples/project-profile.example.zh-CN.md`
