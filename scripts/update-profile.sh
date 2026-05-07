@@ -226,6 +226,18 @@ PRESET_DEFAULTS = {
             "upstream-agents/testing/testing-reality-checker.md",
         ],
         "task_class": "medium",
+        "routing": {
+            "zh": [
+                ("页面、组件、交互流程", "Frontend Developer"),
+                ("信息架构、流程、体验判断", "UX Architect"),
+                ("响应式、验收、用户可见行为验证", "Reality Checker"),
+            ],
+            "en": [
+                ("pages, components, and interaction flows", "Frontend Developer"),
+                ("information architecture, flow design, and UX judgment", "UX Architect"),
+                ("responsiveness, acceptance, and user-visible behavior verification", "Reality Checker"),
+            ],
+        },
     },
     "backend-service": {
         "primary": "Backend Architect",
@@ -237,6 +249,18 @@ PRESET_DEFAULTS = {
             "upstream-agents/engineering/engineering-technical-writer.md",
         ],
         "task_class": "large",
+        "routing": {
+            "zh": [
+                ("接口设计、模块边界、服务流程", "Backend Architect"),
+                ("验证输入输出、错误路径、调用约定", "API Tester"),
+                ("整体结构、模块边界、设计文档", "Software Architect"),
+            ],
+            "en": [
+                ("API design, module boundaries, and service flow", "Backend Architect"),
+                ("input/output validation, error paths, and calling contracts", "API Tester"),
+                ("overall structure, module boundaries, and system design docs", "Software Architect"),
+            ],
+        },
     },
     "marketing-site": {
         "primary": "Content Creator",
@@ -248,6 +272,18 @@ PRESET_DEFAULTS = {
             "upstream-agents/marketing/marketing-seo-specialist.md",
         ],
         "task_class": "lightweight",
+        "routing": {
+            "zh": [
+                ("主张、文案、内容框架", "Content Creator"),
+                ("品牌一致性、视觉叙事", "Brand Guardian"),
+                ("搜索表现、SEO、传播验证", "SEO Specialist"),
+            ],
+            "en": [
+                ("messaging, copy, and content framing", "Content Creator"),
+                ("brand consistency and visual narrative", "Brand Guardian"),
+                ("search performance, SEO, and distribution validation", "SEO Specialist"),
+            ],
+        },
     },
     "ppt-storytelling": {
         "primary": "Visual Storyteller",
@@ -259,6 +295,18 @@ PRESET_DEFAULTS = {
             "upstream-agents/project-management/project-management-project-shepherd.md",
         ],
         "task_class": "medium",
+        "routing": {
+            "zh": [
+                ("布局、叙事结构、视觉层级", "Visual Storyteller"),
+                ("页面实现、样式、交互落地", "Frontend Developer"),
+                ("可交付性、验证、响应式检查", "Reality Checker"),
+            ],
+            "en": [
+                ("layout, narrative structure, and visual hierarchy", "Visual Storyteller"),
+                ("page implementation, styling, and interaction delivery", "Frontend Developer"),
+                ("readiness, verification, and responsive review", "Reality Checker"),
+            ],
+        },
     },
     "zero-to-one-startup": {
         "primary": "Product Manager",
@@ -270,6 +318,18 @@ PRESET_DEFAULTS = {
             "upstream-agents/testing/testing-reality-checker.md",
         ],
         "task_class": "lightweight",
+        "routing": {
+            "zh": [
+                ("目标、范围、优先级、路线", "Product Manager"),
+                ("快速原型、第一版实现、方向验证", "Rapid Prototyper"),
+                ("验收、现实校验、是否真的有进展", "Reality Checker"),
+            ],
+            "en": [
+                ("goal setting, scope, priorities, and roadmap", "Product Manager"),
+                ("rapid prototypes, first implementation, and direction validation", "Rapid Prototyper"),
+                ("acceptance, reality checks, and whether progress is real", "Reality Checker"),
+            ],
+        },
     },
     "ai-agent-stack": {
         "primary": "AI Engineer",
@@ -281,6 +341,18 @@ PRESET_DEFAULTS = {
             "upstream-agents/testing/testing-reality-checker.md",
         ],
         "task_class": "large",
+        "routing": {
+            "zh": [
+                ("agent 设计、prompt、tool 调用、上下文策略", "AI Engineer"),
+                ("MCP、工具接入、外部系统连接", "MCP Builder"),
+                ("评估、回归、成本稳定性、是否真的有效", "Autonomous Optimization Architect"),
+            ],
+            "en": [
+                ("agent design, prompts, tool calls, and context strategy", "AI Engineer"),
+                ("MCP, tool integration, and external-system connectivity", "MCP Builder"),
+                ("evaluation, regression, cost stability, and whether it really works", "Autonomous Optimization Architect"),
+            ],
+        },
     },
     "game-production": {
         "primary": "Game Designer",
@@ -292,6 +364,18 @@ PRESET_DEFAULTS = {
             "upstream-agents/testing/testing-reality-checker.md",
         ],
         "task_class": "large",
+        "routing": {
+            "zh": [
+                ("玩法循环、系统设计、任务流程", "Game Designer"),
+                ("美术实现、技术美术、性能和资源管线", "Technical Artist"),
+                ("关卡、节奏、玩家体验验证", "Level Designer"),
+            ],
+            "en": [
+                ("core loop, systems design, and task flow", "Game Designer"),
+                ("visual implementation, technical art, performance, and asset pipeline", "Technical Artist"),
+                ("level pacing and player experience validation", "Level Designer"),
+            ],
+        },
     },
     "china-market-growth": {
         "primary": "China Market Localization Strategist",
@@ -303,6 +387,18 @@ PRESET_DEFAULTS = {
             "upstream-agents/marketing/marketing-wechat-official-account.md",
         ],
         "task_class": "medium",
+        "routing": {
+            "zh": [
+                ("本地化定位、渠道策略、内容矩阵", "China Market Localization Strategist"),
+                ("小红书、抖音等平台内容与节奏", "Xiaohongshu Specialist"),
+                ("公众号、私域承接、留存链路", "WeChat Official Account"),
+            ],
+            "en": [
+                ("localization positioning, channel strategy, and content matrix", "China Market Localization Strategist"),
+                ("Xiaohongshu, Douyin, and platform-specific content rhythm", "Xiaohongshu Specialist"),
+                ("WeChat, private-domain capture, and retention loops", "WeChat Official Account"),
+            ],
+        },
     },
     "spatial-computing": {
         "primary": "XR Interface Architect",
@@ -314,6 +410,18 @@ PRESET_DEFAULTS = {
             "upstream-agents/testing/testing-reality-checker.md",
         ],
         "task_class": "large",
+        "routing": {
+            "zh": [
+                ("空间交互、心智模型、任务流", "XR Interface Architect"),
+                ("沉浸实现、环境效果、空间体验细节", "XR Immersive Developer"),
+                ("visionOS 或设备约束、性能与舒适性", "VisionOS Spatial Engineer"),
+            ],
+            "en": [
+                ("spatial interaction, mental model, and task flow", "XR Interface Architect"),
+                ("immersive implementation, environmental effects, and spatial experience details", "XR Immersive Developer"),
+                ("visionOS or device constraints, performance, and comfort", "VisionOS Spatial Engineer"),
+            ],
+        },
     },
 }
 
@@ -341,7 +449,7 @@ def format_supporting(raw: str):
 def format_upstream(raw: str):
     normalized = raw.replace("\\n", "\n").replace(",", "\n")
     items = [item.strip() for item in normalized.splitlines() if item.strip()]
-    return [f"- `{item}`" for item in items]
+    return [f"  - `{item}`" for item in items]
 
 if preset:
     defaults = PRESET_DEFAULTS.get(preset)
@@ -354,6 +462,12 @@ if preset:
             upstream_agents = "\n".join(defaults["upstream"])
         if not task_class:
             task_class = defaults["task_class"]
+        if not cue_asks and not cue_switches and not remove_cue_asks:
+            lang_key = "zh" if lang == "zh" else "en"
+            preset_routing = defaults.get("routing", {}).get(lang_key, [])
+            cue_asks = [ask for ask, _ in preset_routing]
+            cue_switches = [switch for _, switch in preset_routing]
+            cue_mode = "replace"
 
 def parse_routing_pairs(lines):
     pairs = []

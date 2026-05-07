@@ -140,7 +140,7 @@ chmod +x scripts/install.sh scripts/init-project.sh
   --reason "任务从实现转向验收"
 ```
 
-如果你已经知道要切到哪个 preset，现在也可以只传 `--preset`，让脚本自动补齐对应的 `Primary`、`Supporting`、`Upstream agents`，并在未显式传值时同步补齐 `Task Class`：
+如果你已经知道要切到哪个 preset，现在也可以只传 `--preset`，让脚本自动补齐对应的 `Primary`、`Supporting`、`Upstream agents`、`Task Class`，并在未显式传 `Routing Cues` 参数时一起切到该 preset 的默认路由分支：
 
 ```bash
 ./scripts/update-profile.sh \
@@ -421,7 +421,7 @@ If the project is already in motion and you want to reroute without rebuilding t
   --reason "Work shifted from implementation to verification"
 ```
 
-If you already know which preset the project should move to, you can now pass only `--preset` and let the script auto-fill the matching `Primary`, `Supporting`, `Upstream agents`, and `Task Class` when those fields are omitted:
+If you already know which preset the project should move to, you can now pass only `--preset` and let the script auto-fill the matching `Primary`, `Supporting`, `Upstream agents`, `Task Class`, and default `Routing Cues` when those fields are omitted:
 
 ```bash
 ./scripts/update-profile.sh \
@@ -488,6 +488,7 @@ For ongoing projects, `update-profile.sh` can now:
 
 - update `Default Squad`
 - reroute by `--preset` and auto-fill the matching squad defaults
+- reroute by `--preset` and replace `Routing Cues` with the preset's default cue branches unless explicit cue arguments are provided
 - update `Routing Cues` via `replace`, `append`, or `remove`
 - use either `exact` or `semantic` matching for `append` / `remove`
 - update `Task Class` and `Delivery Gate`
