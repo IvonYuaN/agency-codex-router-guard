@@ -238,6 +238,18 @@ PRESET_DEFAULTS = {
                 ("responsiveness, acceptance, and user-visible behavior verification", "Reality Checker"),
             ],
         },
+        "delivery_gate": {
+            "zh": [
+                "关键用户路径已有最小可验证闭环",
+                "主要页面或视口已有可见验证",
+                "未验证体验点已列出",
+            ],
+            "en": [
+                "A minimal verifiable loop exists for the core user path",
+                "The main page or viewport behavior has visible validation",
+                "Any unverified UX point is listed",
+            ],
+        },
     },
     "backend-service": {
         "primary": "Backend Architect",
@@ -259,6 +271,18 @@ PRESET_DEFAULTS = {
                 ("API design, module boundaries, and service flow", "Backend Architect"),
                 ("input/output validation, error paths, and calling contracts", "API Tester"),
                 ("overall structure, module boundaries, and system design docs", "Software Architect"),
+            ],
+        },
+        "delivery_gate": {
+            "zh": [
+                "关键接口或流程已有验证证据",
+                "边界、风险与未覆盖项已说明",
+                "没有把设计描述误报成已交付能力",
+            ],
+            "en": [
+                "Critical interfaces or flows have verification evidence",
+                "Boundaries, risks, and uncovered areas are documented",
+                "Design description is not being reported as delivered capability",
             ],
         },
     },
@@ -284,6 +308,18 @@ PRESET_DEFAULTS = {
                 ("search performance, SEO, and distribution validation", "SEO Specialist"),
             ],
         },
+        "delivery_gate": {
+            "zh": [
+                "核心主张和预期动作已清晰可见",
+                "品牌与转化目标未互相打架",
+                "未验证渠道效果的部分已说明",
+            ],
+            "en": [
+                "The core claim and intended action are clear",
+                "Brand and conversion goals are not fighting each other",
+                "Any unverified channel-effect assumption is stated",
+            ],
+        },
     },
     "ppt-storytelling": {
         "primary": "Visual Storyteller",
@@ -305,6 +341,18 @@ PRESET_DEFAULTS = {
                 ("layout, narrative structure, and visual hierarchy", "Visual Storyteller"),
                 ("page implementation, styling, and interaction delivery", "Frontend Developer"),
                 ("readiness, verification, and responsive review", "Reality Checker"),
+            ],
+        },
+        "delivery_gate": {
+            "zh": [
+                "核心叙事和页面骨架已可见可评审",
+                "视觉判断与交付判断已区分",
+                "未落地的实现或验证空白已说明",
+            ],
+            "en": [
+                "The core narrative and page skeleton are visible and reviewable",
+                "Design judgment and delivery judgment are clearly separated",
+                "Any implementation or verification gap is stated explicitly",
             ],
         },
     },
@@ -330,6 +378,18 @@ PRESET_DEFAULTS = {
                 ("acceptance, reality checks, and whether progress is real", "Reality Checker"),
             ],
         },
+        "delivery_gate": {
+            "zh": [
+                "当前输出确实降低了一个关键不确定性",
+                "下一步决策所需证据已说明",
+                "没有把讨论误报成进展",
+            ],
+            "en": [
+                "The current output genuinely reduced a key uncertainty",
+                "The next evidence needed for a decision is stated",
+                "Discussion is not being reported as progress",
+            ],
+        },
     },
     "ai-agent-stack": {
         "primary": "AI Engineer",
@@ -351,6 +411,18 @@ PRESET_DEFAULTS = {
                 ("agent design, prompts, tool calls, and context strategy", "AI Engineer"),
                 ("MCP, tool integration, and external-system connectivity", "MCP Builder"),
                 ("evaluation, regression, cost stability, and whether it really works", "Autonomous Optimization Architect"),
+            ],
+        },
+        "delivery_gate": {
+            "zh": [
+                "关键 agent 回路已有真实样例验证",
+                "失败模式、评估方式与回退路径已说明",
+                "没有把 prompt 想法误报成稳定能力",
+            ],
+            "en": [
+                "Critical agent loops have real-example verification",
+                "Failure modes, evaluation methods, and rollback paths are documented",
+                "Prompt ideas are not being reported as stable capability",
             ],
         },
     },
@@ -376,6 +448,18 @@ PRESET_DEFAULTS = {
                 ("level pacing and player experience validation", "Level Designer"),
             ],
         },
+        "delivery_gate": {
+            "zh": [
+                "核心玩法切片已有可玩验证",
+                "性能、反馈或美术实现至少有一项有真实证据",
+                "未验证的平台或内容范围已说明",
+            ],
+            "en": [
+                "The core gameplay slice has playable verification",
+                "Performance, feedback, or visual implementation has real evidence",
+                "Any unverified platform or content scope is stated",
+            ],
+        },
     },
     "china-market-growth": {
         "primary": "China Market Localization Strategist",
@@ -399,6 +483,18 @@ PRESET_DEFAULTS = {
                 ("WeChat, private-domain capture, and retention loops", "WeChat Official Account"),
             ],
         },
+        "delivery_gate": {
+            "zh": [
+                "核心渠道分工和主张已清楚",
+                "至少一个渠道已有样例内容或验证标准",
+                "未验证增长假设已说明",
+            ],
+            "en": [
+                "The core channel split and message are clear",
+                "At least one channel has sample content or a validation standard",
+                "Any unverified growth assumption is stated",
+            ],
+        },
     },
     "spatial-computing": {
         "primary": "XR Interface Architect",
@@ -420,6 +516,18 @@ PRESET_DEFAULTS = {
                 ("spatial interaction, mental model, and task flow", "XR Interface Architect"),
                 ("immersive implementation, environmental effects, and spatial experience details", "XR Immersive Developer"),
                 ("visionOS or device constraints, performance, and comfort", "VisionOS Spatial Engineer"),
+            ],
+        },
+        "delivery_gate": {
+            "zh": [
+                "核心空间任务流已有实际验证",
+                "可达性、舒适性或性能至少有一项有证据",
+                "未验证的设备或空间判断已说明",
+            ],
+            "en": [
+                "The core spatial task flow has real validation",
+                "Reachability, comfort, or performance has evidence",
+                "Any unverified device or spatial judgment is stated",
             ],
         },
     },
@@ -468,6 +576,9 @@ if preset:
             cue_asks = [ask for ask, _ in preset_routing]
             cue_switches = [switch for _, switch in preset_routing]
             cue_mode = "replace"
+        if not delivery_gate_lines:
+            lang_key = "zh" if lang == "zh" else "en"
+            delivery_gate_lines = list(defaults.get("delivery_gate", {}).get(lang_key, []))
 
 def parse_routing_pairs(lines):
     pairs = []
