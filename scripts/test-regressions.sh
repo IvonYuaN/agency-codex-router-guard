@@ -39,6 +39,48 @@ EOF
   assert_contains "$profile" 'upstream-agents/specialized/specialized-mcp-builder.md'
 }
 
+run_scan_frontend_case() {
+  local tmpdir profile
+  tmpdir="$(mktemp -d /tmp/router-guard-test-frontend-XXXXXX)"
+  mkdir -p "$tmpdir/project/app" "$tmpdir/project/components"
+  cat > "$tmpdir/project/package.json" <<'EOF'
+{"name":"frontend-app","dependencies":{"next":"latest","react":"latest"}}
+EOF
+  cat > "$tmpdir/project/app/page.tsx" <<'EOF'
+export default function Page() { return <main>Hello</main>; }
+EOF
+
+  "$INIT_SCRIPT" --project "$tmpdir/project" --mode scan --lang zh --force >/dev/null
+  profile="$tmpdir/project/.codex/project-profile.md"
+
+  assert_contains "$profile" '- Preset: `frontend-product`'
+  assert_contains "$profile" '- Primary: `Frontend Developer`'
+  assert_contains "$profile" '- Supporting: `UI Designer`、`UX Architect`、`Reality Checker`'
+  assert_contains "$profile" '- 关键用户路径已有最小可验证闭环'
+}
+
+run_scan_python_case() {
+  local tmpdir profile
+  tmpdir="$(mktemp -d /tmp/router-guard-test-python-XXXXXX)"
+  mkdir -p "$tmpdir/project"
+  cat > "$tmpdir/project/pyproject.toml" <<'EOF'
+[project]
+name = "python-service"
+version = "0.1.0"
+EOF
+  cat > "$tmpdir/project/main.py" <<'EOF'
+print("hello")
+EOF
+
+  "$INIT_SCRIPT" --project "$tmpdir/project" --mode scan --lang zh --force >/dev/null
+  profile="$tmpdir/project/.codex/project-profile.md"
+
+  assert_contains "$profile" '- Preset: `backend-service`'
+  assert_contains "$profile" '- Primary: `Backend Architect`'
+  assert_contains "$profile" '- Supporting: `API Tester`、`Software Architect`、`Technical Writer`'
+  assert_contains "$profile" '- 关键接口或流程已有验证证据'
+}
+
 run_dialog_game_case() {
   local tmpdir profile
   tmpdir="$(mktemp -d /tmp/router-guard-test-game-XXXXXX)"
@@ -206,6 +248,8 @@ bash -n "$INIT_SCRIPT"
 bash -n "$UPDATE_SCRIPT"
 
 run_scan_ai_case
+run_scan_frontend_case
+run_scan_python_case
 run_dialog_game_case
 run_dialog_ppt_case
 run_preset_reroute_case
