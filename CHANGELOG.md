@@ -7,6 +7,8 @@
 - Added preset-based reroute for default `Routing Cues`
 - Added preset-based reroute for default `Delivery Gate`
 - Added shared `references/preset-defaults.json` so reroute updates and new-project dialogue presets can reuse one preset source
+- Split shared preset data into `reroute` and `dialog` groups so dialogue-only squads like `ppt-storytelling` keep their intended specialist mix
+- Added regression validation for shared preset JSON structure and dialogue-specific preset behavior
 - Added `scripts/test-regressions.sh` to lock the main scan/dialog/reroute flows with repeatable regression checks
 
 ## 2026-05-06
