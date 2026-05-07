@@ -9,3 +9,7 @@ Presets are reusable routing bundles built from the curated `agency-agents` cata
 - `marketing-site`
 - `ppt-storytelling`
 - `zero-to-one-startup`
+- `ai-agent-stack`
+- `game-production`
+- `china-market-growth`
+- `spatial-computing`

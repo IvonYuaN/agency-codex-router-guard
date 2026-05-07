@@ -20,6 +20,13 @@
 4. 在任务开始打转或改动失控前，触发 guardrails 和 escalation
 5. 通过 curated catalog 和 presets，把 `agency-agents` 的核心 agent 真正纳入当前项目
 
+现在已经不只覆盖通用 Web / API / 内容项目，也会把一部分上游专项 agent 真正接进自动路由：
+
+- `ai-agent-stack`
+- `game-production`
+- `china-market-growth`
+- `spatial-computing`
+
 ## 解决什么问题
 
 - 新项目开局更快，不用每次都从零判断
@@ -235,10 +242,12 @@ Use agency-codex-router-guard for this repo.
 - `update-profile.sh` 现在支持对 `Routing Cues` 做 `replace`、`append`、`remove`
 - `update-profile.sh` 现在支持 `--cue-match semantic`，可用近义文案归并或删除分支
 - `update-profile.sh` 现在会结合意图分组和目标角色做更稳的分支归并，降低误合并概率
+- 扫描现有项目时，已经能自动识别并落到更深的专项 preset：AI / agent 工程、游戏开发、中国市场增长、空间计算
+- 新项目对话模式现在也能直接生成这些专项 preset，而不是只落到通用 web / api / content 模板
 
 下一步更值得继续做的增强：
 
-- 为不同行业继续补充 preset，例如电商、AI 工具、内容工作流、数据分析项目
+- 为更多垂直行业继续补充 preset，例如电商、数据分析、金融工作流、销售流程
 - 支持从真实对话文本里自动抽取这些字段，而不是只靠 CLI 传参
 - 把当前规则型意图归并升级成更强的自然语言意图判断
 
@@ -282,6 +291,13 @@ Instead of copying hundreds of role files into every workspace, this skill does 
 3. persists that choice in `.codex/project-profile.md` so future conversations in the same repo can resume faster
 4. activates guardrails and escalation before repeated failures turn into messy damage
 5. brings the core `agency-agents` roster into the project through a curated catalog and presets
+
+It now routes beyond generic web/API/content work and can automatically choose deeper upstream specialist bundles for:
+
+- `ai-agent-stack`
+- `game-production`
+- `china-market-growth`
+- `spatial-computing`
 
 ## What it solves
 
@@ -498,10 +514,12 @@ Already improved in this version:
 - `update-profile.sh` can now `replace`, `append`, or `remove` individual `Routing Cues` branches
 - `update-profile.sh` can now use `--cue-match semantic` to merge or remove similar cue wording
 - `update-profile.sh` now combines intent groups and target-role signatures to reduce accidental branch merges
+- Existing-project scan can now auto-route into deeper presets for AI/agent engineering, game development, China-market growth, and spatial computing
+- New-project dialogue mode can now generate those deeper presets directly instead of only falling back to generic web/API/content templates
 
 Best next upgrades:
 
-- Add more domain presets such as ecommerce, AI tools, content workflows, and analytics projects
+- Add more sector presets such as ecommerce, analytics, finance workflows, and sales operations
 - Extract those dialogue fields directly from natural conversation, not only from CLI flags
 - Upgrade the current rule-based intent merge into stronger natural-language intent understanding
 

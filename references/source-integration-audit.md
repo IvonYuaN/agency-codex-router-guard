@@ -1,6 +1,6 @@
 # Source Integration Audit
 
-Last reviewed: 2026-05-06
+Last reviewed: 2026-05-07
 
 This file tracks what has actually been incorporated from the external sources discussed during development.
 
@@ -12,13 +12,18 @@ This file tracks what has actually been incorporated from the external sources d
 - Curated working subset in `references/agency-agents-core-catalog.md`
 - Reusable bundles in `presets/`
 - Scan output now maps presets to concrete upstream agent file paths
+- Scan and dialog routing now include deeper auto-selection for:
+  - AI / agent engineering
+  - game development
+  - China-market growth workflows
+  - spatial computing
 
 ### Not yet incorporated
 
 - Upstream shell scripts and non-markdown tool integrations are not part of Router Guard's runtime
 - Upstream installation workflows for Claude Code, Cursor, Copilot, Aider, etc. are not mirrored as first-class Router Guard features
 - Upstream coordination playbooks are vendored as files, but not yet wired into Router Guard's scan or preset logic
-- Most industry-specific agents are present as assets, but Router Guard does not yet auto-route deeply into those specialized sectors
+- Many specialized sectors still remain asset-only and are not yet part of automatic routing
 
 ## 2. `forrestchang/andrej-karpathy-skills`
 
@@ -84,6 +89,7 @@ Router Guard now contains:
 - a real curated catalog
 - real presets
 - real scan-to-upstream-file mapping
+- real deep-sector auto-routing for a selected subset of upstream domains
 
 But it does not yet contain:
 
@@ -94,7 +100,7 @@ But it does not yet contain:
 
 ## Highest-value remaining gaps
 
-1. Add deeper specialized-sector preset routing
-2. Add scan logic that can choose specialized upstream agents beyond the current common presets
+1. Add more sector presets beyond the first four deeper integrations
+2. Wire upstream coordination playbooks into Router Guard's reroute or escalation logic
 3. Decide whether a specific `alchaincyf` repository should be vendored instead of only borrowing abstract ideas
 4. Add a source-sync policy so future upstream pulls stay auditable
