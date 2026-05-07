@@ -10,6 +10,7 @@ UPSTREAM_AGENTS=""
 REASON=""
 UPDATED_BY="router-guard"
 CUE_MODE="replace"
+CUE_MATCH_MODE="exact"
 declare -a CUE_ASKS=()
 declare -a CUE_SWITCHES=()
 declare -a REMOVE_CUE_ASKS=()
@@ -27,6 +28,7 @@ Options:
   --supporting VALUE      Replace the Supporting line, comma-separated
   --upstream VALUE        Replace Upstream agents, newline-separated with literal \n or comma-separated
   --cue-mode MODE         Routing cue update mode: replace (default) or append
+  --cue-match MODE        Routing cue match mode for append/remove: exact (default) or semantic
   --if-user-asks VALUE    Routing cue ask phrase for the current cue update; can be repeated
   --switch-to VALUE       Matching switch target for the previous --if-user-asks; can be repeated
   --remove-if-user-asks VALUE
@@ -65,6 +67,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --cue-mode)
       CUE_MODE="${2:-}"
+      shift 2
+      ;;
+    --cue-match)
+      CUE_MATCH_MODE="${2:-}"
       shift 2
       ;;
     --if-user-asks)
@@ -121,6 +127,11 @@ if [[ "${CUE_MODE}" != "replace" && "${CUE_MODE}" != "append" ]]; then
   exit 1
 fi
 
+if [[ "${CUE_MATCH_MODE}" != "exact" && "${CUE_MATCH_MODE}" != "semantic" ]]; then
+  echo "Unsupported cue match mode: ${CUE_MATCH_MODE}. Use exact or semantic." >&2
+  exit 1
+fi
+
 if [[ ${#CUE_ASKS[@]} -ne ${#CUE_SWITCHES[@]} ]]; then
   echo "--if-user-asks and --switch-to must be provided in matching pairs." >&2
   exit 1
@@ -162,6 +173,7 @@ TIMESTAMP="${timestamp}" \
 CUE_ASKS_PAYLOAD="${CUE_ASKS_PAYLOAD}" \
 CUE_SWITCHES_PAYLOAD="${CUE_SWITCHES_PAYLOAD}" \
 REMOVE_CUE_ASKS_PAYLOAD="${REMOVE_CUE_ASKS_PAYLOAD}" \
+CUE_MATCH_MODE="${CUE_MATCH_MODE}" \
 python3 - <<'PY'
 from pathlib import Path
 import os
@@ -181,6 +193,7 @@ timestamp = os.environ["TIMESTAMP"].strip()
 cue_asks = [x.strip() for x in os.environ.get("CUE_ASKS_PAYLOAD", "").splitlines() if x.strip()]
 cue_switches = [x.strip() for x in os.environ.get("CUE_SWITCHES_PAYLOAD", "").splitlines() if x.strip()]
 remove_cue_asks = [x.strip() for x in os.environ.get("REMOVE_CUE_ASKS_PAYLOAD", "").splitlines() if x.strip()]
+cue_match_mode = os.environ["CUE_MATCH_MODE"].strip()
 
 def get_section(name: str):
     pattern = rf"(## {re.escape(name)}\n)(.*?)(?=\n## |\Z)"
@@ -230,6 +243,66 @@ def render_routing_pairs(pairs):
         lines.append(f"- Switch to: `{switch}`")
     return "\n".join(lines)
 
+SEMANTIC_GROUPS = {
+    "zh": {
+        "frontend": {"页面", "前端", "组件", "样式", "ui", "交互", "布局"},
+        "ux": {"体验", "流程", "信息架构", "导航", "可用性", "交互流程"},
+        "verification": {"验证", "验收", "测试", "qa", "上线", "发布", "交付"},
+        "accessibility": {"无障碍", "可访问性", "键盘导航", "读屏", "对比度", "a11y"},
+        "backend": {"接口", "后端", "服务", "api", "数据流", "调用链"},
+        "content": {"文案", "内容", "品牌", "叙事", "传播", "seo"},
+    },
+    "en": {
+        "frontend": {"frontend", "page", "pages", "component", "components", "styling", "styles", "ui", "interaction", "layout"},
+        "ux": {"ux", "flow", "flows", "information", "architecture", "navigation", "usability", "experience"},
+        "verification": {"verification", "validate", "validation", "qa", "testing", "release", "readiness", "acceptance", "ship"},
+        "accessibility": {"accessibility", "keyboard", "contrast", "screenreader", "screen-reader", "a11y"},
+        "backend": {"backend", "api", "service", "services", "data", "pipeline", "callchain", "call-chain"},
+        "content": {"copy", "content", "brand", "storytelling", "seo", "messaging"},
+    },
+}
+
+def detect_text_lang(value: str):
+    return "zh" if re.search(r"[\u4e00-\u9fff]", value) else "en"
+
+def normalize_for_semantics(value: str):
+    lowered = value.lower()
+    lowered = lowered.replace("&", " ")
+    lowered = re.sub(r"[^\w\u4e00-\u9fff]+", " ", lowered)
+    tokens = [token for token in lowered.split() if token]
+    joined = "".join(tokens) if detect_text_lang(value) == "zh" else None
+    lang_groups = SEMANTIC_GROUPS[detect_text_lang(value)]
+    semantic_tokens = set(tokens)
+    source_text = value if joined is None else f"{value} {joined}"
+    for group_name, keywords in lang_groups.items():
+        for keyword in keywords:
+            if detect_text_lang(value) == "zh":
+                if keyword in source_text or keyword in joined:
+                    semantic_tokens.add(f"group:{group_name}")
+            else:
+                if keyword in semantic_tokens:
+                    semantic_tokens.add(f"group:{group_name}")
+    return semantic_tokens
+
+def semantic_match(a: str, b: str):
+    a_tokens = normalize_for_semantics(a)
+    b_tokens = normalize_for_semantics(b)
+    if not a_tokens or not b_tokens:
+        return False
+    overlap = len(a_tokens & b_tokens)
+    minimum = min(len(a_tokens), len(b_tokens))
+    return overlap >= 2 or (minimum > 0 and overlap / minimum >= 0.6)
+
+def find_pair_index(pairs, ask: str):
+    for index, (existing_ask, _) in enumerate(pairs):
+        if existing_ask == ask:
+            return index
+    if cue_match_mode == "semantic":
+        for index, (existing_ask, _) in enumerate(pairs):
+            if semantic_match(existing_ask, ask):
+                return index
+    return None
+
 default_match = get_section("Default Squad")
 default_lines = split_lines(default_match.group(2))
 new_default = []
@@ -257,21 +330,29 @@ routing_match = get_section("Routing Cues")
 existing_pairs = parse_routing_pairs(split_lines(routing_match.group(2)))
 
 if remove_cue_asks:
-    remove_set = set(remove_cue_asks)
-    existing_pairs = [(ask, switch) for ask, switch in existing_pairs if ask not in remove_set]
+    kept_pairs = []
+    for ask, switch in existing_pairs:
+        should_remove = False
+        for remove_ask in remove_cue_asks:
+            if ask == remove_ask or (cue_match_mode == "semantic" and semantic_match(ask, remove_ask)):
+                should_remove = True
+                break
+        if not should_remove:
+            kept_pairs.append((ask, switch))
+    existing_pairs = kept_pairs
 
 if cue_asks and cue_switches:
     incoming_pairs = list(zip(cue_asks, cue_switches))
     if cue_mode == "replace":
         updated_pairs = incoming_pairs
     else:
-        merged = {ask: switch for ask, switch in existing_pairs}
-        order = [ask for ask, _ in existing_pairs]
+        updated_pairs = list(existing_pairs)
         for ask, switch in incoming_pairs:
-            if ask not in merged:
-                order.append(ask)
-            merged[ask] = switch
-        updated_pairs = [(ask, merged[ask]) for ask in order]
+            match_index = find_pair_index(updated_pairs, ask)
+            if match_index is None:
+                updated_pairs.append((ask, switch))
+            else:
+                updated_pairs[match_index] = (ask, switch)
     replace_section("Routing Cues", render_routing_pairs(updated_pairs))
 elif remove_cue_asks:
     replace_section("Routing Cues", render_routing_pairs(existing_pairs))

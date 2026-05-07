@@ -144,6 +144,18 @@ chmod +x scripts/install.sh scripts/init-project.sh
   --reason "补充无障碍路由分支"
 ```
 
+如果你想用相近表述去归并已有分支，而不是新增一条重复分支：
+
+```bash
+./scripts/update-profile.sh \
+  --project /path/to/your/repo \
+  --cue-mode append \
+  --cue-match semantic \
+  --if-user-asks "响应式、上线验收、交付质量确认" \
+  --switch-to "Reality Checker" \
+  --reason "用近义表述归并验收分支"
+```
+
 ## 工作方式
 
 在一个新仓库里，这个 skill 的理想流程是：
@@ -165,6 +177,7 @@ chmod +x scripts/install.sh scripts/init-project.sh
 
 - 更新 `Default Squad`
 - 以 `replace`、`append`、`remove` 三种方式更新 `Routing Cues`
+- 在 `append` / `remove` 时支持 `exact` 与 `semantic` 两种匹配方式
 - 追加带时间和原因的 `Squad History`
 
 ## 项目 profile 示例
@@ -192,7 +205,7 @@ Use agency-codex-router-guard for this repo.
 
 - 自动扫描现在会读取少量关键配置与 README 标题，但规则仍然是启发式，不是深度理解
 - 路由规则目前写在 `SKILL.md` 里，后续可以拆成更细的行业或任务模板
-- `update-profile.sh` 目前还是按文本精确匹配分支，还不支持语义归并或模糊匹配
+- `update-profile.sh` 现在已有第一版语义归并，但仍是关键词级，不是更强的语义理解
 
 已经补上的优化：
 
@@ -203,12 +216,13 @@ Use agency-codex-router-guard for this repo.
 - 所有生成的 profile 现在都会带 `Squad History`
 - `update-profile.sh` 现在可以在 reroute 时自动追加带时间和原因的历史记录
 - `update-profile.sh` 现在支持对 `Routing Cues` 做 `replace`、`append`、`remove`
+- `update-profile.sh` 现在支持 `--cue-match semantic`，可用近义文案归并或删除分支
 
 下一步更值得继续做的增强：
 
 - 为不同行业继续补充 preset，例如电商、AI 工具、内容工作流、数据分析项目
 - 支持从真实对话文本里自动抽取这些字段，而不是只靠 CLI 传参
-- 让 `update-profile.sh` 支持语义级分支归并，而不是只靠精确文本匹配
+- 把当前关键词级语义归并升级成更稳的意图级归并
 
 ## 吸收了哪些外部思路
 
@@ -372,6 +386,18 @@ If you only want to add one more `Routing Cues` branch without replacing the exi
   --reason "Added accessibility verification branch"
 ```
 
+If you want similar wording to merge into an existing branch instead of creating a duplicate:
+
+```bash
+./scripts/update-profile.sh \
+  --project /path/to/your/repo \
+  --cue-mode append \
+  --cue-match semantic \
+  --if-user-asks "QA handoff, release validation, readiness checks" \
+  --switch-to "Reality Checker" \
+  --reason "Merged verification cue using semantic match"
+```
+
 ## How it works
 
 On a new repo, the skill should:
@@ -393,6 +419,7 @@ For ongoing projects, `update-profile.sh` can now:
 
 - update `Default Squad`
 - update `Routing Cues` via `replace`, `append`, or `remove`
+- use either `exact` or `semantic` matching for `append` / `remove`
 - append timestamped `Squad History` entries with reroute reasons
 
 ## Example project profiles
@@ -420,7 +447,7 @@ Or let Codex apply it when the task clearly benefits from routing.
 
 - Scan-based routing now reads a few key config files and README headings, but it is still heuristic rather than deep repo understanding
 - Routing rules are centralized in `SKILL.md`; they could later be split into domain-specific presets
-- `update-profile.sh` still matches routing branches by exact text and does not yet support semantic merging
+- `update-profile.sh` now has a first-pass semantic merge, but it is still keyword-based rather than intent-complete
 
 Already improved in this version:
 
@@ -431,12 +458,13 @@ Already improved in this version:
 - All generated profiles now include `Squad History`
 - `update-profile.sh` can now append timestamped reroute history entries automatically
 - `update-profile.sh` can now `replace`, `append`, or `remove` individual `Routing Cues` branches
+- `update-profile.sh` can now use `--cue-match semantic` to merge or remove similar cue wording
 
 Best next upgrades:
 
 - Add more domain presets such as ecommerce, AI tools, content workflows, and analytics projects
 - Extract those dialogue fields directly from natural conversation, not only from CLI flags
-- Add semantic branch merging to `update-profile.sh` instead of relying only on exact-text matching
+- Upgrade the current keyword-level semantic merge into a more robust intent-level merge
 
 ## External ideas incorporated
 
