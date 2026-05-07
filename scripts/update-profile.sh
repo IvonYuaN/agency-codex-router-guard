@@ -262,6 +262,17 @@ SEMANTIC_GROUPS = {
     },
 }
 
+ROLE_GROUPS = {
+    "onboarding": {"codebase onboarding engineer", "technical writer"},
+    "frontend": {"frontend developer", "ui designer"},
+    "ux": {"ux architect", "ux researcher"},
+    "verification": {"reality checker", "api tester", "test results analyzer", "evidence collector"},
+    "accessibility": {"accessibility auditor"},
+    "backend": {"backend architect", "software architect", "database optimizer", "sre"},
+    "content": {"content creator", "brand guardian", "seo specialist", "visual storyteller"},
+    "product": {"product manager", "project shepherd", "senior project manager", "rapid prototyper"},
+}
+
 def detect_text_lang(value: str):
     return "zh" if re.search(r"[\u4e00-\u9fff]", value) else "en"
 
@@ -293,13 +304,59 @@ def semantic_match(a: str, b: str):
     minimum = min(len(a_tokens), len(b_tokens))
     return overlap >= 2 or (minimum > 0 and overlap / minimum >= 0.6)
 
-def find_pair_index(pairs, ask: str):
+def canonical_role_group(value: str):
+    lowered = value.lower().strip()
+    for group_name, roles in ROLE_GROUPS.items():
+        if lowered in roles:
+            return group_name
+    return ""
+
+def infer_intent_groups(value: str):
+    return sorted(token.split(":", 1)[1] for token in normalize_for_semantics(value) if token.startswith("group:"))
+
+def intent_signature(ask: str, switch: str):
+    groups = infer_intent_groups(ask)
+    role_group = canonical_role_group(switch)
+    primary_intent = groups[0] if groups else ""
+    return {
+        "groups": set(groups),
+        "primary": primary_intent,
+        "role_group": role_group,
+    }
+
+def intent_match(existing_ask: str, existing_switch: str, incoming_ask: str, incoming_switch: str):
+    existing_sig = intent_signature(existing_ask, existing_switch)
+    incoming_sig = intent_signature(incoming_ask, incoming_switch)
+    shared_groups = existing_sig["groups"] & incoming_sig["groups"]
+    same_role_group = (
+        existing_sig["role_group"]
+        and incoming_sig["role_group"]
+        and existing_sig["role_group"] == incoming_sig["role_group"]
+    )
+
+    if existing_sig["primary"] and incoming_sig["primary"] and existing_sig["primary"] == incoming_sig["primary"]:
+        if same_role_group or (not existing_sig["role_group"] and not incoming_sig["role_group"]):
+            return True
+
+    if same_role_group and shared_groups:
+        return True
+
+    if same_role_group and semantic_match(existing_ask, incoming_ask):
+        return True
+
+    if existing_sig["primary"] and incoming_sig["primary"] and existing_sig["primary"] == incoming_sig["primary"]:
+        if shared_groups and semantic_match(existing_ask, incoming_ask):
+            return True
+
+    return False
+
+def find_pair_index(pairs, ask: str, switch: str):
     for index, (existing_ask, _) in enumerate(pairs):
         if existing_ask == ask:
             return index
     if cue_match_mode == "semantic":
-        for index, (existing_ask, _) in enumerate(pairs):
-            if semantic_match(existing_ask, ask):
+        for index, (existing_ask, existing_switch) in enumerate(pairs):
+            if intent_match(existing_ask, existing_switch, ask, switch):
                 return index
     return None
 
@@ -334,7 +391,7 @@ if remove_cue_asks:
     for ask, switch in existing_pairs:
         should_remove = False
         for remove_ask in remove_cue_asks:
-            if ask == remove_ask or (cue_match_mode == "semantic" and semantic_match(ask, remove_ask)):
+            if ask == remove_ask or (cue_match_mode == "semantic" and intent_match(ask, switch, remove_ask, switch)):
                 should_remove = True
                 break
         if not should_remove:
@@ -348,7 +405,7 @@ if cue_asks and cue_switches:
     else:
         updated_pairs = list(existing_pairs)
         for ask, switch in incoming_pairs:
-            match_index = find_pair_index(updated_pairs, ask)
+            match_index = find_pair_index(updated_pairs, ask, switch)
             if match_index is None:
                 updated_pairs.append((ask, switch))
             else:
