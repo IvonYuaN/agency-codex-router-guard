@@ -232,6 +232,36 @@ Use agency-codex-router-guard for this repo.
 
 也可以让 Codex 在任务明显适合时自动使用。
 
+## 推荐迁移流程
+
+如果你是第一次把一个项目接入这个 skill，推荐按下面顺序：
+
+1. 已有仓库、已部署项目、已经有较多代码和资产：
+   用 `scan`
+2. 新项目、空目录、只有想法还没有稳定代码：
+   用 `dialog`
+3. 项目方向已经明显变化，但不想重建整份 profile：
+   用 `update-profile --preset`
+
+一个更稳的实际用法是：
+
+1. 先用 `./scripts/install.sh --project /path/to/your/repo --mode scan` 或 `dialog`
+2. 让 `.codex/project-profile.md` 先落地第一版 squad、routing cues、delivery gate
+3. 项目进入下一阶段时，只用 `./scripts/update-profile.sh --project ... --preset ... --reason ...`
+4. 只有当你明确想保留原 preset 但补一条局部分支时，再用 `--cue-mode append`
+5. 只有当你明确知道默认 gate 不适用时，再单独传 `--delivery-gate`
+
+简单判断规则：
+
+- 用 `scan`
+  场景：这是“读现状、贴着现有项目继续做”
+- 用 `dialog`
+  场景：这是“先定方向、先生成第一版执行框架”
+- 用 `update-profile --preset`
+  场景：这是“项目没有重开，但项目类型或主战场已经变了”
+- 用 `update-profile` 的细粒度参数
+  场景：这是“主 preset 不变，只修一小段路由或门禁”
+
 ## 当前已知可优化方向
 
 - 自动扫描现在会读取少量关键配置与 README 标题，但规则仍然是启发式，不是深度理解
@@ -515,6 +545,36 @@ Use agency-codex-router-guard for this repo.
 ```
 
 Or let Codex apply it when the task clearly benefits from routing.
+
+## Recommended Migration Flow
+
+If you are adopting this skill for a project for the first time, the cleanest sequence is:
+
+1. Existing repo, deployed system, or a codebase with meaningful assets already in place:
+   use `scan`
+2. New project, empty folder, or idea-stage work without a stable codebase yet:
+   use `dialog`
+3. The project direction has clearly changed, but you do not want to rebuild the entire profile:
+   use `update-profile --preset`
+
+A practical workflow is:
+
+1. Start with `./scripts/install.sh --project /path/to/your/repo --mode scan` or `dialog`
+2. Let `.codex/project-profile.md` establish the first squad, routing cues, and delivery gate
+3. When the project enters a new phase, use only `./scripts/update-profile.sh --project ... --preset ... --reason ...`
+4. Use `--cue-mode append` only when the preset still fits and you merely want one more branch
+5. Pass `--delivery-gate` explicitly only when the preset's default gate is no longer appropriate
+
+Quick decision rule:
+
+- use `scan`
+  scenario: continue from the real repository state
+- use `dialog`
+  scenario: define the first execution frame before code reality exists
+- use `update-profile --preset`
+  scenario: the repo continues, but the project type or primary battleground has changed
+- use granular `update-profile` flags
+  scenario: the main preset still fits and you only need a local routing or gate adjustment
 
 ## Known optimization opportunities
 
