@@ -133,6 +133,17 @@ chmod +x scripts/install.sh scripts/init-project.sh
   --reason "任务从实现转向验收"
 ```
 
+如果你只想补一条新的 `Routing Cues` 分支，而不覆盖原有内容：
+
+```bash
+./scripts/update-profile.sh \
+  --project /path/to/your/repo \
+  --cue-mode append \
+  --if-user-asks "无障碍、键盘导航、可访问性问题" \
+  --switch-to "Accessibility Auditor" \
+  --reason "补充无障碍路由分支"
+```
+
 ## 工作方式
 
 在一个新仓库里，这个 skill 的理想流程是：
@@ -153,7 +164,7 @@ chmod +x scripts/install.sh scripts/init-project.sh
 如果项目已经在推进中，`update-profile.sh` 现在可以在不重建整份 profile 的前提下：
 
 - 更新 `Default Squad`
-- 按需改写 `Routing Cues`
+- 以 `replace`、`append`、`remove` 三种方式更新 `Routing Cues`
 - 追加带时间和原因的 `Squad History`
 
 ## 项目 profile 示例
@@ -181,7 +192,7 @@ Use agency-codex-router-guard for this repo.
 
 - 自动扫描现在会读取少量关键配置与 README 标题，但规则仍然是启发式，不是深度理解
 - 路由规则目前写在 `SKILL.md` 里，后续可以拆成更细的行业或任务模板
-- `update-profile.sh` 目前对 `Routing Cues` 仍是整段替换，还不是分支级精细编辑
+- `update-profile.sh` 目前还是按文本精确匹配分支，还不支持语义归并或模糊匹配
 
 已经补上的优化：
 
@@ -191,12 +202,13 @@ Use agency-codex-router-guard for this repo.
 - 新项目对话答案现在可以直接落成 `Current Goals`、`Constraints`、`Routing Cues`
 - 所有生成的 profile 现在都会带 `Squad History`
 - `update-profile.sh` 现在可以在 reroute 时自动追加带时间和原因的历史记录
+- `update-profile.sh` 现在支持对 `Routing Cues` 做 `replace`、`append`、`remove`
 
 下一步更值得继续做的增强：
 
 - 为不同行业继续补充 preset，例如电商、AI 工具、内容工作流、数据分析项目
 - 支持从真实对话文本里自动抽取这些字段，而不是只靠 CLI 传参
-- 让 `update-profile.sh` 在保留原线索的同时做更细粒度的局部更新，而不是整段替换
+- 让 `update-profile.sh` 支持语义级分支归并，而不是只靠精确文本匹配
 
 ## 吸收了哪些外部思路
 
@@ -349,6 +361,17 @@ If the project is already in motion and you want to reroute without rebuilding t
   --reason "Work shifted from implementation to verification"
 ```
 
+If you only want to add one more `Routing Cues` branch without replacing the existing ones:
+
+```bash
+./scripts/update-profile.sh \
+  --project /path/to/your/repo \
+  --cue-mode append \
+  --if-user-asks "accessibility, keyboard navigation, contrast checks" \
+  --switch-to "Accessibility Auditor" \
+  --reason "Added accessibility verification branch"
+```
+
 ## How it works
 
 On a new repo, the skill should:
@@ -369,7 +392,7 @@ When dialogue answers are provided for a new project, `dialog` mode now writes t
 For ongoing projects, `update-profile.sh` can now:
 
 - update `Default Squad`
-- rewrite `Routing Cues` when needed
+- update `Routing Cues` via `replace`, `append`, or `remove`
 - append timestamped `Squad History` entries with reroute reasons
 
 ## Example project profiles
@@ -397,6 +420,7 @@ Or let Codex apply it when the task clearly benefits from routing.
 
 - Scan-based routing now reads a few key config files and README headings, but it is still heuristic rather than deep repo understanding
 - Routing rules are centralized in `SKILL.md`; they could later be split into domain-specific presets
+- `update-profile.sh` still matches routing branches by exact text and does not yet support semantic merging
 
 Already improved in this version:
 
@@ -406,12 +430,13 @@ Already improved in this version:
 - New-project dialogue answers can now be written directly into `Current Goals`, `Constraints`, and `Routing Cues`
 - All generated profiles now include `Squad History`
 - `update-profile.sh` can now append timestamped reroute history entries automatically
+- `update-profile.sh` can now `replace`, `append`, or `remove` individual `Routing Cues` branches
 
 Best next upgrades:
 
 - Add more domain presets such as ecommerce, AI tools, content workflows, and analytics projects
 - Extract those dialogue fields directly from natural conversation, not only from CLI flags
-- Make `update-profile.sh` preserve and edit individual routing-cue branches more granularly instead of replacing the whole section
+- Add semantic branch merging to `update-profile.sh` instead of relying only on exact-text matching
 
 ## External ideas incorporated
 

@@ -9,8 +9,10 @@ SUPPORTING=""
 UPSTREAM_AGENTS=""
 REASON=""
 UPDATED_BY="router-guard"
+CUE_MODE="replace"
 declare -a CUE_ASKS=()
 declare -a CUE_SWITCHES=()
+declare -a REMOVE_CUE_ASKS=()
 
 usage() {
   cat <<'EOF'
@@ -24,8 +26,11 @@ Options:
   --primary VALUE         Replace the Primary line in Default Squad
   --supporting VALUE      Replace the Supporting line, comma-separated
   --upstream VALUE        Replace Upstream agents, newline-separated with literal \n or comma-separated
-  --if-user-asks VALUE    Add or replace a routing cue ask phrase; can be repeated
+  --cue-mode MODE         Routing cue update mode: replace (default) or append
+  --if-user-asks VALUE    Routing cue ask phrase for the current cue update; can be repeated
   --switch-to VALUE       Matching switch target for the previous --if-user-asks; can be repeated
+  --remove-if-user-asks VALUE
+                          Remove existing routing cue branches matching this ask phrase; can be repeated
   --reason TEXT           Human-readable reroute reason to append into Squad History
   --updated-by VALUE      Source tag for the history line, default: router-guard
   -h, --help              Show this help message
@@ -58,12 +63,20 @@ while [[ $# -gt 0 ]]; do
       UPSTREAM_AGENTS="${2:-}"
       shift 2
       ;;
+    --cue-mode)
+      CUE_MODE="${2:-}"
+      shift 2
+      ;;
     --if-user-asks)
       CUE_ASKS+=("${2:-}")
       shift 2
       ;;
     --switch-to)
       CUE_SWITCHES+=("${2:-}")
+      shift 2
+      ;;
+    --remove-if-user-asks)
+      REMOVE_CUE_ASKS+=("${2:-}")
       shift 2
       ;;
     --reason)
@@ -103,6 +116,11 @@ if [[ -n "${PROFILE_LANG}" && "${PROFILE_LANG}" != "zh" && "${PROFILE_LANG}" != 
   exit 1
 fi
 
+if [[ "${CUE_MODE}" != "replace" && "${CUE_MODE}" != "append" ]]; then
+  echo "Unsupported cue mode: ${CUE_MODE}. Use replace or append." >&2
+  exit 1
+fi
+
 if [[ ${#CUE_ASKS[@]} -ne ${#CUE_SWITCHES[@]} ]]; then
   echo "--if-user-asks and --switch-to must be provided in matching pairs." >&2
   exit 1
@@ -120,11 +138,15 @@ timestamp="$(TZ=Asia/Shanghai date '+%Y-%m-%d %H:%M:%S %z')"
 
 CUE_ASKS_PAYLOAD=""
 CUE_SWITCHES_PAYLOAD=""
+REMOVE_CUE_ASKS_PAYLOAD=""
 if (( ${#CUE_ASKS[@]} > 0 )); then
   CUE_ASKS_PAYLOAD="$(printf '%s\n' "${CUE_ASKS[@]}")"
 fi
 if (( ${#CUE_SWITCHES[@]} > 0 )); then
   CUE_SWITCHES_PAYLOAD="$(printf '%s\n' "${CUE_SWITCHES[@]}")"
+fi
+if (( ${#REMOVE_CUE_ASKS[@]} > 0 )); then
+  REMOVE_CUE_ASKS_PAYLOAD="$(printf '%s\n' "${REMOVE_CUE_ASKS[@]}")"
 fi
 
 PROFILE_FILE="${PROFILE_FILE}" \
@@ -133,11 +155,13 @@ PRESET="${PRESET}" \
 PRIMARY="${PRIMARY}" \
 SUPPORTING="${SUPPORTING}" \
 UPSTREAM_AGENTS="${UPSTREAM_AGENTS}" \
+CUE_MODE="${CUE_MODE}" \
 REASON="${REASON}" \
 UPDATED_BY="${UPDATED_BY}" \
 TIMESTAMP="${timestamp}" \
 CUE_ASKS_PAYLOAD="${CUE_ASKS_PAYLOAD}" \
 CUE_SWITCHES_PAYLOAD="${CUE_SWITCHES_PAYLOAD}" \
+REMOVE_CUE_ASKS_PAYLOAD="${REMOVE_CUE_ASKS_PAYLOAD}" \
 python3 - <<'PY'
 from pathlib import Path
 import os
@@ -150,11 +174,13 @@ preset = os.environ["PRESET"].strip()
 primary = os.environ["PRIMARY"].strip()
 supporting = os.environ["SUPPORTING"].strip()
 upstream_agents = os.environ["UPSTREAM_AGENTS"].strip()
+cue_mode = os.environ["CUE_MODE"].strip()
 reason = os.environ["REASON"].strip()
 updated_by = os.environ["UPDATED_BY"].strip()
 timestamp = os.environ["TIMESTAMP"].strip()
 cue_asks = [x.strip() for x in os.environ.get("CUE_ASKS_PAYLOAD", "").splitlines() if x.strip()]
 cue_switches = [x.strip() for x in os.environ.get("CUE_SWITCHES_PAYLOAD", "").splitlines() if x.strip()]
+remove_cue_asks = [x.strip() for x in os.environ.get("REMOVE_CUE_ASKS_PAYLOAD", "").splitlines() if x.strip()]
 
 def get_section(name: str):
     pattern = rf"(## {re.escape(name)}\n)(.*?)(?=\n## |\Z)"
@@ -182,6 +208,28 @@ def format_upstream(raw: str):
     items = [item.strip() for item in normalized.splitlines() if item.strip()]
     return [f"- `{item}`" for item in items]
 
+def parse_routing_pairs(lines):
+    pairs = []
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        if line.startswith("- If user asks for:"):
+            ask = line.split(":", 1)[1].strip()
+            switch = ""
+            if i + 1 < len(lines) and lines[i + 1].startswith("- Switch to:"):
+                switch = lines[i + 1].split(":", 1)[1].strip().strip("`")
+                i += 1
+            pairs.append((ask, switch))
+        i += 1
+    return pairs
+
+def render_routing_pairs(pairs):
+    lines = []
+    for ask, switch in pairs:
+        lines.append(f"- If user asks for: {ask}")
+        lines.append(f"- Switch to: `{switch}`")
+    return "\n".join(lines)
+
 default_match = get_section("Default Squad")
 default_lines = split_lines(default_match.group(2))
 new_default = []
@@ -205,12 +253,28 @@ for line in default_lines:
         new_default.append(line)
 replace_section("Default Squad", "\n".join(new_default))
 
+routing_match = get_section("Routing Cues")
+existing_pairs = parse_routing_pairs(split_lines(routing_match.group(2)))
+
+if remove_cue_asks:
+    remove_set = set(remove_cue_asks)
+    existing_pairs = [(ask, switch) for ask, switch in existing_pairs if ask not in remove_set]
+
 if cue_asks and cue_switches:
-    routing_lines = []
-    for ask, switch in zip(cue_asks, cue_switches):
-        routing_lines.append(f"- If user asks for: {ask}")
-        routing_lines.append(f"- Switch to: `{switch}`")
-    replace_section("Routing Cues", "\n".join(routing_lines))
+    incoming_pairs = list(zip(cue_asks, cue_switches))
+    if cue_mode == "replace":
+        updated_pairs = incoming_pairs
+    else:
+        merged = {ask: switch for ask, switch in existing_pairs}
+        order = [ask for ask, _ in existing_pairs]
+        for ask, switch in incoming_pairs:
+            if ask not in merged:
+                order.append(ask)
+            merged[ask] = switch
+        updated_pairs = [(ask, merged[ask]) for ask in order]
+    replace_section("Routing Cues", render_routing_pairs(updated_pairs))
+elif remove_cue_asks:
+    replace_section("Routing Cues", render_routing_pairs(existing_pairs))
 
 history_match = get_section("Squad History")
 history_lines = split_lines(history_match.group(2))
