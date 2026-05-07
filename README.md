@@ -156,6 +156,18 @@ chmod +x scripts/install.sh scripts/init-project.sh
   --reason "用近义表述归并验收分支"
 ```
 
+如果任务阶段已经变化，也可以同步更新 `Task Class` 和 `Delivery Gate`：
+
+```bash
+./scripts/update-profile.sh \
+  --project /path/to/your/repo \
+  --task-class "lightweight" \
+  --delivery-gate "关键交付目标已有人眼或浏览器验证" \
+  --delivery-gate "未覆盖范围和风险已说明" \
+  --delivery-gate "本轮不把体验猜测误报为完成" \
+  --reason "任务进入最终验收阶段"
+```
+
 ## 工作方式
 
 在一个新仓库里，这个 skill 的理想流程是：
@@ -180,6 +192,7 @@ chmod +x scripts/install.sh scripts/init-project.sh
 - 更新 `Default Squad`
 - 以 `replace`、`append`、`remove` 三种方式更新 `Routing Cues`
 - 在 `append` / `remove` 时支持 `exact` 与 `semantic` 两种匹配方式
+- 同步更新 `Task Class` 与 `Delivery Gate`
 - 追加带时间和原因的 `Squad History`
 
 ## 项目 profile 示例
@@ -218,6 +231,7 @@ Use agency-codex-router-guard for this repo.
 - `init-project.sh` 现在会按项目类型或新项目目标直接生成 `Task Class` 和 `Delivery Gate`
 - 所有生成的 profile 现在都会带 `Squad History`
 - `update-profile.sh` 现在可以在 reroute 时自动追加带时间和原因的历史记录
+- `update-profile.sh` 现在也可以随着 reroute 同步更新 `Task Class` 和 `Delivery Gate`
 - `update-profile.sh` 现在支持对 `Routing Cues` 做 `replace`、`append`、`remove`
 - `update-profile.sh` 现在支持 `--cue-match semantic`，可用近义文案归并或删除分支
 - `update-profile.sh` 现在会结合意图分组和目标角色做更稳的分支归并，降低误合并概率
@@ -405,6 +419,18 @@ If you want similar wording to merge into an existing branch instead of creating
   --reason "Merged verification cue using semantic match"
 ```
 
+If the task has clearly moved into another phase, you can update `Task Class` and `Delivery Gate` at the same time:
+
+```bash
+./scripts/update-profile.sh \
+  --project /path/to/your/repo \
+  --task-class "lightweight" \
+  --delivery-gate "The key deliverable has human or browser verification" \
+  --delivery-gate "Remaining gaps and risks are stated explicitly" \
+  --delivery-gate "This round does not report UX guesses as completion" \
+  --reason "Work moved into final verification"
+```
+
 ## How it works
 
 On a new repo, the skill should:
@@ -429,6 +455,7 @@ For ongoing projects, `update-profile.sh` can now:
 - update `Default Squad`
 - update `Routing Cues` via `replace`, `append`, or `remove`
 - use either `exact` or `semantic` matching for `append` / `remove`
+- update `Task Class` and `Delivery Gate`
 - append timestamped `Squad History` entries with reroute reasons
 
 ## Example project profiles
@@ -467,6 +494,7 @@ Already improved in this version:
 - `init-project.sh` now generates `Task Class` and `Delivery Gate` directly from project type or new-project intent
 - All generated profiles now include `Squad History`
 - `update-profile.sh` can now append timestamped reroute history entries automatically
+- `update-profile.sh` can now update `Task Class` and `Delivery Gate` as the task phase changes
 - `update-profile.sh` can now `replace`, `append`, or `remove` individual `Routing Cues` branches
 - `update-profile.sh` can now use `--cue-match semantic` to merge or remove similar cue wording
 - `update-profile.sh` now combines intent groups and target-role signatures to reduce accidental branch merges

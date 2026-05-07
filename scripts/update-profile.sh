@@ -7,6 +7,7 @@ PRESET=""
 PRIMARY=""
 SUPPORTING=""
 UPSTREAM_AGENTS=""
+TASK_CLASS=""
 REASON=""
 UPDATED_BY="router-guard"
 CUE_MODE="replace"
@@ -14,6 +15,7 @@ CUE_MATCH_MODE="exact"
 declare -a CUE_ASKS=()
 declare -a CUE_SWITCHES=()
 declare -a REMOVE_CUE_ASKS=()
+declare -a DELIVERY_GATE_LINES=()
 
 usage() {
   cat <<'EOF'
@@ -27,6 +29,8 @@ Options:
   --primary VALUE         Replace the Primary line in Default Squad
   --supporting VALUE      Replace the Supporting line, comma-separated
   --upstream VALUE        Replace Upstream agents, newline-separated with literal \n or comma-separated
+  --task-class VALUE      Replace the Task Class section with a single value
+  --delivery-gate VALUE   Add a Delivery Gate bullet; can be repeated, replaces section if provided
   --cue-mode MODE         Routing cue update mode: replace (default) or append
   --cue-match MODE        Routing cue match mode for append/remove: exact (default) or semantic
   --if-user-asks VALUE    Routing cue ask phrase for the current cue update; can be repeated
@@ -63,6 +67,14 @@ while [[ $# -gt 0 ]]; do
       ;;
     --upstream)
       UPSTREAM_AGENTS="${2:-}"
+      shift 2
+      ;;
+    --task-class)
+      TASK_CLASS="${2:-}"
+      shift 2
+      ;;
+    --delivery-gate)
+      DELIVERY_GATE_LINES+=("${2:-}")
       shift 2
       ;;
     --cue-mode)
@@ -150,6 +162,7 @@ timestamp="$(TZ=Asia/Shanghai date '+%Y-%m-%d %H:%M:%S %z')"
 CUE_ASKS_PAYLOAD=""
 CUE_SWITCHES_PAYLOAD=""
 REMOVE_CUE_ASKS_PAYLOAD=""
+DELIVERY_GATE_PAYLOAD=""
 if (( ${#CUE_ASKS[@]} > 0 )); then
   CUE_ASKS_PAYLOAD="$(printf '%s\n' "${CUE_ASKS[@]}")"
 fi
@@ -159,6 +172,9 @@ fi
 if (( ${#REMOVE_CUE_ASKS[@]} > 0 )); then
   REMOVE_CUE_ASKS_PAYLOAD="$(printf '%s\n' "${REMOVE_CUE_ASKS[@]}")"
 fi
+if (( ${#DELIVERY_GATE_LINES[@]} > 0 )); then
+  DELIVERY_GATE_PAYLOAD="$(printf '%s\n' "${DELIVERY_GATE_LINES[@]}")"
+fi
 
 PROFILE_FILE="${PROFILE_FILE}" \
 PROFILE_LANG="${PROFILE_LANG}" \
@@ -166,6 +182,7 @@ PRESET="${PRESET}" \
 PRIMARY="${PRIMARY}" \
 SUPPORTING="${SUPPORTING}" \
 UPSTREAM_AGENTS="${UPSTREAM_AGENTS}" \
+TASK_CLASS="${TASK_CLASS}" \
 CUE_MODE="${CUE_MODE}" \
 REASON="${REASON}" \
 UPDATED_BY="${UPDATED_BY}" \
@@ -173,6 +190,7 @@ TIMESTAMP="${timestamp}" \
 CUE_ASKS_PAYLOAD="${CUE_ASKS_PAYLOAD}" \
 CUE_SWITCHES_PAYLOAD="${CUE_SWITCHES_PAYLOAD}" \
 REMOVE_CUE_ASKS_PAYLOAD="${REMOVE_CUE_ASKS_PAYLOAD}" \
+DELIVERY_GATE_PAYLOAD="${DELIVERY_GATE_PAYLOAD}" \
 CUE_MATCH_MODE="${CUE_MATCH_MODE}" \
 python3 - <<'PY'
 from pathlib import Path
@@ -186,6 +204,7 @@ preset = os.environ["PRESET"].strip()
 primary = os.environ["PRIMARY"].strip()
 supporting = os.environ["SUPPORTING"].strip()
 upstream_agents = os.environ["UPSTREAM_AGENTS"].strip()
+task_class = os.environ["TASK_CLASS"].strip()
 cue_mode = os.environ["CUE_MODE"].strip()
 reason = os.environ["REASON"].strip()
 updated_by = os.environ["UPDATED_BY"].strip()
@@ -193,6 +212,7 @@ timestamp = os.environ["TIMESTAMP"].strip()
 cue_asks = [x.strip() for x in os.environ.get("CUE_ASKS_PAYLOAD", "").splitlines() if x.strip()]
 cue_switches = [x.strip() for x in os.environ.get("CUE_SWITCHES_PAYLOAD", "").splitlines() if x.strip()]
 remove_cue_asks = [x.strip() for x in os.environ.get("REMOVE_CUE_ASKS_PAYLOAD", "").splitlines() if x.strip()]
+delivery_gate_lines = [x.strip() for x in os.environ.get("DELIVERY_GATE_PAYLOAD", "").splitlines() if x.strip()]
 cue_match_mode = os.environ["CUE_MATCH_MODE"].strip()
 
 def get_section(name: str):
@@ -383,6 +403,9 @@ for line in default_lines:
         new_default.append(line)
 replace_section("Default Squad", "\n".join(new_default))
 
+if task_class:
+    replace_section("Task Class", f"- {task_class}")
+
 routing_match = get_section("Routing Cues")
 existing_pairs = parse_routing_pairs(split_lines(routing_match.group(2)))
 
@@ -413,6 +436,9 @@ if cue_asks and cue_switches:
     replace_section("Routing Cues", render_routing_pairs(updated_pairs))
 elif remove_cue_asks:
     replace_section("Routing Cues", render_routing_pairs(existing_pairs))
+
+if delivery_gate_lines:
+    replace_section("Delivery Gate", "\n".join(f"- {line}" for line in delivery_gate_lines))
 
 history_match = get_section("Squad History")
 history_lines = split_lines(history_match.group(2))
