@@ -140,6 +140,15 @@ chmod +x scripts/install.sh scripts/init-project.sh
   --reason "任务从实现转向验收"
 ```
 
+如果你已经知道要切到哪个 preset，现在也可以只传 `--preset`，让脚本自动补齐对应的 `Primary`、`Supporting`、`Upstream agents`，并在未显式传值时同步补齐 `Task Class`：
+
+```bash
+./scripts/update-profile.sh \
+  --project /path/to/your/repo \
+  --preset "ai-agent-stack" \
+  --reason "仓库进入 agent 工程与评估闭环阶段"
+```
+
 如果你只想补一条新的 `Routing Cues` 分支，而不覆盖原有内容：
 
 ```bash
@@ -412,6 +421,15 @@ If the project is already in motion and you want to reroute without rebuilding t
   --reason "Work shifted from implementation to verification"
 ```
 
+If you already know which preset the project should move to, you can now pass only `--preset` and let the script auto-fill the matching `Primary`, `Supporting`, `Upstream agents`, and `Task Class` when those fields are omitted:
+
+```bash
+./scripts/update-profile.sh \
+  --project /path/to/your/repo \
+  --preset "ai-agent-stack" \
+  --reason "The repo moved into agent engineering and evaluation work"
+```
+
 If you only want to add one more `Routing Cues` branch without replacing the existing ones:
 
 ```bash
@@ -469,6 +487,7 @@ When dialogue answers are provided for a new project, `dialog` mode now writes t
 For ongoing projects, `update-profile.sh` can now:
 
 - update `Default Squad`
+- reroute by `--preset` and auto-fill the matching squad defaults
 - update `Routing Cues` via `replace`, `append`, or `remove`
 - use either `exact` or `semantic` matching for `append` / `remove`
 - update `Task Class` and `Delivery Gate`

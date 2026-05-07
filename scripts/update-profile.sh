@@ -25,7 +25,7 @@ Usage:
 Options:
   --project PATH          Target project directory containing .codex/project-profile.md
   --lang zh|en            Optional explicit profile language override
-  --preset VALUE          Replace the Preset line in Default Squad
+  --preset VALUE          Replace the Preset line and auto-fill matching squad defaults when other fields are omitted
   --primary VALUE         Replace the Primary line in Default Squad
   --supporting VALUE      Replace the Supporting line, comma-separated
   --upstream VALUE        Replace Upstream agents, newline-separated with literal \n or comma-separated
@@ -215,6 +215,108 @@ remove_cue_asks = [x.strip() for x in os.environ.get("REMOVE_CUE_ASKS_PAYLOAD", 
 delivery_gate_lines = [x.strip() for x in os.environ.get("DELIVERY_GATE_PAYLOAD", "").splitlines() if x.strip()]
 cue_match_mode = os.environ["CUE_MATCH_MODE"].strip()
 
+PRESET_DEFAULTS = {
+    "frontend-product": {
+        "primary": "Frontend Developer",
+        "supporting": "UI Designer,UX Architect,Reality Checker",
+        "upstream": [
+            "upstream-agents/engineering/engineering-frontend-developer.md",
+            "upstream-agents/design/design-ui-designer.md",
+            "upstream-agents/design/design-ux-architect.md",
+            "upstream-agents/testing/testing-reality-checker.md",
+        ],
+        "task_class": "medium",
+    },
+    "backend-service": {
+        "primary": "Backend Architect",
+        "supporting": "API Tester,Software Architect,Technical Writer",
+        "upstream": [
+            "upstream-agents/engineering/engineering-backend-architect.md",
+            "upstream-agents/testing/testing-api-tester.md",
+            "upstream-agents/engineering/engineering-software-architect.md",
+            "upstream-agents/engineering/engineering-technical-writer.md",
+        ],
+        "task_class": "large",
+    },
+    "marketing-site": {
+        "primary": "Content Creator",
+        "supporting": "Brand Guardian,Visual Storyteller,SEO Specialist",
+        "upstream": [
+            "upstream-agents/marketing/marketing-content-creator.md",
+            "upstream-agents/design/design-brand-guardian.md",
+            "upstream-agents/design/design-visual-storyteller.md",
+            "upstream-agents/marketing/marketing-seo-specialist.md",
+        ],
+        "task_class": "lightweight",
+    },
+    "ppt-storytelling": {
+        "primary": "Visual Storyteller",
+        "supporting": "Brand Guardian,UI Designer,Project Shepherd",
+        "upstream": [
+            "upstream-agents/design/design-visual-storyteller.md",
+            "upstream-agents/design/design-brand-guardian.md",
+            "upstream-agents/design/design-ui-designer.md",
+            "upstream-agents/project-management/project-management-project-shepherd.md",
+        ],
+        "task_class": "medium",
+    },
+    "zero-to-one-startup": {
+        "primary": "Product Manager",
+        "supporting": "Rapid Prototyper,Project Shepherd,Reality Checker",
+        "upstream": [
+            "upstream-agents/product/product-manager.md",
+            "upstream-agents/engineering/engineering-rapid-prototyper.md",
+            "upstream-agents/project-management/project-management-project-shepherd.md",
+            "upstream-agents/testing/testing-reality-checker.md",
+        ],
+        "task_class": "lightweight",
+    },
+    "ai-agent-stack": {
+        "primary": "AI Engineer",
+        "supporting": "MCP Builder,Autonomous Optimization Architect,Reality Checker",
+        "upstream": [
+            "upstream-agents/engineering/engineering-ai-engineer.md",
+            "upstream-agents/specialized/specialized-mcp-builder.md",
+            "upstream-agents/engineering/engineering-autonomous-optimization-architect.md",
+            "upstream-agents/testing/testing-reality-checker.md",
+        ],
+        "task_class": "large",
+    },
+    "game-production": {
+        "primary": "Game Designer",
+        "supporting": "Technical Artist,Level Designer,Reality Checker",
+        "upstream": [
+            "upstream-agents/game-development/game-designer.md",
+            "upstream-agents/game-development/technical-artist.md",
+            "upstream-agents/game-development/level-designer.md",
+            "upstream-agents/testing/testing-reality-checker.md",
+        ],
+        "task_class": "large",
+    },
+    "china-market-growth": {
+        "primary": "China Market Localization Strategist",
+        "supporting": "Xiaohongshu Specialist,Douyin Strategist,WeChat Official Account",
+        "upstream": [
+            "upstream-agents/marketing/marketing-china-market-localization-strategist.md",
+            "upstream-agents/marketing/marketing-xiaohongshu-specialist.md",
+            "upstream-agents/marketing/marketing-douyin-strategist.md",
+            "upstream-agents/marketing/marketing-wechat-official-account.md",
+        ],
+        "task_class": "medium",
+    },
+    "spatial-computing": {
+        "primary": "XR Interface Architect",
+        "supporting": "XR Immersive Developer,VisionOS Spatial Engineer,Reality Checker",
+        "upstream": [
+            "upstream-agents/spatial-computing/xr-interface-architect.md",
+            "upstream-agents/spatial-computing/xr-immersive-developer.md",
+            "upstream-agents/spatial-computing/visionos-spatial-engineer.md",
+            "upstream-agents/testing/testing-reality-checker.md",
+        ],
+        "task_class": "large",
+    },
+}
+
 def get_section(name: str):
     pattern = rf"(## {re.escape(name)}\n)(.*?)(?=\n## |\Z)"
     match = re.search(pattern, text, flags=re.S)
@@ -240,6 +342,18 @@ def format_upstream(raw: str):
     normalized = raw.replace("\\n", "\n").replace(",", "\n")
     items = [item.strip() for item in normalized.splitlines() if item.strip()]
     return [f"- `{item}`" for item in items]
+
+if preset:
+    defaults = PRESET_DEFAULTS.get(preset)
+    if defaults:
+        if not primary:
+            primary = defaults["primary"]
+        if not supporting:
+            supporting = defaults["supporting"]
+        if not upstream_agents:
+            upstream_agents = "\n".join(defaults["upstream"])
+        if not task_class:
+            task_class = defaults["task_class"]
 
 def parse_routing_pairs(lines):
     pairs = []
@@ -396,9 +510,12 @@ for line in default_lines:
         new_default.append(line)
         if upstream_agents:
             new_default.extend(format_upstream(upstream_agents))
-    elif upstream_started and line.startswith("- `"):
+    elif upstream_started and (line.startswith("- `") or line.startswith("  - `")):
         if not upstream_agents:
             new_default.append(line)
+    elif upstream_started and line.startswith("- If user asks for:"):
+        upstream_started = False
+        new_default.append(line)
     else:
         new_default.append(line)
 replace_section("Default Squad", "\n".join(new_default))
