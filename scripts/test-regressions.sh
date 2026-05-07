@@ -84,6 +84,33 @@ run_dialog_ppt_case() {
   assert_contains "$profile" '- If user asks for: 页面实现、样式、交互落地'
 }
 
+run_ppt_reroute_case() {
+  local tmpdir profile
+  tmpdir="$(mktemp -d /tmp/router-guard-test-ppt-reroute-XXXXXX)"
+  mkdir -p "$tmpdir/project"
+
+  "$INIT_SCRIPT" \
+    --project "$tmpdir/project" \
+    --mode dialog \
+    --lang zh \
+    --goal "ppt" \
+    --artifact "页面或演示稿" \
+    --success "更好看" \
+    --first-move "clarify-story" \
+    --force >/dev/null
+
+  "$UPDATE_SCRIPT" \
+    --project "$tmpdir/project" \
+    --preset "ppt-storytelling" \
+    --reason "项目已进入 deck 交付与统筹阶段" >/dev/null
+
+  profile="$tmpdir/project/.codex/project-profile.md"
+
+  assert_contains "$profile" '- Preset: `ppt-storytelling`'
+  assert_contains "$profile" '- Supporting: `Brand Guardian`、`UI Designer`、`Project Shepherd`'
+  assert_contains "$profile" '- Latest change reason: 项目已进入 deck 交付与统筹阶段'
+}
+
 validate_shared_preset_json() {
   PRESET_DEFAULTS_FILE="${SOURCE_DIR}/references/preset-defaults.json" \
   python3 - <<'PY'
@@ -105,6 +132,9 @@ required_presets = {
     "game-production",
     "china-market-growth",
     "spatial-computing",
+}
+allowed_group_differences = {
+    "ppt-storytelling",
 }
 
 for group in required_groups:
@@ -128,6 +158,14 @@ for group in required_groups:
                 raise SystemExit(f"{group}/{preset_name}/{lang}: delivery gate must have 3 items")
             if not task_class:
                 raise SystemExit(f"{group}/{preset_name}/{lang}: task_class missing")
+
+for preset_name in required_presets:
+    reroute_preset = data["reroute"][preset_name]
+    dialog_preset = data["dialog"][preset_name]
+    if preset_name in allowed_group_differences:
+        continue
+    if reroute_preset != dialog_preset:
+        raise SystemExit(f"{preset_name}: reroute/dialog should match unless explicitly allowed to differ")
 
 reroute_ppt = data["reroute"]["ppt-storytelling"]["supporting"]
 dialog_ppt = data["dialog"]["ppt-storytelling"]["supporting"]
@@ -171,6 +209,7 @@ run_scan_ai_case
 run_dialog_game_case
 run_dialog_ppt_case
 run_preset_reroute_case
+run_ppt_reroute_case
 validate_shared_preset_json
 
 echo "Regression tests passed."
