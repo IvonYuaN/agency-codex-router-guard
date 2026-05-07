@@ -206,6 +206,48 @@ project_matches_text() {
   rg -n -i -m 1 "${pattern}" "${search_files[@]}" >/dev/null 2>&1
 }
 
+read_preset_defaults() {
+  local preset_key="$1"
+  local lang_key="$2"
+
+  PRESET_DEFAULTS_FILE="${SOURCE_DIR}/references/preset-defaults.json" \
+  PRESET_KEY="${preset_key}" \
+  PRESET_LANG="${lang_key}" \
+  python3 - <<'PY'
+from pathlib import Path
+import json
+import os
+
+defaults = json.loads(Path(os.environ["PRESET_DEFAULTS_FILE"]).read_text()).get("reroute", {})
+preset = defaults.get(os.environ["PRESET_KEY"])
+if not preset:
+    raise SystemExit(f"Unknown preset: {os.environ['PRESET_KEY']}")
+
+lang = os.environ["PRESET_LANG"]
+supporting = list(preset.get("supporting", []))
+upstream = list(preset.get("upstream", []))
+routing = list(preset.get("routing", {}).get(lang, []))
+delivery_gate = list(preset.get("delivery_gate", {}).get(lang, []))
+task_class = preset.get("task_class", {}).get(lang, "")
+
+values = [
+    preset.get("primary", ""),
+    *supporting[:3],
+    *([""] * max(0, 3 - len(supporting))),
+    *upstream[:4],
+    *([""] * max(0, 4 - len(upstream))),
+    task_class,
+    *[entry.get("ask", "") for entry in routing[:3]],
+    *([""] * max(0, 3 - len(routing))),
+    *[entry.get("switch", "") for entry in routing[:3]],
+    *([""] * max(0, 3 - len(routing))),
+    *delivery_gate[:3],
+    *([""] * max(0, 3 - len(delivery_gate))),
+]
+print("\n".join(values))
+PY
+}
+
 write_scan_profile() {
   local type stack artifacts preset primary implementer verifier support_a support_b support_c cue_a cue_b cue_c top_files
   local upstream_primary upstream_support_a upstream_support_b upstream_support_c
@@ -1099,6 +1141,7 @@ normalize_token() {
 
 write_dialog_profile() {
   local goal success stack artifact move normalized_goal normalized_stack normalized_artifact normalized_move
+  local use_shared_preset_defaults="true"
   local type summary_stack artifacts preset primary support_a support_b support_c upstream_primary upstream_support_a upstream_support_b upstream_support_c
   local current_goal_1 current_goal_2 constraint_1 constraint_2 cue_1 switch_1 cue_2 switch_2 cue_3 switch_3
   local heur_1 heur_2 anti_1 anti_2 handoff_1 handoff_2 verify_1 verify_2 verify_3 evo_1 evo_2
@@ -1120,6 +1163,7 @@ write_dialog_profile() {
 
   case "${normalized_goal}" in
     website|single-page|presentation|deck|ppt)
+      use_shared_preset_defaults="false"
       type="presentation-style web or deck concept"
       summary_stack="new project, ${normalized_stack}"
       artifacts="landing page, deck, or presentation-style deliverable"
@@ -1706,6 +1750,67 @@ write_dialog_profile() {
       gate_en_3="Discussion is not being reported as progress"
       ;;
   esac
+
+  if [[ "${use_shared_preset_defaults}" == "true" ]]; then
+    local -a preset_zh=()
+    local -a preset_en=()
+
+    while IFS= read -r line; do
+      preset_zh+=("${line}")
+    done < <(read_preset_defaults "${preset}" "zh")
+    while IFS= read -r line; do
+      preset_en+=("${line}")
+    done < <(read_preset_defaults "${preset}" "en")
+
+    primary="${preset_zh[0]:-}"
+    support_a="${preset_zh[1]:-}"
+    support_b="${preset_zh[2]:-}"
+    support_c="${preset_zh[3]:-}"
+    upstream_primary="${preset_zh[4]:-}"
+    upstream_support_a="${preset_zh[5]:-}"
+    upstream_support_b="${preset_zh[6]:-}"
+    upstream_support_c="${preset_zh[7]:-}"
+    task_class="${preset_zh[8]:-}"
+    cue_1="${preset_zh[9]:-}"
+    cue_2="${preset_zh[10]:-}"
+    cue_3="${preset_zh[11]:-}"
+    switch_1="${preset_zh[12]:-}"
+    switch_2="${preset_zh[13]:-}"
+    switch_3="${preset_zh[14]:-}"
+    gate_1="${preset_zh[15]:-}"
+    gate_2="${preset_zh[16]:-}"
+    gate_3="${preset_zh[17]:-}"
+
+    task_class_en="${preset_en[8]:-}"
+    cue_en_1="${preset_en[9]:-}"
+    cue_en_2="${preset_en[10]:-}"
+    cue_en_3="${preset_en[11]:-}"
+    switch_en_1="${preset_en[12]:-}"
+    switch_en_2="${preset_en[13]:-}"
+    switch_en_3="${preset_en[14]:-}"
+    gate_en_1="${preset_en[15]:-}"
+    gate_en_2="${preset_en[16]:-}"
+    gate_en_3="${preset_en[17]:-}"
+  fi
+
+  if [[ "${preset}" == "game-production" ]]; then
+    case "${normalized_stack}" in
+      *unity*)
+        primary="Unity Architect"
+        upstream_primary="upstream-agents/game-development/unity/unity-architect.md"
+        ;;
+      *godot*)
+        primary="Godot Gameplay Scripter"
+        upstream_primary="upstream-agents/game-development/godot/godot-gameplay-scripter.md"
+        ;;
+      *unreal*)
+        primary="Unreal Systems Engineer"
+        upstream_primary="upstream-agents/game-development/unreal-engine/unreal-systems-engineer.md"
+        ;;
+    esac
+    switch_1="${primary}"
+    switch_en_1="${primary}"
+  fi
 
   if [[ "${PROFILE_LANG}" == "zh" ]]; then
     cat > "${PROFILE_FILE}" <<EOF

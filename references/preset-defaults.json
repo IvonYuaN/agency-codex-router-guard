@@ -1,0 +1,492 @@
+{
+  "reroute": {
+    "frontend-product": {
+      "primary": "Frontend Developer",
+      "supporting": ["UI Designer", "UX Architect", "Reality Checker"],
+      "upstream": [
+        "upstream-agents/engineering/engineering-frontend-developer.md",
+        "upstream-agents/design/design-ui-designer.md",
+        "upstream-agents/design/design-ux-architect.md",
+        "upstream-agents/testing/testing-reality-checker.md"
+      ],
+      "task_class": {"zh": "medium", "en": "medium"},
+      "routing": {
+        "zh": [
+          {"ask": "页面、组件、交互流程", "switch": "Frontend Developer"},
+          {"ask": "信息架构、流程、体验判断", "switch": "UX Architect"},
+          {"ask": "响应式、验收、用户可见行为验证", "switch": "Reality Checker"}
+        ],
+        "en": [
+          {"ask": "pages, components, and interaction flows", "switch": "Frontend Developer"},
+          {"ask": "information architecture, flow design, and UX judgment", "switch": "UX Architect"},
+          {"ask": "responsiveness, acceptance, and user-visible behavior verification", "switch": "Reality Checker"}
+        ]
+      },
+      "delivery_gate": {
+        "zh": ["关键用户路径已有最小可验证闭环", "主要页面或视口已有可见验证", "未验证体验点已列出"],
+        "en": ["A minimal verifiable loop exists for the core user path", "The main page or viewport behavior has visible validation", "Any unverified UX point is listed"]
+      }
+    },
+    "backend-service": {
+      "primary": "Backend Architect",
+      "supporting": ["API Tester", "Software Architect", "Technical Writer"],
+      "upstream": [
+        "upstream-agents/engineering/engineering-backend-architect.md",
+        "upstream-agents/testing/testing-api-tester.md",
+        "upstream-agents/engineering/engineering-software-architect.md",
+        "upstream-agents/engineering/engineering-technical-writer.md"
+      ],
+      "task_class": {"zh": "large", "en": "large"},
+      "routing": {
+        "zh": [
+          {"ask": "接口设计、模块边界、服务流程", "switch": "Backend Architect"},
+          {"ask": "验证输入输出、错误路径、调用约定", "switch": "API Tester"},
+          {"ask": "整体结构、模块边界、设计文档", "switch": "Software Architect"}
+        ],
+        "en": [
+          {"ask": "API design, module boundaries, and service flow", "switch": "Backend Architect"},
+          {"ask": "input/output validation, error paths, and calling contracts", "switch": "API Tester"},
+          {"ask": "overall structure, module boundaries, and system design docs", "switch": "Software Architect"}
+        ]
+      },
+      "delivery_gate": {
+        "zh": ["关键接口或流程已有验证证据", "边界、风险与未覆盖项已说明", "没有把设计描述误报成已交付能力"],
+        "en": ["Critical interfaces or flows have verification evidence", "Boundaries, risks, and uncovered areas are documented", "Design description is not being reported as delivered capability"]
+      }
+    },
+    "marketing-site": {
+      "primary": "Content Creator",
+      "supporting": ["Brand Guardian", "Visual Storyteller", "SEO Specialist"],
+      "upstream": [
+        "upstream-agents/marketing/marketing-content-creator.md",
+        "upstream-agents/design/design-brand-guardian.md",
+        "upstream-agents/design/design-visual-storyteller.md",
+        "upstream-agents/marketing/marketing-seo-specialist.md"
+      ],
+      "task_class": {"zh": "lightweight", "en": "lightweight"},
+      "routing": {
+        "zh": [
+          {"ask": "主张、文案、内容框架", "switch": "Content Creator"},
+          {"ask": "品牌一致性、视觉叙事", "switch": "Brand Guardian"},
+          {"ask": "搜索表现、SEO、传播验证", "switch": "SEO Specialist"}
+        ],
+        "en": [
+          {"ask": "messaging, copy, and content framing", "switch": "Content Creator"},
+          {"ask": "brand consistency and visual narrative", "switch": "Brand Guardian"},
+          {"ask": "search performance, SEO, and distribution validation", "switch": "SEO Specialist"}
+        ]
+      },
+      "delivery_gate": {
+        "zh": ["核心主张和预期动作已清晰可见", "品牌与转化目标未互相打架", "未验证渠道效果的部分已说明"],
+        "en": ["The core claim and intended action are clear", "Brand and conversion goals are not fighting each other", "Any unverified channel-effect assumption is stated"]
+      }
+    },
+    "ppt-storytelling": {
+      "primary": "Visual Storyteller",
+      "supporting": ["Brand Guardian", "UI Designer", "Project Shepherd"],
+      "upstream": [
+        "upstream-agents/design/design-visual-storyteller.md",
+        "upstream-agents/design/design-brand-guardian.md",
+        "upstream-agents/design/design-ui-designer.md",
+        "upstream-agents/project-management/project-management-project-shepherd.md"
+      ],
+      "task_class": {"zh": "medium", "en": "medium"},
+      "routing": {
+        "zh": [
+          {"ask": "布局、叙事结构、视觉层级", "switch": "Visual Storyteller"},
+          {"ask": "页面实现、样式、交互落地", "switch": "Frontend Developer"},
+          {"ask": "可交付性、验证、响应式检查", "switch": "Reality Checker"}
+        ],
+        "en": [
+          {"ask": "layout, narrative structure, and visual hierarchy", "switch": "Visual Storyteller"},
+          {"ask": "page implementation, styling, and interaction delivery", "switch": "Frontend Developer"},
+          {"ask": "readiness, verification, and responsive review", "switch": "Reality Checker"}
+        ]
+      },
+      "delivery_gate": {
+        "zh": ["核心叙事和页面骨架已可见可评审", "视觉判断与交付判断已区分", "未落地的实现或验证空白已说明"],
+        "en": ["The core narrative and page skeleton are visible and reviewable", "Design judgment and delivery judgment are clearly separated", "Any implementation or verification gap is stated explicitly"]
+      }
+    },
+    "zero-to-one-startup": {
+      "primary": "Product Manager",
+      "supporting": ["Rapid Prototyper", "Project Shepherd", "Reality Checker"],
+      "upstream": [
+        "upstream-agents/product/product-manager.md",
+        "upstream-agents/engineering/engineering-rapid-prototyper.md",
+        "upstream-agents/project-management/project-management-project-shepherd.md",
+        "upstream-agents/testing/testing-reality-checker.md"
+      ],
+      "task_class": {"zh": "lightweight", "en": "lightweight"},
+      "routing": {
+        "zh": [
+          {"ask": "目标、范围、优先级、路线", "switch": "Product Manager"},
+          {"ask": "快速原型、第一版实现、方向验证", "switch": "Rapid Prototyper"},
+          {"ask": "验收、现实校验、是否真的有进展", "switch": "Reality Checker"}
+        ],
+        "en": [
+          {"ask": "goal setting, scope, priorities, and roadmap", "switch": "Product Manager"},
+          {"ask": "rapid prototypes, first implementation, and direction validation", "switch": "Rapid Prototyper"},
+          {"ask": "acceptance, reality checks, and whether progress is real", "switch": "Reality Checker"}
+        ]
+      },
+      "delivery_gate": {
+        "zh": ["当前输出确实降低了一个关键不确定性", "下一步决策所需证据已说明", "没有把讨论误报成进展"],
+        "en": ["The current output genuinely reduced a key uncertainty", "The next evidence needed for a decision is stated", "Discussion is not being reported as progress"]
+      }
+    },
+    "ai-agent-stack": {
+      "primary": "AI Engineer",
+      "supporting": ["MCP Builder", "Autonomous Optimization Architect", "Reality Checker"],
+      "upstream": [
+        "upstream-agents/engineering/engineering-ai-engineer.md",
+        "upstream-agents/specialized/specialized-mcp-builder.md",
+        "upstream-agents/engineering/engineering-autonomous-optimization-architect.md",
+        "upstream-agents/testing/testing-reality-checker.md"
+      ],
+      "task_class": {"zh": "large", "en": "large"},
+      "routing": {
+        "zh": [
+          {"ask": "agent 设计、prompt、tool 调用、上下文策略", "switch": "AI Engineer"},
+          {"ask": "MCP、工具接入、外部系统连接", "switch": "MCP Builder"},
+          {"ask": "评估、回归、成本稳定性、是否真的有效", "switch": "Autonomous Optimization Architect"}
+        ],
+        "en": [
+          {"ask": "agent design, prompts, tool calls, and context strategy", "switch": "AI Engineer"},
+          {"ask": "MCP, tool integration, and external-system connectivity", "switch": "MCP Builder"},
+          {"ask": "evaluation, regression, cost stability, and whether it really works", "switch": "Autonomous Optimization Architect"}
+        ]
+      },
+      "delivery_gate": {
+        "zh": ["关键 agent 回路已有真实样例验证", "失败模式、评估方式与回退路径已说明", "没有把 prompt 想法误报成稳定能力"],
+        "en": ["Critical agent loops have real-example verification", "Failure modes, evaluation methods, and rollback paths are documented", "Prompt ideas are not being reported as stable capability"]
+      }
+    },
+    "game-production": {
+      "primary": "Game Designer",
+      "supporting": ["Technical Artist", "Level Designer", "Reality Checker"],
+      "upstream": [
+        "upstream-agents/game-development/game-designer.md",
+        "upstream-agents/game-development/technical-artist.md",
+        "upstream-agents/game-development/level-designer.md",
+        "upstream-agents/testing/testing-reality-checker.md"
+      ],
+      "task_class": {"zh": "large", "en": "large"},
+      "routing": {
+        "zh": [
+          {"ask": "玩法循环、系统设计、任务流程", "switch": "Game Designer"},
+          {"ask": "美术实现、技术美术、性能和资源管线", "switch": "Technical Artist"},
+          {"ask": "关卡、节奏、玩家体验验证", "switch": "Level Designer"}
+        ],
+        "en": [
+          {"ask": "core loop, systems design, and task flow", "switch": "Game Designer"},
+          {"ask": "visual implementation, technical art, performance, and asset pipeline", "switch": "Technical Artist"},
+          {"ask": "level pacing and player experience validation", "switch": "Level Designer"}
+        ]
+      },
+      "delivery_gate": {
+        "zh": ["核心玩法切片已有可玩验证", "性能、反馈或美术实现至少有一项有真实证据", "未验证的平台或内容范围已说明"],
+        "en": ["The core gameplay slice has playable verification", "Performance, feedback, or visual implementation has real evidence", "Any unverified platform or content scope is stated"]
+      }
+    },
+    "china-market-growth": {
+      "primary": "China Market Localization Strategist",
+      "supporting": ["Xiaohongshu Specialist", "Douyin Strategist", "WeChat Official Account"],
+      "upstream": [
+        "upstream-agents/marketing/marketing-china-market-localization-strategist.md",
+        "upstream-agents/marketing/marketing-xiaohongshu-specialist.md",
+        "upstream-agents/marketing/marketing-douyin-strategist.md",
+        "upstream-agents/marketing/marketing-wechat-official-account.md"
+      ],
+      "task_class": {"zh": "medium", "en": "medium"},
+      "routing": {
+        "zh": [
+          {"ask": "本地化定位、渠道策略、内容矩阵", "switch": "China Market Localization Strategist"},
+          {"ask": "小红书、抖音等平台内容与节奏", "switch": "Xiaohongshu Specialist"},
+          {"ask": "公众号、私域承接、留存链路", "switch": "WeChat Official Account"}
+        ],
+        "en": [
+          {"ask": "localization positioning, channel strategy, and content matrix", "switch": "China Market Localization Strategist"},
+          {"ask": "Xiaohongshu, Douyin, and platform-specific content rhythm", "switch": "Xiaohongshu Specialist"},
+          {"ask": "WeChat, private-domain capture, and retention loops", "switch": "WeChat Official Account"}
+        ]
+      },
+      "delivery_gate": {
+        "zh": ["核心渠道分工和主张已清楚", "至少一个渠道已有样例内容或验证标准", "未验证增长假设已说明"],
+        "en": ["The core channel split and message are clear", "At least one channel has sample content or a validation standard", "Any unverified growth assumption is stated"]
+      }
+    },
+    "spatial-computing": {
+      "primary": "XR Interface Architect",
+      "supporting": ["XR Immersive Developer", "VisionOS Spatial Engineer", "Reality Checker"],
+      "upstream": [
+        "upstream-agents/spatial-computing/xr-interface-architect.md",
+        "upstream-agents/spatial-computing/xr-immersive-developer.md",
+        "upstream-agents/spatial-computing/visionos-spatial-engineer.md",
+        "upstream-agents/testing/testing-reality-checker.md"
+      ],
+      "task_class": {"zh": "large", "en": "large"},
+      "routing": {
+        "zh": [
+          {"ask": "空间交互、心智模型、任务流", "switch": "XR Interface Architect"},
+          {"ask": "沉浸实现、环境效果、空间体验细节", "switch": "XR Immersive Developer"},
+          {"ask": "visionOS 或设备约束、性能与舒适性", "switch": "VisionOS Spatial Engineer"}
+        ],
+        "en": [
+          {"ask": "spatial interaction, mental model, and task flow", "switch": "XR Interface Architect"},
+          {"ask": "immersive implementation, environmental effects, and spatial experience details", "switch": "XR Immersive Developer"},
+          {"ask": "visionOS or device constraints, performance, and comfort", "switch": "VisionOS Spatial Engineer"}
+        ]
+      },
+      "delivery_gate": {
+        "zh": ["核心空间任务流已有实际验证", "可达性、舒适性或性能至少有一项有证据", "未验证的设备或空间判断已说明"],
+        "en": ["The core spatial task flow has real validation", "Reachability, comfort, or performance has evidence", "Any unverified device or spatial judgment is stated"]
+      }
+    }
+  },
+  "dialog": {
+    "frontend-product": {
+      "primary": "Frontend Developer",
+      "supporting": ["UI Designer", "UX Architect", "Reality Checker"],
+      "upstream": [
+        "upstream-agents/engineering/engineering-frontend-developer.md",
+        "upstream-agents/design/design-ui-designer.md",
+        "upstream-agents/design/design-ux-architect.md",
+        "upstream-agents/testing/testing-reality-checker.md"
+      ],
+      "task_class": {"zh": "medium", "en": "medium"},
+      "routing": {
+        "zh": [
+          {"ask": "页面、组件、交互流程", "switch": "Frontend Developer"},
+          {"ask": "信息架构、流程、体验判断", "switch": "UX Architect"},
+          {"ask": "响应式、验收、用户可见行为验证", "switch": "Reality Checker"}
+        ],
+        "en": [
+          {"ask": "pages, components, and interaction flows", "switch": "Frontend Developer"},
+          {"ask": "information architecture, flow design, and UX judgment", "switch": "UX Architect"},
+          {"ask": "responsiveness, acceptance, and user-visible behavior verification", "switch": "Reality Checker"}
+        ]
+      },
+      "delivery_gate": {
+        "zh": ["关键用户路径已有最小可验证闭环", "主要页面或视口已有可见验证", "未验证体验点已列出"],
+        "en": ["A minimal verifiable loop exists for the core user path", "The main page or viewport behavior has visible validation", "Any unverified UX point is listed"]
+      }
+    },
+    "backend-service": {
+      "primary": "Backend Architect",
+      "supporting": ["API Tester", "Software Architect", "Technical Writer"],
+      "upstream": [
+        "upstream-agents/engineering/engineering-backend-architect.md",
+        "upstream-agents/testing/testing-api-tester.md",
+        "upstream-agents/engineering/engineering-software-architect.md",
+        "upstream-agents/engineering/engineering-technical-writer.md"
+      ],
+      "task_class": {"zh": "large", "en": "large"},
+      "routing": {
+        "zh": [
+          {"ask": "接口设计、模块边界、服务流程", "switch": "Backend Architect"},
+          {"ask": "验证输入输出、错误路径、调用约定", "switch": "API Tester"},
+          {"ask": "整体结构、模块边界、设计文档", "switch": "Software Architect"}
+        ],
+        "en": [
+          {"ask": "API design, module boundaries, and service flow", "switch": "Backend Architect"},
+          {"ask": "input/output validation, error paths, and calling contracts", "switch": "API Tester"},
+          {"ask": "overall structure, module boundaries, and system design docs", "switch": "Software Architect"}
+        ]
+      },
+      "delivery_gate": {
+        "zh": ["关键接口或流程已有验证证据", "边界、风险与未覆盖项已说明", "没有把设计描述误报成已交付能力"],
+        "en": ["Critical interfaces or flows have verification evidence", "Boundaries, risks, and uncovered areas are documented", "Design description is not being reported as delivered capability"]
+      }
+    },
+    "marketing-site": {
+      "primary": "Content Creator",
+      "supporting": ["Brand Guardian", "Visual Storyteller", "SEO Specialist"],
+      "upstream": [
+        "upstream-agents/marketing/marketing-content-creator.md",
+        "upstream-agents/design/design-brand-guardian.md",
+        "upstream-agents/design/design-visual-storyteller.md",
+        "upstream-agents/marketing/marketing-seo-specialist.md"
+      ],
+      "task_class": {"zh": "lightweight", "en": "lightweight"},
+      "routing": {
+        "zh": [
+          {"ask": "主张、文案、内容框架", "switch": "Content Creator"},
+          {"ask": "品牌一致性、视觉叙事", "switch": "Brand Guardian"},
+          {"ask": "搜索表现、SEO、传播验证", "switch": "SEO Specialist"}
+        ],
+        "en": [
+          {"ask": "messaging, copy, and content framing", "switch": "Content Creator"},
+          {"ask": "brand consistency and visual narrative", "switch": "Brand Guardian"},
+          {"ask": "search performance, SEO, and distribution validation", "switch": "SEO Specialist"}
+        ]
+      },
+      "delivery_gate": {
+        "zh": ["核心主张和预期动作已清晰可见", "品牌与转化目标未互相打架", "未验证渠道效果的部分已说明"],
+        "en": ["The core claim and intended action are clear", "Brand and conversion goals are not fighting each other", "Any unverified channel-effect assumption is stated"]
+      }
+    },
+    "ppt-storytelling": {
+      "primary": "Visual Storyteller",
+      "supporting": ["UI Designer", "Frontend Developer", "Reality Checker"],
+      "upstream": [
+        "upstream-agents/design/design-visual-storyteller.md",
+        "upstream-agents/design/design-ui-designer.md",
+        "upstream-agents/engineering/engineering-frontend-developer.md",
+        "upstream-agents/testing/testing-reality-checker.md"
+      ],
+      "task_class": {"zh": "medium", "en": "medium"},
+      "routing": {
+        "zh": [
+          {"ask": "布局、叙事结构、视觉层级", "switch": "Visual Storyteller"},
+          {"ask": "页面实现、样式、交互落地", "switch": "Frontend Developer"},
+          {"ask": "可交付性、验证、响应式检查", "switch": "Reality Checker"}
+        ],
+        "en": [
+          {"ask": "layout, narrative structure, and visual hierarchy", "switch": "Visual Storyteller"},
+          {"ask": "page implementation, styling, and interaction delivery", "switch": "Frontend Developer"},
+          {"ask": "readiness, verification, and responsive review", "switch": "Reality Checker"}
+        ]
+      },
+      "delivery_gate": {
+        "zh": ["核心叙事和页面骨架已可见可评审", "视觉判断与交付判断已区分", "未落地的实现或验证空白已说明"],
+        "en": ["The core narrative and page skeleton are visible and reviewable", "Design judgment and delivery judgment are clearly separated", "Any implementation or verification gap is stated explicitly"]
+      }
+    },
+    "zero-to-one-startup": {
+      "primary": "Product Manager",
+      "supporting": ["Rapid Prototyper", "Project Shepherd", "Reality Checker"],
+      "upstream": [
+        "upstream-agents/product/product-manager.md",
+        "upstream-agents/engineering/engineering-rapid-prototyper.md",
+        "upstream-agents/project-management/project-management-project-shepherd.md",
+        "upstream-agents/testing/testing-reality-checker.md"
+      ],
+      "task_class": {"zh": "lightweight", "en": "lightweight"},
+      "routing": {
+        "zh": [
+          {"ask": "目标、范围、优先级、路线", "switch": "Product Manager"},
+          {"ask": "快速原型、第一版实现、方向验证", "switch": "Rapid Prototyper"},
+          {"ask": "验收、现实校验、是否真的有进展", "switch": "Reality Checker"}
+        ],
+        "en": [
+          {"ask": "goal setting, scope, priorities, and roadmap", "switch": "Product Manager"},
+          {"ask": "rapid prototypes, first implementation, and direction validation", "switch": "Rapid Prototyper"},
+          {"ask": "acceptance, reality checks, and whether progress is real", "switch": "Reality Checker"}
+        ]
+      },
+      "delivery_gate": {
+        "zh": ["当前输出确实降低了一个关键不确定性", "下一步决策所需证据已说明", "没有把讨论误报成进展"],
+        "en": ["The current output genuinely reduced a key uncertainty", "The next evidence needed for a decision is stated", "Discussion is not being reported as progress"]
+      }
+    },
+    "ai-agent-stack": {
+      "primary": "AI Engineer",
+      "supporting": ["MCP Builder", "Autonomous Optimization Architect", "Reality Checker"],
+      "upstream": [
+        "upstream-agents/engineering/engineering-ai-engineer.md",
+        "upstream-agents/specialized/specialized-mcp-builder.md",
+        "upstream-agents/engineering/engineering-autonomous-optimization-architect.md",
+        "upstream-agents/testing/testing-reality-checker.md"
+      ],
+      "task_class": {"zh": "large", "en": "large"},
+      "routing": {
+        "zh": [
+          {"ask": "agent 设计、prompt、tool 调用、上下文策略", "switch": "AI Engineer"},
+          {"ask": "MCP、工具接入、外部系统连接", "switch": "MCP Builder"},
+          {"ask": "评估、回归、成本稳定性、是否真的有效", "switch": "Autonomous Optimization Architect"}
+        ],
+        "en": [
+          {"ask": "agent design, prompts, tool calls, and context strategy", "switch": "AI Engineer"},
+          {"ask": "MCP, tool integration, and external-system connectivity", "switch": "MCP Builder"},
+          {"ask": "evaluation, regression, cost stability, and whether it really works", "switch": "Autonomous Optimization Architect"}
+        ]
+      },
+      "delivery_gate": {
+        "zh": ["关键 agent 回路已有真实样例验证", "失败模式、评估方式与回退路径已说明", "没有把 prompt 想法误报成稳定能力"],
+        "en": ["Critical agent loops have real-example verification", "Failure modes, evaluation methods, and rollback paths are documented", "Prompt ideas are not being reported as stable capability"]
+      }
+    },
+    "game-production": {
+      "primary": "Game Designer",
+      "supporting": ["Technical Artist", "Level Designer", "Reality Checker"],
+      "upstream": [
+        "upstream-agents/game-development/game-designer.md",
+        "upstream-agents/game-development/technical-artist.md",
+        "upstream-agents/game-development/level-designer.md",
+        "upstream-agents/testing/testing-reality-checker.md"
+      ],
+      "task_class": {"zh": "large", "en": "large"},
+      "routing": {
+        "zh": [
+          {"ask": "玩法循环、系统设计、任务流程", "switch": "Game Designer"},
+          {"ask": "美术实现、技术美术、性能和资源管线", "switch": "Technical Artist"},
+          {"ask": "关卡、节奏、玩家体验验证", "switch": "Level Designer"}
+        ],
+        "en": [
+          {"ask": "core loop, systems design, and task flow", "switch": "Game Designer"},
+          {"ask": "visual implementation, technical art, performance, and asset pipeline", "switch": "Technical Artist"},
+          {"ask": "level pacing and player experience validation", "switch": "Level Designer"}
+        ]
+      },
+      "delivery_gate": {
+        "zh": ["核心玩法切片已有可玩验证", "性能、反馈或美术实现至少有一项有真实证据", "未验证的平台或内容范围已说明"],
+        "en": ["The core gameplay slice has playable verification", "Performance, feedback, or visual implementation has real evidence", "Any unverified platform or content scope is stated"]
+      }
+    },
+    "china-market-growth": {
+      "primary": "China Market Localization Strategist",
+      "supporting": ["Xiaohongshu Specialist", "Douyin Strategist", "WeChat Official Account"],
+      "upstream": [
+        "upstream-agents/marketing/marketing-china-market-localization-strategist.md",
+        "upstream-agents/marketing/marketing-xiaohongshu-specialist.md",
+        "upstream-agents/marketing/marketing-douyin-strategist.md",
+        "upstream-agents/marketing/marketing-wechat-official-account.md"
+      ],
+      "task_class": {"zh": "medium", "en": "medium"},
+      "routing": {
+        "zh": [
+          {"ask": "本地化定位、渠道策略、内容矩阵", "switch": "China Market Localization Strategist"},
+          {"ask": "小红书、抖音等平台内容与节奏", "switch": "Xiaohongshu Specialist"},
+          {"ask": "公众号、私域承接、留存链路", "switch": "WeChat Official Account"}
+        ],
+        "en": [
+          {"ask": "localization positioning, channel strategy, and content matrix", "switch": "China Market Localization Strategist"},
+          {"ask": "Xiaohongshu, Douyin, and platform-specific content rhythm", "switch": "Xiaohongshu Specialist"},
+          {"ask": "WeChat, private-domain capture, and retention loops", "switch": "WeChat Official Account"}
+        ]
+      },
+      "delivery_gate": {
+        "zh": ["核心渠道分工和主张已清楚", "至少一个渠道已有样例内容或验证标准", "未验证增长假设已说明"],
+        "en": ["The core channel split and message are clear", "At least one channel has sample content or a validation standard", "Any unverified growth assumption is stated"]
+      }
+    },
+    "spatial-computing": {
+      "primary": "XR Interface Architect",
+      "supporting": ["XR Immersive Developer", "VisionOS Spatial Engineer", "Reality Checker"],
+      "upstream": [
+        "upstream-agents/spatial-computing/xr-interface-architect.md",
+        "upstream-agents/spatial-computing/xr-immersive-developer.md",
+        "upstream-agents/spatial-computing/visionos-spatial-engineer.md",
+        "upstream-agents/testing/testing-reality-checker.md"
+      ],
+      "task_class": {"zh": "large", "en": "large"},
+      "routing": {
+        "zh": [
+          {"ask": "空间交互、心智模型、任务流", "switch": "XR Interface Architect"},
+          {"ask": "沉浸实现、环境效果、空间体验细节", "switch": "XR Immersive Developer"},
+          {"ask": "visionOS 或设备约束、性能与舒适性", "switch": "VisionOS Spatial Engineer"}
+        ],
+        "en": [
+          {"ask": "spatial interaction, mental model, and task flow", "switch": "XR Interface Architect"},
+          {"ask": "immersive implementation, environmental effects, and spatial experience details", "switch": "XR Immersive Developer"},
+          {"ask": "visionOS or device constraints, performance, and comfort", "switch": "VisionOS Spatial Engineer"}
+        ]
+      },
+      "delivery_gate": {
+        "zh": ["核心空间任务流已有实际验证", "可达性、舒适性或性能至少有一项有证据", "未验证的设备或空间判断已说明"],
+        "en": ["The core spatial task flow has real validation", "Reachability, comfort, or performance has evidence", "Any unverified device or spatial judgment is stated"]
+      }
+    }
+  }
+}

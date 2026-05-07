@@ -6,6 +6,7 @@
 - Added preset-based reroute updates in `scripts/update-profile.sh`
 - Added preset-based reroute for default `Routing Cues`
 - Added preset-based reroute for default `Delivery Gate`
+- Added shared `references/preset-defaults.json` so reroute updates and new-project dialogue presets can reuse one preset source
 - Added `scripts/test-regressions.sh` to lock the main scan/dialog/reroute flows with repeatable regression checks
 
 ## 2026-05-06
