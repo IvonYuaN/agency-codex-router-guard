@@ -56,6 +56,7 @@ agency-codex-router-guard/
 ├── scripts/install.sh
 ├── scripts/init-project.sh
 ├── scripts/update-profile.sh
+├── scripts/validate-preset-defaults.sh
 └── scripts/scan-project.sh
 ```
 
@@ -184,6 +185,12 @@ chmod +x scripts/install.sh scripts/init-project.sh
   --reason "任务进入最终验收阶段"
 ```
 
+如果你正在维护 preset 数据本身，也可以单独校验共享默认值文件：
+
+```bash
+./scripts/validate-preset-defaults.sh
+```
+
 ## 工作方式
 
 在一个新仓库里，这个 skill 的理想流程是：
@@ -210,6 +217,22 @@ chmod +x scripts/install.sh scripts/init-project.sh
 - 在 `append` / `remove` 时支持 `exact` 与 `semantic` 两种匹配方式
 - 同步更新 `Task Class` 与 `Delivery Gate`
 - 追加带时间和原因的 `Squad History`
+
+## Preset 维护规则
+
+现在 `references/preset-defaults.json` 是 preset 默认值的单一数据源。
+
+- `reroute`：给 `update-profile.sh --preset` 使用
+- `dialog`：给 `init-project.sh --mode dialog` 使用
+- `scan`：只在“默认值与 reroute 完全一致”的分支复用这份数据；仓库特化判断仍保留在脚本中
+
+维护时建议遵守这个顺序：
+
+1. 先改 `references/preset-defaults.json`
+2. 再跑 `./scripts/validate-preset-defaults.sh`
+3. 最后跑 `./scripts/test-regressions.sh`
+
+目前只有 `ppt-storytelling` 允许 `dialog` 和 `reroute` 的默认 squad 不同；其他 preset 如果两组数据漂移，校验会直接失败。
 
 ## 项目 profile 示例
 
@@ -283,6 +306,7 @@ Use agency-codex-router-guard for this repo.
 - `update-profile.sh` 现在会结合意图分组和目标角色做更稳的分支归并，降低误合并概率
 - 扫描现有项目时，已经能自动识别并落到更深的专项 preset：AI / agent 工程、游戏开发、中国市场增长、空间计算
 - 新项目对话模式现在也能直接生成这些专项 preset，而不是只落到通用 web / api / content 模板
+- `references/preset-defaults.json` 现在已经成为 `reroute` / `dialog` 共享 preset 数据源，并有独立校验脚本
 
 下一步更值得继续做的增强：
 
@@ -367,6 +391,7 @@ agency-codex-router-guard/
 ├── scripts/install.sh
 ├── scripts/init-project.sh
 ├── scripts/update-profile.sh
+├── scripts/validate-preset-defaults.sh
 └── scripts/scan-project.sh
 ```
 
@@ -495,6 +520,12 @@ If the task has clearly moved into another phase, you can update `Task Class` an
   --reason "Work moved into final verification"
 ```
 
+If you are maintaining preset data itself, you can also validate the shared defaults file directly:
+
+```bash
+./scripts/validate-preset-defaults.sh
+```
+
 ## How it works
 
 On a new repo, the skill should:
@@ -524,6 +555,22 @@ For ongoing projects, `update-profile.sh` can now:
 - use either `exact` or `semantic` matching for `append` / `remove`
 - update `Task Class` and `Delivery Gate`
 - append timestamped `Squad History` entries with reroute reasons
+
+## Preset Maintenance Rules
+
+`references/preset-defaults.json` is now the single source of truth for preset defaults.
+
+- `reroute`: used by `update-profile.sh --preset`
+- `dialog`: used by `init-project.sh --mode dialog`
+- `scan`: only reuses this data on branches whose defaults truly match `reroute`; repository-specific scan behavior still stays in code
+
+Recommended maintenance order:
+
+1. edit `references/preset-defaults.json`
+2. run `./scripts/validate-preset-defaults.sh`
+3. run `./scripts/test-regressions.sh`
+
+Right now only `ppt-storytelling` is allowed to differ between `dialog` and `reroute`. If any other preset drifts across those groups, validation will fail.
 
 ## Example project profiles
 
@@ -597,6 +644,7 @@ Already improved in this version:
 - `update-profile.sh` now combines intent groups and target-role signatures to reduce accidental branch merges
 - Existing-project scan can now auto-route into deeper presets for AI/agent engineering, game development, China-market growth, and spatial computing
 - New-project dialogue mode can now generate those deeper presets directly instead of only falling back to generic web/API/content templates
+- `references/preset-defaults.json` is now the shared preset source for `reroute` and `dialog`, with a dedicated validation script
 
 Best next upgrades:
 
