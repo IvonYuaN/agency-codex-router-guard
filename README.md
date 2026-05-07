@@ -238,6 +238,9 @@ Use agency-codex-router-guard for this repo.
 - `msitarzewski/agency-agents`
   - 现在不只是借路由思路，也真正引入了 upstream agent 资产目录
   - 同时补了 curated core catalog 和 presets 层
+- `OpenSpec + Superpowers + gstack`
+  - 吸收了“需求层 / 执行层 / 验证层”分治方法，而不是把所有问题都混在一次对话里解决
+  - 吸收了任务分级、交付门禁、Harness Engineering 棘轮这几套更适合生产环境的约束
 
 ## 说明
 
@@ -481,6 +484,9 @@ Best next upgrades:
 - `msitarzewski/agency-agents`
   - Now included as actual upstream agent assets under `upstream-agents/`
   - Also represented through a curated core catalog plus preset layer
+- `OpenSpec + Superpowers + gstack`
+  - Contributed the separation between specification, execution, and verification layers
+  - Also reinforced task sizing, delivery gates, and the Harness Engineering ratchet idea
 
 ## Notes
 

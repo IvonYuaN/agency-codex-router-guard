@@ -12,6 +12,7 @@ This skill also benefits from:
 - `references/distilled-agent-frameworks.md` for specialist distillation heuristics
 - `references/nuwa-distillation-principles.md` for cognitive operating system extraction
 - `references/darwin-optimization-principles.md` for ratchet-style skill evolution
+- `references/openspec-superpowers-gstack-distillation.md` for spec / execution / verification separation and delivery gates
 - `references/high-agency-escalation.md` for optional anti-spinning escalation
 - `references/agency-agents-core-catalog.md` for the curated upstream agent layer
 - `references/upstream-agent-divisions.md` for the full upstream division map
@@ -62,6 +63,11 @@ For existing repos, prefer `scripts/scan-project.sh` or follow the same logic di
 
 For new projects, use `examples/new-project-dialogues.zh-CN.md` or `examples/new-project-dialogues.md`.
 
+If the repo already uses explicit change specs such as `openspec/changes/`:
+- treat proposal/design/tasks docs as routing input for medium and large changes
+- prefer spec alignment before wide implementation
+- use code as evidence, not as the only definition of intent
+
 ### Step 3: Select an active squad
 
 Choose 1 primary specialist and up to 3 supporting specialists.
@@ -70,6 +76,17 @@ Prefer small squads:
 - simple bug or feature: 1-2 specialists
 - medium implementation: 2-3 specialists
 - cross-functional launch or redesign: 3-4 specialists
+
+Also size the workflow before choosing ceremony:
+- lightweight task
+  - small, bounded, low-risk change
+  - prefer direct execution plus targeted verification
+- medium task
+  - bounded multi-file feature or refactor
+  - prefer explicit plan, clearer routing cues, and stronger verification
+- large task
+  - cross-module or contract-moving change
+  - prefer spec-first alignment, staged execution, and stricter delivery gate
 
 For coding work, map specialist intent onto Codex behavior instead of roleplay theater. The output should be better execution, not more ceremony.
 
@@ -120,6 +137,22 @@ This is inspired by `tanweai/pua`, but should usually be applied as behavior, no
 - require evidence before claiming success
 - require search or source-reading before more guessing
 - require adjacency checks after a fix
+
+### Step 7: Apply delivery gates
+
+Do not treat work as complete unless:
+- the intended change is implemented
+- the relevant verification was actually run, or the gap is stated plainly
+- the active squad and routing still make sense after the result
+- no success claim depends on invented evidence
+
+### Step 8: Ratchet repeated failures into workflow rules
+
+If the same class of mistake appears repeatedly:
+- update anti-patterns
+- update routing cues or verification protocol
+- append the reroute reason into `Squad History`
+- prefer reusable guardrails over one-off warnings
 
 ## Squad Selection Rules
 
