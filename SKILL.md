@@ -272,6 +272,9 @@ Write `.codex/project-profile.md` in this structure:
 ## Working Style
 - 
 
+## Task Class
+- 
+
 ## Decision Heuristics
 - 
 
@@ -282,6 +285,9 @@ Write `.codex/project-profile.md` in this structure:
 - 
 
 ## Verification Protocol
+- 
+
+## Delivery Gate
 - 
 
 ## Squad History

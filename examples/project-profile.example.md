@@ -34,6 +34,9 @@
 ## Working Style
 - Prefer small, verifiable changes before expanding scope
 
+## Task Class
+- medium
+
 ## Decision Heuristics
 - Preserve the lead mental model, not just the speaking style
 - Prefer the smallest effective change before expanding scope
@@ -54,6 +57,11 @@
 - Verify the most critical user path or core output first
 - Check adjacent impact, not just the edited surface
 - Distinguish between demo-ready and production-ready
+
+## Delivery Gate
+- The key result already has real verification evidence
+- Unverified scope and risk are stated clearly
+- Static judgment, guesses, or descriptive plans are not reported as completion
 
 ## Squad History
 - Initial squad: example template initialized with `ppt-storytelling`

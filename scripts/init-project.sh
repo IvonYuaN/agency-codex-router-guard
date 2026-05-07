@@ -180,6 +180,7 @@ write_scan_profile() {
   local heur_1 heur_2 anti_1 anti_2 evo_1 evo_2
   local heur_en_1 heur_en_2 anti_en_1 anti_en_2 evo_en_1 evo_en_2
   local handoff_1 handoff_2 verify_1 verify_2 verify_3
+  local task_class task_class_en gate_1 gate_2 gate_3 gate_en_1 gate_en_2 gate_en_3
   local section_lang
 
   top_files="$(find "${PROJECT_DIR}" -maxdepth 2 -type f \
@@ -222,6 +223,14 @@ write_scan_profile() {
       anti_en_2="Do not polish too early when the flow is still unclear"
       evo_en_1="Keep interaction improvements that are easy to verify"
       evo_en_2="Revert UI complexity that does not improve understanding"
+      task_class="medium"
+      task_class_en="medium"
+      gate_1="关键用户路径或交互已实际验证"
+      gate_2="主要视口下的用户可见行为有证据支持"
+      gate_3="若仍有未验证项，必须明确列出"
+      gate_en_1="The critical user path or interaction has been actually verified"
+      gate_en_2="User-visible behavior across the main viewports is backed by evidence"
+      gate_en_3="Any unverified area is stated explicitly"
     elif [[ -d "${PROJECT_DIR}/server" || -d "${PROJECT_DIR}/api" || -d "${PROJECT_DIR}/backend" ]]; then
       type="full-stack web application"
       preset="backend-service"
@@ -249,6 +258,14 @@ write_scan_profile() {
       anti_en_2="Do not claim the whole system is stable without verification"
       evo_en_1="Keep changes that reduce structural confusion"
       evo_en_2="Revert changes that expand risk without clarifying boundaries"
+      task_class="large"
+      task_class_en="large"
+      gate_1="跨层主路径已联通验证"
+      gate_2="边界和影响面已经说明清楚"
+      gate_3="关键风险和未覆盖点已显式列出"
+      gate_en_1="The cross-layer primary path has been validated end to end"
+      gate_en_2="Boundaries and adjacent impact are described clearly"
+      gate_en_3="Key risks and uncovered areas are listed explicitly"
     else
       type="JavaScript application"
       preset="zero-to-one-startup"
@@ -276,6 +293,14 @@ write_scan_profile() {
       anti_en_2="Do not mistake volume of output for evidence"
       evo_en_1="Keep prototype conclusions that reduce uncertainty"
       evo_en_2="Revert implementations that expand scope without stronger proof"
+      task_class="lightweight"
+      task_class_en="lightweight"
+      gate_1="当前产物已证明或否定一个明确假设"
+      gate_2="演示可用与生产可用已区分"
+      gate_3="下一步判断所需证据已说明"
+      gate_en_1="The current artifact proves or disproves a clear hypothesis"
+      gate_en_2="Demo-ready and production-ready have been distinguished"
+      gate_en_3="The next evidence needed for a decision is stated"
     fi
   elif [[ -f "${PROJECT_DIR}/pyproject.toml" || -f "${PROJECT_DIR}/requirements.txt" ]]; then
     type="Python service or application"
@@ -304,6 +329,14 @@ write_scan_profile() {
     anti_en_2="Do not claim stability without interface-level evidence"
     evo_en_1="Keep changes that improve correctness and traceability"
     evo_en_2="Revert backend adjustments that amplify risk without stronger safeguards"
+    task_class="medium"
+    task_class_en="medium"
+    gate_1="关键接口输入输出已验证"
+    gate_2="错误路径和边界条件已有证据"
+    gate_3="未执行的验证项已明确说明"
+    gate_en_1="Critical interface inputs and outputs have been verified"
+    gate_en_2="Error paths and edge conditions have supporting evidence"
+    gate_en_3="Any verification not executed is stated clearly"
   elif [[ -f "${PROJECT_DIR}/go.mod" ]]; then
     type="Go service"
     preset="backend-service"
@@ -331,6 +364,14 @@ write_scan_profile() {
     anti_en_2="Do not ignore runtime evidence in favor of code intuition"
     evo_en_1="Keep changes that improve stability and observability"
     evo_en_2="Revert changes that create more runtime uncertainty"
+    task_class="large"
+    task_class_en="large"
+    gate_1="关键调用链和运行证据已检查"
+    gate_2="修复效果有日志、测试或观测佐证"
+    gate_3="运行风险和回退点已说明"
+    gate_en_1="Critical call chains and runtime evidence were inspected"
+    gate_en_2="The fix is backed by logs, tests, or observable signals"
+    gate_en_3="Runtime risks and rollback points are documented"
   elif [[ -f "${PROJECT_DIR}/Cargo.toml" ]]; then
     type="Rust application or service"
     preset="backend-service"
@@ -358,6 +399,14 @@ write_scan_profile() {
     anti_en_2="Do not expand language-level refactors without verification"
     evo_en_1="Keep implementations that improve correctness and maintainability"
     evo_en_2="Revert flashy refactors that do not increase stability"
+    task_class="medium"
+    task_class_en="medium"
+    gate_1="关键行为已被验证或回归检查覆盖"
+    gate_2="重构影响范围已说明"
+    gate_3="未验证的语言级风险已列出"
+    gate_en_1="Critical behavior is covered by verification or regression checks"
+    gate_en_2="The refactor impact surface is described"
+    gate_en_3="Any unverified language-level risk is listed"
   elif [[ -f "${PROJECT_DIR}/index.html" && ( -d "${PROJECT_DIR}/assets" || -d "${PROJECT_DIR}/images" ) ]]; then
     type="presentation-style static web artifact"
     preset="marketing-site"
@@ -385,6 +434,14 @@ write_scan_profile() {
     anti_en_2="Do not let implementation detail drown the narrative"
     evo_en_1="Keep changes that strengthen storytelling and scanability"
     evo_en_2="Revert visual complexity that weakens clarity and pacing"
+    task_class="medium"
+    task_class_en="medium"
+    gate_1="首屏和关键区块已做可见性验证"
+    gate_2="叙事层级和扫读路径已检查"
+    gate_3="任何仅停留在静态判断的部分已明确说明"
+    gate_en_1="The hero and key sections have been checked visually"
+    gate_en_2="Narrative hierarchy and scan path were reviewed"
+    gate_en_3="Any area still judged only statically is stated explicitly"
   elif find "${PROJECT_DIR}" -maxdepth 2 -type f \( -name "*.pptx" -o -name "*.ppt" -o -name "*.key" -o -name "*.pdf" \) | grep -q .; then
     type="presentation or document artifact"
     preset="ppt-storytelling"
@@ -412,6 +469,14 @@ write_scan_profile() {
     anti_en_2="Do not add flashy forms that weaken the argument"
     evo_en_1="Keep structural adjustments that improve story flow"
     evo_en_2="Revert content that adds noise without adding persuasion"
+    task_class="medium"
+    task_class_en="medium"
+    gate_1="叙事顺序和每页作用已复核"
+    gate_2="主线和品牌表达没有互相冲突"
+    gate_3="任何未做最终渲染验证的部分已说明"
+    gate_en_1="Narrative order and page purpose have been reviewed"
+    gate_en_2="Main storyline and brand expression do not conflict"
+    gate_en_3="Any part without final render validation is called out"
   elif [[ -d "${PROJECT_DIR}/content" || -d "${PROJECT_DIR}/posts" || -d "${PROJECT_DIR}/marketing" ]]; then
     type="content or marketing workspace"
     preset="marketing-site"
@@ -439,6 +504,14 @@ write_scan_profile() {
     anti_en_2="Do not sacrifice brand consistency for keyword stuffing"
     evo_en_1="Keep content changes that improve clarity and conversion intent"
     evo_en_2="Revert edits that lengthen content while weakening force"
+    task_class="lightweight"
+    task_class_en="lightweight"
+    gate_1="核心主张和目标动作已清晰可辨"
+    gate_2="品牌一致性和转化意图已复核"
+    gate_3="未验证渠道表现的部分已说明"
+    gate_en_1="The core message and intended action are clearly visible"
+    gate_en_2="Brand consistency and conversion intent were reviewed"
+    gate_en_3="Any unverified channel-performance claim is stated as such"
   else
     type="general software or project workspace"
     preset="zero-to-one-startup"
@@ -466,6 +539,14 @@ write_scan_profile() {
     anti_en_2="Do not mistake busyness for validated progress"
     evo_en_1="Keep progress that reduces uncertainty"
     evo_en_2="Revert work that increases surface area without stronger confidence"
+    task_class="lightweight"
+    task_class_en="lightweight"
+    gate_1="当前结果确实降低了不确定性"
+    gate_2="下一步判断所需证据已说明"
+    gate_3="没有把忙碌误报成完成"
+    gate_en_1="The current result genuinely reduced uncertainty"
+    gate_en_2="The next evidence needed for a decision is stated"
+    gate_en_3="Busy activity is not being reported as completion"
   fi
 
   section_lang="${PROFILE_LANG}"
@@ -631,6 +712,9 @@ $(printf '%s
 - 先理解，再做最小有效改动
 - 优先使用最小可用 squad，避免无谓扩张
 
+## Task Class
+- ${task_class}
+
 ## Decision Heuristics
 - ${heur_1}
 - ${heur_2}
@@ -651,6 +735,11 @@ $(printf '%s
 - ${verify_1}
 - ${verify_2}
 - ${verify_3}
+
+## Delivery Gate
+- ${gate_1}
+- ${gate_2}
+- ${gate_3}
 
 ## Evolution Loop
 - ${evo_1}
@@ -706,6 +795,9 @@ $(printf '%s
 - Understand first, then make the smallest effective change
 - Prefer the smallest useful squad before expanding
 
+## Task Class
+- ${task_class_en}
+
 ## Decision Heuristics
 - ${heur_en_1}
 - ${heur_en_2}
@@ -726,6 +818,11 @@ $(printf '%s
 - ${verify_1}
 - ${verify_2}
 - ${verify_3}
+
+## Delivery Gate
+- ${gate_en_1}
+- ${gate_en_2}
+- ${gate_en_3}
 
 ## Evolution Loop
 - ${evo_en_1}
@@ -748,8 +845,10 @@ write_dialog_profile() {
   local type summary_stack artifacts preset primary support_a support_b support_c upstream_primary upstream_support_a upstream_support_b upstream_support_c
   local current_goal_1 current_goal_2 constraint_1 constraint_2 cue_1 switch_1 cue_2 switch_2 cue_3 switch_3
   local heur_1 heur_2 anti_1 anti_2 handoff_1 handoff_2 verify_1 verify_2 verify_3 evo_1 evo_2
+  local task_class task_class_en gate_1 gate_2 gate_3
   local current_goal_en_1 current_goal_en_2 constraint_en_1 constraint_en_2 cue_en_1 switch_en_1 cue_en_2 switch_en_2 cue_en_3 switch_en_3
   local heur_en_1 heur_en_2 anti_en_1 anti_en_2 handoff_en_1 handoff_en_2 verify_en_1 verify_en_2 verify_en_3 evo_en_1 evo_en_2
+  local gate_en_1 gate_en_2 gate_en_3
 
   goal="$(normalize_token "${PROJECT_GOAL:-}")"
   success="$(normalize_token "${SUCCESS_METRIC:-}")"
@@ -797,6 +896,10 @@ write_dialog_profile() {
       verify_3="区分提案可讲与成品可交付"
       evo_1="保留能强化故事线和扫读性的调整"
       evo_2="回滚降低说服力的视觉复杂度"
+      task_class="medium"
+      gate_1="核心叙事和页面骨架已可见可评审"
+      gate_2="视觉判断与交付判断已区分"
+      gate_3="未落地的实现或验证空白已说明"
       current_goal_en_1="Clarify the story, page structure, and delivery rhythm first"
       current_goal_en_2="Shape the first iteration around the success metric: ${SUCCESS_METRIC:-looks better}"
       constraint_en_1="This profile is inferred from new-project answers and should evolve with real project samples"
@@ -818,6 +921,10 @@ write_dialog_profile() {
       verify_en_3="Distinguish between a pitch-ready draft and a delivery-ready artifact"
       evo_en_1="Keep changes that strengthen storyline and scanability"
       evo_en_2="Revert visual complexity that weakens persuasion"
+      task_class_en="medium"
+      gate_en_1="The core narrative and page skeleton are visible and reviewable"
+      gate_en_2="Design judgment and delivery judgment are clearly separated"
+      gate_en_3="Any implementation or verification gap is stated explicitly"
       ;;
     web-app|app|webapp)
       type="new frontend product or web app"
@@ -853,6 +960,10 @@ write_dialog_profile() {
       verify_3="确认当前实现支撑了最小可验证闭环"
       evo_1="保留能提升关键路径清晰度的改动"
       evo_2="回滚增加复杂度却不改善体验的实现"
+      task_class="medium"
+      gate_1="关键用户路径已有最小可验证闭环"
+      gate_2="主要页面或视口已有可见验证"
+      gate_3="未验证体验点已列出"
       current_goal_en_1="Define the core user path and first page skeletons"
       current_goal_en_2="Build the minimum verifiable flow around the success metric: ${SUCCESS_METRIC:-ready to ship}"
       constraint_en_1="This is a new project without a stable code baseline, so prefer the smallest effective structure"
@@ -874,6 +985,10 @@ write_dialog_profile() {
       verify_en_3="Confirm the current build supports a minimal verifiable loop"
       evo_en_1="Keep changes that improve critical-path clarity"
       evo_en_2="Revert complexity that does not improve the experience"
+      task_class_en="medium"
+      gate_en_1="A minimal verifiable loop exists for the core user path"
+      gate_en_2="The main page or viewport behavior has visible validation"
+      gate_en_3="Any unverified UX point is listed"
       ;;
     api|backend|service|automation-workflow|automation)
       type="new backend service or workflow"
@@ -909,6 +1024,10 @@ write_dialog_profile() {
       verify_3="确认第一版结构支持后续扩展"
       evo_1="保留能提升正确性和可验证性的改动"
       evo_2="回滚扩大风险却没有更清晰边界的设计"
+      task_class="large"
+      gate_1="关键接口或流程已有验证证据"
+      gate_2="边界、风险与未覆盖项已说明"
+      gate_3="没有把设计描述误报成已交付能力"
       current_goal_en_1="Define interface boundaries, the core flow, and verifiable inputs and outputs first"
       current_goal_en_2="Shape the first service structure around the success metric: ${SUCCESS_METRIC:-more reliable}"
       constraint_en_1="There is no mature runtime evidence yet, so build a verifiable interface and minimal call chain first"
@@ -930,6 +1049,10 @@ write_dialog_profile() {
       verify_en_3="Confirm the first structure can support future extension"
       evo_en_1="Keep changes that improve correctness and verifiability"
       evo_en_2="Revert design expansion that increases risk without clearer boundaries"
+      task_class_en="large"
+      gate_en_1="Critical interfaces or flows have verification evidence"
+      gate_en_2="Boundaries, risks, and uncovered areas are documented"
+      gate_en_3="Design description is not being reported as delivered capability"
       ;;
     content|marketing|brand)
       type="new content or marketing workspace"
@@ -965,6 +1088,10 @@ write_dialog_profile() {
       verify_3="确认扩展没有削弱品牌和转化意图"
       evo_1="保留能提升清晰度和传播效率的改动"
       evo_2="回滚拉长内容却削弱力度的版本"
+      task_class="lightweight"
+      gate_1="核心主张和预期动作已清晰可见"
+      gate_2="品牌与转化目标未互相打架"
+      gate_3="未验证渠道效果的部分已说明"
       current_goal_en_1="Define the core claim, audience, and first content structure"
       current_goal_en_2="Build the smallest distribution loop around the success metric: ${SUCCESS_METRIC:-faster to complete}"
       constraint_en_1="This profile is based on new-project content assumptions and should evolve with real channels and assets"
@@ -986,6 +1113,10 @@ write_dialog_profile() {
       verify_en_3="Confirm expansion did not weaken brand or conversion intent"
       evo_en_1="Keep changes that improve clarity and distribution efficiency"
       evo_en_2="Revert versions that lengthen content while weakening force"
+      task_class_en="lightweight"
+      gate_en_1="The core claim and intended action are clear"
+      gate_en_2="Brand and conversion goals are not fighting each other"
+      gate_en_3="Any unverified channel-effect assumption is stated"
       ;;
     *)
       type="zero-to-one product workspace"
@@ -1021,6 +1152,10 @@ write_dialog_profile() {
       verify_3="区分讨论进展与实际进展"
       evo_1="保留能减少不确定性的推进"
       evo_2="回滚扩大范围却没有更强证据的工作"
+      task_class="lightweight"
+      gate_1="当前输出确实降低了一个关键不确定性"
+      gate_2="下一步决策所需证据已说明"
+      gate_3="没有把讨论误报成进展"
       current_goal_en_1="Clarify the goal, success metric, and smallest next step first"
       current_goal_en_2="Create a minimum validation path around the success metric: ${SUCCESS_METRIC:-easier to extend}"
       constraint_en_1="There is not enough repository evidence yet, so this profile is mostly dialogue-derived"
@@ -1042,6 +1177,10 @@ write_dialog_profile() {
       verify_en_3="Distinguish discussion progress from actual progress"
       evo_en_1="Keep moves that reduce uncertainty"
       evo_en_2="Revert work that expands scope without stronger proof"
+      task_class_en="lightweight"
+      gate_en_1="The current output genuinely reduced a key uncertainty"
+      gate_en_2="The next evidence needed for a decision is stated"
+      gate_en_3="Discussion is not being reported as progress"
       ;;
   esac
 
@@ -1084,6 +1223,9 @@ write_dialog_profile() {
 - 先基于对话建立最小可执行方向，再随着样例和代码增长更新 profile
 - 优先使用最小有效 squad，避免在新项目阶段过早膨胀
 
+## Task Class
+- ${task_class}
+
 ## Decision Heuristics
 - ${heur_1}
 - ${heur_2}
@@ -1104,6 +1246,11 @@ write_dialog_profile() {
 - ${verify_1}
 - ${verify_2}
 - ${verify_3}
+
+## Delivery Gate
+- ${gate_1}
+- ${gate_2}
+- ${gate_3}
 
 ## Evolution Loop
 - ${evo_1}
@@ -1153,6 +1300,9 @@ EOF
 - Start from a dialogue-derived execution direction, then refine the profile as code and artifacts appear
 - Prefer the smallest useful squad before expanding early-project scope
 
+## Task Class
+- ${task_class_en}
+
 ## Decision Heuristics
 - ${heur_en_1}
 - ${heur_en_2}
@@ -1173,6 +1323,11 @@ EOF
 - ${verify_en_1}
 - ${verify_en_2}
 - ${verify_en_3}
+
+## Delivery Gate
+- ${gate_en_1}
+- ${gate_en_2}
+- ${gate_en_3}
 
 ## Evolution Loop
 - ${evo_en_1}

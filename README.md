@@ -171,6 +171,8 @@ chmod +x scripts/install.sh scripts/init-project.sh
 - `Current Goals`
 - `Constraints`
 - `Routing Cues`
+- `Task Class`
+- `Delivery Gate`
 - `Squad History`
 
 如果项目已经在推进中，`update-profile.sh` 现在可以在不重建整份 profile 的前提下：
@@ -213,6 +215,7 @@ Use agency-codex-router-guard for this repo.
 - 不同项目类型已经会生成不同的决策规则、反模式、交接触发器和验证协议
 - 安装脚本现在默认中文，并支持安装后立即为项目生成 profile
 - 新项目对话答案现在可以直接落成 `Current Goals`、`Constraints`、`Routing Cues`
+- `init-project.sh` 现在会按项目类型或新项目目标直接生成 `Task Class` 和 `Delivery Gate`
 - 所有生成的 profile 现在都会带 `Squad History`
 - `update-profile.sh` 现在可以在 reroute 时自动追加带时间和原因的历史记录
 - `update-profile.sh` 现在支持对 `Routing Cues` 做 `replace`、`append`、`remove`
@@ -417,6 +420,8 @@ When dialogue answers are provided for a new project, `dialog` mode now writes t
 - `Current Goals`
 - `Constraints`
 - `Routing Cues`
+- `Task Class`
+- `Delivery Gate`
 - `Squad History`
 
 For ongoing projects, `update-profile.sh` can now:
@@ -459,6 +464,7 @@ Already improved in this version:
 - Different project types now generate different heuristics, anti-patterns, handoff triggers, and verification rules
 - The install script now defaults to Chinese and can install the skill while generating a project profile immediately
 - New-project dialogue answers can now be written directly into `Current Goals`, `Constraints`, and `Routing Cues`
+- `init-project.sh` now generates `Task Class` and `Delivery Gate` directly from project type or new-project intent
 - All generated profiles now include `Squad History`
 - `update-profile.sh` can now append timestamped reroute history entries automatically
 - `update-profile.sh` can now `replace`, `append`, or `remove` individual `Routing Cues` branches
