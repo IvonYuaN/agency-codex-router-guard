@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-05-07
+
+- Added deeper sector routing for AI/agent engineering, game development, China-market growth, and spatial computing
+- Added preset-based reroute updates in `scripts/update-profile.sh`
+- Added preset-based reroute for default `Routing Cues`
+- Added preset-based reroute for default `Delivery Gate`
+- Added `scripts/test-regressions.sh` to lock the main scan/dialog/reroute flows with repeatable regression checks
+
 ## 2026-05-06
 
 - Initial public release of `agency-codex-router`
